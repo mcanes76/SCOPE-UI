@@ -6,6 +6,10 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## Open the demonstrator
 
+The latest [Premium Shell Exploration](mockups/scope-shell-premium-exploration.html) presents Aperture, Mosaic, Portal and Command Deck with distinct multicolor materials and navigation models. Its fifth tab, Visual Comparison, compares the four alternatives. Each concept has a secondary Component Laboratory with a Generic Visualization Gallery and Interactive Controls & States. All charts, statuses and interactions are synthetic and local; application surfaces remain abstract. Open the HTML directly in a browser without a server or dependencies.
+
+The earlier [Three-Shell Exploration](mockups/scope-shell-exploration.html) remains available alongside the original twelve-concept demonstrator below. Existing documentation and explorations are preserved.
+
 Open [mockups/scope-ui-concepts.html](mockups/scope-ui-concepts.html) directly in a modern browser by double-clicking the file or using the browser's Open File command. No Node.js, packages, network access or server is needed.
 
 1. Select one of the twelve concept tabs. Comparison provides all twelve concepts against eleven common criteria and identifies promising candidates without selecting a final design.
@@ -29,6 +33,8 @@ docs/
     validate-prototype.cjs       Optional dependency-free developer validation
 mockups/
   scope-ui-concepts.html         Complete offline HTML/CSS/JavaScript demonstrator
+  scope-shell-exploration.html   Earlier Aperture, Mosaic and Portal shell studies
+  scope-shell-premium-exploration.html  Four premium shell studies, gallery and comparison
 src/
   .gitkeep                      Reserved for future application work
 ```
