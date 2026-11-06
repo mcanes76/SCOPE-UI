@@ -6,6 +6,10 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## Open the demonstrator
 
+The newest [Integrated Application Demo](mockups/scope-integrated-demo.html) adds four separate simulated applications to the premium shell. Start with BLOS and Display side by side; select either panel's application independently, expand/restore a panel, or switch to single-application shell navigation. BLOS includes group/discovery/topology examples; Display provides a functional SVG globe; Calibration supports local read/edit/validate/confirm/update flows; Native LOS provides generic local configuration and history. **All functionality is simulation only.** See [Integrated Demo Notes](docs/SCOPE-Integrated-Demo-Notes.md) for data ownership, assumptions, example flows and validation limits.
+
+In the integrated demo, **Style Guide** provides Shell & Look plus BLOS, Display, Sensor Calibration and Native LOS coverage for every shell/look. Each guide has **Export Style Guide to PDF**. Two views of the same application share simulated data but keep independent tabs, selections and drafts; separate browser windows start independent demo sessions. All previous generations below remain available.
+
 The latest [Premium Shell Exploration](mockups/scope-shell-premium-exploration.html) presents Aperture, Mosaic, Portal and Command Deck, each with four selectable visual looks: Prism Glass, Nocturne Ink, Carbon Cobalt and Spectrum Blocks. These provide 16 combinations of navigation architecture and visual material. The fifth tab, Visual Comparison, compares the shells and look families. Each concept has a secondary Component Laboratory with a Generic Visualization Gallery and Interactive Controls & States. All charts, statuses and interactions are synthetic and local; application surfaces remain abstract. Open the HTML directly in a browser without a server or dependencies.
 
 Choose a shell and visual look, then open **Style Guide** for its palette, typography, geometry, navigation rules, component-state examples and operator rationale. **Export Style Guide to PDF** opens the browser print dialog for that shell/look combination only. Choose Save as PDF; enable background graphics to retain swatches. Ctrl+P also prepares the current combination's guide. Printing uses paper-friendly component ink while listing the exact screen HEX values. The prototype has no PDF-library or network dependency.
@@ -33,9 +37,12 @@ Choose a concept → Style Guide → **Export Style Guide to PDF**. The browser 
 ```text
 docs/
   SCOPE-UI-Documentation.html    Tabbed architecture, requirements, comparison and validation
+  SCOPE-Integrated-Demo-Notes.md Integrated demo boundaries, assumptions and validation
   assets/
     validate-prototype.cjs       Optional dependency-free developer validation
+    validate-integrated-demo.cjs Integrated app contract/handler/guide validation
 mockups/
+  scope-integrated-demo.html     Four simulated apps, split view and exportable style guides
   scope-ui-concepts.html         Complete offline HTML/CSS/JavaScript demonstrator
   scope-shell-exploration.html   Earlier Aperture, Mosaic and Portal shell studies
   scope-shell-premium-exploration.html  Four premium shell studies, gallery and comparison
