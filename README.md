@@ -6,6 +6,8 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## Open the demonstrator
 
+The newest [Electric Glass Integrated Demo](mockups/scope-integrated-electric-glass.html) preserves the four applications, shell concepts, looks, split views and PDF-exportable style guides while adding saturated semantic action buttons, dimensional glass surfaces and explicit alignment-status panels. Its textured perspective Earth starts on ten fictional southeastern US/Gulf nodes. **Reset to Network** restores the regional camera; **Full Earth** and rotation/zoom expose the entire globe. Display and BLOS use independent sparse graphs; an optional dashed-violet BLOS overlay has its own legend. See [Electric Glass Notes](docs/SCOPE-Electric-Glass-Notes.md) for assumptions, embedded-image attribution and verification limits. The licensed Earth texture is embedded, so the file works offline and is larger than the earlier explorations.
+
 The newest [Integrated Application Demo](mockups/scope-integrated-demo.html) adds four separate simulated applications to the premium shell. Start with BLOS and Display side by side; select either panel's application independently, expand/restore a panel, or switch to single-application shell navigation. BLOS includes group/discovery/topology examples; Display provides a functional SVG globe; Calibration supports local read/edit/validate/confirm/update flows; Native LOS provides generic local configuration and history. **All functionality is simulation only.** See [Integrated Demo Notes](docs/SCOPE-Integrated-Demo-Notes.md) for data ownership, assumptions, example flows and validation limits.
 
 In the integrated demo, **Style Guide** provides Shell & Look plus BLOS, Display, Sensor Calibration and Native LOS coverage for every shell/look. Each guide has **Export Style Guide to PDF**. Two views of the same application share simulated data but keep independent tabs, selections and drafts; separate browser windows start independent demo sessions. All previous generations below remain available.
@@ -38,10 +40,13 @@ Choose a concept → Style Guide → **Export Style Guide to PDF**. The browser 
 docs/
   SCOPE-UI-Documentation.html    Tabbed architecture, requirements, comparison and validation
   SCOPE-Integrated-Demo-Notes.md Integrated demo boundaries, assumptions and validation
+  SCOPE-Electric-Glass-Notes.md  Electric styling, regional Earth and texture attribution
   assets/
     validate-prototype.cjs       Optional dependency-free developer validation
     validate-integrated-demo.cjs Integrated app contract/handler/guide validation
+    validate-electric-glass.cjs Electric action, regional projection and regression checks
 mockups/
+  scope-integrated-electric-glass.html  Electric Glass, textured regional Earth and independent links
   scope-integrated-demo.html     Four simulated apps, split view and exportable style guides
   scope-ui-concepts.html         Complete offline HTML/CSS/JavaScript demonstrator
   scope-shell-exploration.html   Earlier Aperture, Mosaic and Portal shell studies
