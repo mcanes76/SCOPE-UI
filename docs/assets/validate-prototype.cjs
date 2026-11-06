@@ -7,13 +7,65 @@ const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../..');
-const deliverables=['README.md','.gitignore','docs/SCOPE-UI-Architecture.md','docs/SCOPE-UI-Design-Requirements.md','docs/SCOPE-UI-Style-Comparison.md','docs/Validation.md','docs/assets/.gitkeep','docs/assets/validate-prototype.cjs','mockups/scope-ui-concepts.html','src/.gitkeep'];
+const deliverables=['README.md','.gitignore','docs/SCOPE-UI-Documentation.html','docs/assets/.gitkeep','docs/assets/validate-prototype.cjs','mockups/scope-ui-concepts.html','src/.gitkeep'];
 for(const relative of deliverables){
   const filename=path.join(root,relative);assert(fs.existsSync(filename),'Required file '+relative);
   const source=fs.readFileSync(filename,'utf8');assert(!/[^\S\r\n]+\r?$/m.test(source),'Trailing whitespace in '+relative);
   if(relative.endsWith('.md'))for(const match of source.matchAll(/\]\(([^)]+)\)/g)){
-    if(!/^https?:/.test(match[1]))assert(fs.existsSync(path.resolve(path.dirname(filename),match[1])),'Broken local document link '+match[1]);
+    if(!/^https?:/.test(match[1]))assert(fs.existsSync(path.resolve(path.dirname(filename),match[1].split('#')[0])),'Broken local document link '+match[1]);
   }
+}
+// Validate the consolidated documentation, including generated markup and navigation.
+{
+  const file=path.join(root,'docs/SCOPE-UI-Documentation.html');
+  const source=fs.readFileSync(file,'utf8');
+  const code=source.match(/<script>([\s\S]*?)<\/script>/)[1];
+  new vm.Script(code);
+  assert(!/<(?:script|link|img)[^>]+(?:src|href)\s*=/i.test(source),'Documentation is self-contained');
+  const nodes=new Map(), links=[], refs=[];
+  for(const tag of source.matchAll(/<[a-z][\w-]*(\s[^<>]*?)?>/gi)){
+    const attrs={};for(const attr of tag[0].matchAll(/([\w-]+)="([^"]*)"/g))attrs[attr[1]]=attr[2];
+    if(attrs.id){
+      assert(!nodes.has(attrs.id),'Duplicate documentation ID '+attrs.id);
+      nodes.set(attrs.id,{id:attrs.id,attrs,dataset:{anchor:attrs['data-anchor'],label:attrs['data-label']},events:{},
+        setAttribute(k,v){this.attrs[k]=v;},getAttribute(k){return this.attrs[k];},
+        addEventListener(k,fn){this.events[k]=fn;},focus(){this.focused=true;},scrollIntoView(){this.scrolled=true;},
+        click(){this.events.click();},closest(){const key=this.id.replace(/^(?:panel-|tab-)/,'');return panels.find(p=>p.id==='panel-'+key||this.id.startsWith(p.id.slice(6)+'-'));}
+      });
+    }
+    for(const key of ['aria-controls','aria-labelledby'])if(attrs[key])refs.push(attrs[key]);
+    if(attrs.href)links.push(attrs.href);
+  }
+  for(const ref of refs)assert(nodes.has(ref),'Missing documentation relationship '+ref);
+  for(const href of links){
+    if(/^https?:/.test(href))continue;
+    const [relative,anchor]=href.split('#');
+    if(relative)assert(fs.existsSync(path.resolve(path.dirname(file),relative)),'Missing local HTML link '+href);
+    else if(anchor)assert(nodes.has(anchor),'Missing documentation anchor '+href);
+  }
+  const tabs=[...nodes.values()].filter(n=>n.attrs.role==='tab');
+  const panels=[...nodes.values()].filter(n=>n.attrs.role==='tabpanel');
+  assert.equal(tabs.length,4);assert.equal(panels.length,4);
+  const location={hash:''},events={};let printed=false;
+  const doc={title:'',querySelectorAll:q=>q==='[role="tab"]'?tabs:panels,getElementById:id=>nodes.get(id)||null};
+  vm.runInNewContext(code,{document:doc,location,window:{addEventListener(k,fn){events[k]=fn;},print(){printed=true;}}});
+  for(let i=0;i<tabs.length;i++){
+    tabs[i].click();events.hashchange();
+    assert.equal(panels.filter(p=>!p.hidden).length,1);
+    assert.equal(panels[i].hidden,false);assert.equal(tabs[i].attrs['aria-selected'],'true');assert.equal(tabs[i].tabIndex,0);
+    assert.equal(location.hash,'#'+tabs[i].dataset.anchor);
+    for(const key of ['ArrowLeft','ArrowRight','Home','End']){
+      const index=key==='Home'?0:key==='End'?3:key==='ArrowRight'?(i+1)%4:(i+3)%4;
+      tabs[i].events.keydown({key,preventDefault(){}});assert.equal(panels[index].hidden,false);
+    }
+  }
+  for(const target of ['architecture-c-conceptual-system-architecture','design-requirements-control-state-requirements','style-comparison-promising-candidates','validation-browser-verification-limit']){
+    location.hash='#'+target;events.hashchange();assert(nodes.get(target).scrolled);assert.equal(nodes.get(target).closest().hidden,false);
+  }
+  location.hash='#%invalid';events.hashchange();assert.equal(panels[0].hidden,false);
+  nodes.get('print-document').click();assert(printed);
+  assert(source.includes('.document-panel[hidden]{display:none!important}'),'Print excludes inactive panels');
+  console.log('Documentation: four tabs, keyboard/hash handlers, print invocation, script syntax, IDs and links passed (controlled fixture; no browser renderer).');
 }
 const html = fs.readFileSync(path.join(root, 'mockups/scope-ui-concepts.html'), 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];

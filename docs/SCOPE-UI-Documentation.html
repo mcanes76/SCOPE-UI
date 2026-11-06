@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark light"><title>SCOPE Documentation</title><style>
+:root{color-scheme:dark;--bg:#0d141d;--panel:#16212e;--raised:#203142;--text:#e0e8f0;--muted:#b5c2cf;--accent:#92c7d9;--line:#536b80;font:16px/1.65 system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--accent);text-underline-offset:4px}a:hover{text-decoration-thickness:2px}button,a,summary{outline-offset:4px}:focus-visible{outline:3px solid var(--accent)}button{font:inherit;cursor:pointer;min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text)}button:hover{background:var(--raised)}button:active{transform:translateY(1px)}.skip{position:absolute;left:16px;top:-100px;z-index:4;padding:12px;background:var(--panel)}.skip:focus{top:10px}.masthead{max-width:1600px;margin:auto;padding:32px 40px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:750;color:var(--muted);margin:0 0 8px}h1{font-size:28px;line-height:1.2;margin:0 0 8px;letter-spacing:-.02em}.subtitle{color:var(--muted);margin:0;font-size:14px}.header-actions{display:flex;align-items:center;gap:20px;flex-shrink:0}.tab-strip{border-block:1px solid var(--line);background:#111c27}.tabs{max-width:1600px;display:flex;gap:8px;margin:auto;padding:12px 40px;flex-wrap:wrap}.tabs button{background:transparent;border-color:transparent;text-align:left}.tabs button[aria-selected=true]{background:var(--raised);border-color:var(--accent);box-shadow:inset 0 -3px var(--accent)}.tabs .tab-number{font-size:11px;color:var(--muted);margin-right:10px}.document-panel{max-width:1600px;margin:0 auto;padding:32px 40px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px}.contents{position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow:auto;padding-right:12px}.contents nav{display:flex;flex-direction:column;gap:3px}.contents a{font-size:12px;line-height:1.4;text-decoration:none;padding:8px 10px;border-left:1px solid var(--line);color:var(--muted);min-height:34px}.contents a:hover,.contents a:focus-visible{color:var(--accent);background:var(--panel)}.contents a.subsection{padding-left:22px}article{min-width:0}h2{font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:0 0 22px}h3{font-size:21px;line-height:1.35;margin:40px 0 16px;border-top:1px solid var(--line);padding-top:24px}h4{font-size:17px;margin:28px 0 10px}h2,h3,h4{scroll-margin-top:24px}p{margin:0 0 18px}li{margin-bottom:10px}ul{padding-left:24px;margin:0 0 24px}code{font-size:.88em;font-family:ui-monospace,Consolas,monospace;background:var(--raised);padding:2px 5px;border-radius:3px;overflow-wrap:anywhere}pre{background:var(--panel);padding:20px;border:1px solid var(--line);border-radius:6px;overflow:auto;font-size:12px;line-height:1.5}pre code{padding:0;background:transparent;overflow-wrap:normal}.table-scroll{overflow:auto;margin:22px 0 30px;border:1px solid var(--line);border-radius:6px}table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.5}th,td{padding:13px 15px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);min-width:180px}thead th{background:var(--raised);font-weight:650}tbody th{font-weight:600;background:var(--panel)}tr:last-child>*{border-bottom:0}#panel-style-comparison table{min-width:1700px}#panel-style-comparison thead th:first-child,#panel-style-comparison tbody th{position:sticky;left:0;min-width:215px}details{margin:18px 0 28px}summary{cursor:pointer;min-height:44px;padding:10px 0;color:var(--accent)}.architecture-diagram{margin:24px 0;padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:12px;text-align:center}.architecture-diagram figcaption{font-size:13px;font-weight:650;margin-bottom:20px}.diagram-context{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.diagram-context>div,.diagram-lane>div{border:1px solid var(--line);padding:12px;background:var(--bg);border-radius:4px}.diagram-shell{padding:16px;border:1px solid var(--accent);background:var(--raised);display:flex;flex-direction:column;gap:8px}.diagram-shell strong{font-size:18px}.diagram-arrow{font-size:24px;color:var(--accent);padding:6px}.diagram-lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.diagram-lane{display:flex;flex-direction:column;gap:10px;border:1px dashed var(--line);padding:14px 10px;border-radius:4px}.diagram-lane strong{font-size:14px}.diagram-lane span{font-size:11px;color:var(--muted)}.diagram-lane b{color:var(--accent)}.diagram-note{margin:20px 0 0;color:var(--muted);font-size:12px}.page-footer{padding:18px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}[hidden]{display:none!important}
+@media(max-width:1000px){.document-panel{grid-template-columns:190px minmax(0,1fr);gap:24px;padding-inline:24px}.masthead,.tabs{padding-inline:24px}.diagram-lanes{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.masthead{padding:24px 18px;flex-direction:column;align-items:flex-start}.tabs{padding:12px 18px;display:grid;grid-template-columns:1fr 1fr;gap:6px}.tabs button{font-size:13px;padding:10px}.document-panel{padding:24px 18px 40px;grid-template-columns:1fr;gap:24px}.contents{position:static;max-height:none;padding:16px;border:1px solid var(--line);border-radius:6px}.contents nav{max-height:180px;overflow:auto}.contents a{min-height:44px}h2{font-size:27px}.diagram-context,.diagram-lanes{grid-template-columns:1fr}.architecture-diagram{padding:16px}th,td{min-width:160px}}
+@page{size:A4 landscape;margin:14mm}
+@media print{:root{color-scheme:light;--bg:#fff;--panel:#f5f6f7;--raised:#e8edf1;--text:#17212b;--muted:#374553;--accent:#244c66;--line:#8494a1;font-size:10pt}body{background:#fff}.skip,.masthead,.tab-strip,.contents,.page-footer{display:none!important}.document-panel{display:block;padding:0;max-width:none}.document-panel[hidden]{display:none!important}h2{font-size:21pt}h3{font-size:14pt;break-after:avoid}h4{break-after:avoid}.table-scroll{overflow:visible;border:0}table{font-size:8pt}th,td{min-width:0;padding:7px}#panel-style-comparison table{min-width:0;font-size:6pt}#panel-style-comparison thead th:first-child,#panel-style-comparison tbody th{position:static;min-width:0}.table-scroll tr{break-inside:avoid}thead{display:table-header-group}.architecture-diagram{break-inside:avoid}.diagram-lanes{grid-template-columns:repeat(4,1fr)}.diagram-context{grid-template-columns:repeat(3,1fr)}article a{color:#244c66}details{display:none}code{white-space:normal}pre{white-space:pre-wrap}*{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head>
+<body><a class="skip" href="#documents">Skip to document</a>
+<header class="masthead"><div><p class="eyebrow">SCOPE / Reference library</p><h1>Operator UI documentation</h1><p class="subtitle">Target architecture, design requirements, concept comparison & validation</p></div><div class="header-actions"><a href="../mockups/scope-ui-concepts.html">Open design lab ↗</a><button id="print-document" type="button">Print active tab / Save PDF</button></div></header>
+<div class="tab-strip"><nav class="tabs" role="tablist" aria-label="Documentation"><button type="button" role="tab" id="tab-architecture" aria-controls="panel-architecture" aria-selected="true" tabindex="0" data-anchor="architecture" data-label="Architecture"><span class="tab-number">01</span>Architecture</button><button type="button" role="tab" id="tab-design-requirements" aria-controls="panel-design-requirements" aria-selected="false" tabindex="-1" data-anchor="design-requirements" data-label="Design Requirements"><span class="tab-number">02</span>Design Requirements</button><button type="button" role="tab" id="tab-style-comparison" aria-controls="panel-style-comparison" aria-selected="false" tabindex="-1" data-anchor="style-comparison" data-label="Style Comparison"><span class="tab-number">03</span>Style Comparison</button><button type="button" role="tab" id="tab-validation" aria-controls="panel-validation" aria-selected="false" tabindex="-1" data-anchor="validation" data-label="Validation"><span class="tab-number">04</span>Validation</button></nav></div>
+<main id="documents" tabindex="-1"><section id="panel-architecture" class="document-panel" role="tabpanel" aria-labelledby="tab-architecture"><aside class="contents" aria-label="architecture contents"><p class="eyebrow">On this tab</p><nav><a href="#architecture-a-purpose-and-scope">A. Purpose and scope</a><a href="#architecture-b-architecture-drivers">B. Architecture drivers</a><a href="#architecture-c-conceptual-system-architecture">C. Conceptual system architecture</a><a href="#architecture-d-component-responsibilities">D. Component responsibilities</a><a href="#architecture-e-decoupling-strategy">E. Decoupling strategy</a><a href="#architecture-f-ui-integration-options">F. UI integration options</a><a href="#architecture-g-rest-api-integration-architecture">G. REST/API integration architecture</a><a href="#architecture-h-common-ui-design-system">H. Common UI design system</a><a href="#architecture-i-information-and-visualization-models">I. Information and visualization models</a><a href="#architecture-j-failure-and-degraded-operation">J. Failure and degraded operation</a><a href="#architecture-k-security-considerations">K. Security considerations</a><a href="#architecture-l-architectural-decisions-and-tradeoffs">L. Architectural decisions and tradeoffs</a><a href="#architecture-m-open-questions-and-assumptions">M. Open questions and assumptions</a></nav></aside><article><h2 id="architecture" tabindex="-1">SCOPE UI target architecture</h2>
+<p>Status: design exploration and architectural recommendation. No stackup internals, endpoint schemas, deployment platform or frontend framework have been supplied. This document describes the target shape, not a phased delivery plan.</p>
+<h3 id="architecture-a-purpose-and-scope" tabindex="-1">A. Purpose and scope</h3>
+<p>SCOPE gives operators a common browser entry point for independently developed BLOS, Display, Sensor Calibration and Native LOS applications. The shell makes applications discoverable and provides consistent navigation, context and feedback. Each application retains its functionality, backend, owner and release lifecycle. BLOS already exists; this effort neither redesigns it nor assumes it can be embedded.</p>
+<p>The single-file <a href="../mockups/scope-ui-concepts.html">demonstrator</a> explores presentation and local interactions. Its shared JavaScript and embedded CSS are packaging conveniences for offline review. Production need not share that runtime or form a monolith. The reserved <code>src/</code> directory contains no production application.</p>
+<h3 id="architecture-b-architecture-drivers" tabindex="-1">B. Architecture drivers</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="B. Architecture drivers table"><table><thead><tr><th scope="col">Driver</th><th scope="col">Architectural consequence</th></tr></thead><tbody>
+<tr><th scope="row">Independent technical ownership</th><td>No application-to-application imports, backend dependencies or shared mutable domain store</td></tr>
+<tr><th scope="row">Common operator experience</th><td>Shell navigation, documented state semantics, shared tokens and integration acceptance contracts</td></tr>
+<tr><th scope="row">Existing independently developed UIs</th><td>Support launch links and isolated embedded applications; do not mandate a rewrite</td></tr>
+<tr><th scope="row">Dark room with blue ambient lighting</th><td>Restrained luminance, stable placement, textual abnormal-state cues and visible keyboard focus</td></tr>
+<tr><th scope="row">Extended operation</th><td>Predictable feedback, progressive disclosure, explicit freshness and failure indicators</td></tr>
+<tr><th scope="row">REST-accessible functionality</th><td>Owner-controlled API contracts with versioned adapters where normalization is needed</td></tr>
+<tr><th scope="row">Unknown stackups and hosting topology</th><td>Configuration-driven registry with explicit capabilities and trust policies</td></tr>
+<tr><th scope="row">Failure isolation</th><td>Shell remains usable when one UI or backend fails; no aggregate all-or-nothing startup</td></tr>
+<tr><th scope="row">Security</th><td>Independently enforced backend authorization and deliberate browser trust boundaries</td></tr>
+</tbody></table></div>
+<p>Quality attributes to evaluate include availability, accessibility, change isolation, consistency, observability, latency and maintainability. No numerical service objectives have been supplied.</p>
+<h3 id="architecture-c-conceptual-system-architecture" tabindex="-1">C. Conceptual system architecture</h3>
+<figure class="architecture-diagram"><figcaption>Conceptual architecture · independent application and API boundaries</figcaption>
+<div class="diagram-context"><div>Operator browser</div><div>Approved application registry<br>and integration policy</div><div>Shared tokens, component contracts<br>and interaction standards</div></div>
+<div class="diagram-arrow" aria-hidden="true">↓</div><div class="diagram-shell"><strong>SCOPE application shell</strong><span>Shared navigation and context</span><span>Integration host: launch, isolated frame or approved module</span></div>
+<div class="diagram-arrow" aria-hidden="true">↓</div><div class="diagram-lanes"><div class="diagram-lane"><strong>BLOS UI</strong><span>Independent application owner</span><b aria-hidden="true">↓</b><div>BLOS API boundary / owner adapter</div><b aria-hidden="true">↓</b><div>Independent REST backend</div></div><div class="diagram-lane"><strong>Display UI</strong><span>Independent application owner</span><b aria-hidden="true">↓</b><div>Display API boundary / owner adapter</div><b aria-hidden="true">↓</b><div>Independent REST backend</div></div><div class="diagram-lane"><strong>Sensor Calibration UI</strong><span>Independent application owner</span><b aria-hidden="true">↓</b><div>Calibration API boundary / owner adapter</div><b aria-hidden="true">↓</b><div>Independent REST backend</div></div><div class="diagram-lane"><strong>Native LOS UI</strong><span>Independent application owner</span><b aria-hidden="true">↓</b><div>Native LOS API boundary / owner adapter</div><b aria-hidden="true">↓</b><div>Independent REST backend</div></div></div><p class="diagram-note">Shared design infrastructure supports the shell; application adoption is optional. Each UI retains its own API boundary and backend.</p></figure>
+<details><summary>View architecture diagram source</summary><pre><code>flowchart TB
+    Operator[Operator browser] --&gt; Shell[SCOPE application shell]
+    Design[Shared tokens, component contracts and interaction standards] -.-&gt; Shell
+    Registry[Approved application registry and integration policy] --&gt; Shell
+    Shell --&gt; Nav[Shared navigation and context]
+    Shell --&gt; Host[Integration host: launch, isolated frame or approved module]
+    Host --&gt; B[BLOS UI - independent owner]
+    Host --&gt; D[Display UI - independent owner]
+    Host --&gt; S[Sensor Calibration UI - independent owner]
+    Host --&gt; N[Native LOS UI - independent owner]
+    Design -. optional adoption .-&gt; B
+    Design -. optional adoption .-&gt; D
+    Design -. optional adoption .-&gt; S
+    Design -. optional adoption .-&gt; N
+    B --&gt; BA[BLOS API boundary / owner adapter]
+    D --&gt; DA[Display API boundary / owner adapter]
+    S --&gt; SA[Calibration API boundary / owner adapter]
+    N --&gt; NA[Native LOS API boundary / owner adapter]
+    BA --&gt; BB[Independent REST backend]
+    DA --&gt; DB[Independent REST backend]
+    SA --&gt; SB[Independent REST backend]
+    NA --&gt; NB[Independent REST backend]</code></pre></details>
+<p>The arrows express responsibility boundaries, not invented endpoint definitions. A launch integration may open a different browser page; an embedded integration occupies the shell&#x27;s host region. A gateway or backend-for-frontend is optional for policy enforcement and narrow normalization; it must not become the owner of stackup business logic.</p>
+<h3 id="architecture-d-component-responsibilities" tabindex="-1">D. Component responsibilities</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="D. Component responsibilities table"><table><thead><tr><th scope="col">Component</th><th scope="col">Owns</th><th scope="col">Does not own</th></tr></thead><tbody>
+<tr><th scope="row">SCOPE shell</th><td>Page frame, selected application, shell-level loading/failure, operator context and host lifecycle</td><td>Domain operations or stackup business rules</td></tr>
+<tr><th scope="row">Navigation framework</th><td>Approved application list, stable ordering, deep-link coordination, availability explanations and focus restoration</td><td>Determining authorization from visual visibility alone</td></tr>
+<tr><th scope="row">Shared UI components</th><td>Buttons, input patterns, disclosures, confirmations and accessible status presentation</td><td>Domain-specific workflows</td></tr>
+<tr><th scope="row">Design system</th><td>Versioned semantic tokens, typography, spacing, states and operator interaction standards</td><td>A mandatory internal application framework</td></tr>
+<tr><th scope="row">API adapters</th><td>Explicit contract translation, cancellation, error normalization and freshness metadata where justified</td><td>A universal speculative data model</td></tr>
+<tr><th scope="row">Independent UI modules</th><td>Their routes, domain state, operations, validation and integration lifecycle implementation</td><td>Sibling applications&#x27; state or network clients</td></tr>
+<tr><th scope="row">Stackup backends</th><td>Data and operation semantics, authorization, API contracts, version support and availability reporting</td><td>Shell appearance</td></tr>
+</tbody></table></div>
+<p>Shell alerts cover shell concerns. Application alerts remain owned by their application unless a supplied contract explicitly promotes selected events to a common notification area. Deduplication, severity mapping and acknowledgement ownership must then be specified.</p>
+<h3 id="architecture-e-decoupling-strategy" tabindex="-1">E. Decoupling strategy</h3>
+<ul>
+<li><strong>Independent development:</strong> each application publishes an integration contract and tested compatible versions. The shell consumes those contracts rather than private implementation details.</li>
+<li><strong>Backend ownership:</strong> applications call their own REST boundaries; any shared gateway enforces policy without merging domain implementations.</li>
+<li><strong>Module isolation:</strong> default to a separate browser document or separately hosted launch. Same-realm modules require explicit trust and lifecycle compatibility.</li>
+<li><strong>Shared contracts:</strong> define application identity, approved entry location, integration mode, navigation intents, lifecycle and failure reporting. These are shell integration concerns, not guessed REST fields.</li>
+<li><strong>API versioning:</strong> owners declare compatibility and deprecation policy. Adapters absorb supported variations; incompatible versions show a meaningful integration failure.</li>
+<li><strong>Application discovery:</strong> an approved registry drives application names, order, entry location, required permissions and declared capabilities. Validate configuration against a versioned schema. Do not discover arbitrary URLs supplied by operators.</li>
+<li><strong>Failure isolation:</strong> asynchronous independent initialization, per-application timeouts, bounded retries and cancellation. A failed app must not block application switching.</li>
+<li><strong>Change propagation:</strong> design tokens and shared components use explicit versions. New versions require compatibility review, not silent global replacement. A common visual standard can be implemented by different frameworks.</li>
+<li><strong>State ownership:</strong> keep shell selection and preferences separate from domain state. Cross-application communication uses narrow, versioned intents; do not build a shared global domain event bus.</li>
+</ul>
+<p>For additions, an owner supplies an approved registry entry and demonstrates integration-contract compatibility. Existing applications should not need code changes. Whether registry changes require a shell deployment depends on configuration delivery policy, which remains open.</p>
+<h3 id="architecture-f-ui-integration-options" tabindex="-1">F. UI integration options</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="F. UI integration options table"><table><thead><tr><th scope="col">Option</th><th scope="col">Benefits</th><th scope="col">Security/runtime constraints</th><th scope="col">Deployment/maintenance tradeoffs</th><th scope="col">Fit</th></tr></thead><tbody>
+<tr><th scope="row">Independently hosted launch</th><td>Highest lifecycle independence; existing UI can remain intact</td><td>Separate page context; secure entry allowlist and coordinated sign-in needed</td><td>Simplest deployment; shell frame and visual continuity may be lost</td><td>Baseline when embedding is unsupported</td></tr>
+<tr><th scope="row">Cross-origin iframe</th><td>Browser document/CSS isolation; independently hosted UI; framework neutral</td><td>Embedding must be allowed by frame policy; sandbox, permissions, origin-checked messages and session behavior need agreement</td><td>Independent deployment; focus, sizing, routing, accessibility and nested scrolling need testing</td><td>Preferred embedded option when existing apps support it</td></tr>
+<tr><th scope="row">Runtime micro-frontend composition</th><td>Seamless layout and navigation; independently owned modules possible</td><td>Same-realm code usually shares shell privileges; runtime dependency and CSS collisions</td><td>Runtime/version compatibility and rollback coordination add overhead</td><td>Trusted apps with a strong need for deep composition</td></tr>
+<tr><th scope="row">Web Components</th><td>Framework-neutral element interface; optional Shadow DOM styling boundary</td><td>Shadow DOM is not a security sandbox; code still runs with document privileges</td><td>Attribute/event/lifecycle contracts need versioning; framework wrappers may be needed</td><td>Small trusted widgets and bounded shared UI surfaces</td></tr>
+<tr><th scope="row">Shared application framework</th><td>Uniform component behavior and straightforward in-process composition</td><td>Shared runtime and release assumptions; one failure may affect the whole UI</td><td>High consistency but increased migration cost and lifecycle coupling</td><td>Optional for new cooperating modules, not a prerequisite</td></tr>
+</tbody></table></div>
+<p>Micro-frontends describe organizational/composition boundaries, not a single isolation technology; frames and Web Components can both be used within that approach. Separate hosting does not itself provide same-realm isolation when code is imported into the shell.</p>
+<p><strong>Recommendation:</strong> use a framework-neutral shell and approved registry supporting launch integration first as a capability, and isolated embedding when verified with the owner. Offer shared tokens and standards. Adopt same-realm modules or Web Components only where benefits outweigh the additional trust and runtime coordination. No evidence yet justifies mandating React, Vue, Angular or another application framework.</p>
+<p>For iframes, assess <code>frame-ancestors</code> on the embedded application and <code>frame-src</code> on the shell, sandbox capabilities, permissions policy, authentication redirects and storage behavior. Sandbox settings must be selected for the actual origin and required capabilities; do not copy a permissive template. The <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe">MDN iframe reference</a> describes the relevant controls and sandbox limitations.</p>
+<h3 id="architecture-g-rest-api-integration-architecture" tabindex="-1">G. REST/API integration architecture</h3>
+<p>Application owners publish their API contracts and semantics, preferably in machine-readable form when available. SCOPE must not infer an API from rendered UI labels. No endpoint paths, payloads or sensor operations are specified here.</p>
+<p>Configuration resolves approved environments and API locations independently of the visual concept. Browser-direct REST calls require the appropriate origin, credential and CORS policy. A gateway can simplify origin and session policy but adds an availability dependency and must remain narrowly scoped.</p>
+<p>An adapter may normalize shell-relevant availability, generic error categories or timestamp formatting after actual contracts are supplied. Keep raw domain meaning, units and operation semantics with the owner. Do not equate a loaded UI with a healthy backend, or a successful network request with a completed domain operation.</p>
+<p>Use bounded timeouts, cancellation on navigation, correlation identifiers and documented retry policies. Retry only operations whose contract makes retries safe; avoid duplicate mutations. Distinguish unauthenticated, unauthorized, unavailable, invalid input and incompatible integration. Preserve recoverable work and expose freshness where data is retained.</p>
+<p>Authentication should follow the organization&#x27;s chosen identity model. Shell and applications may share an identity provider without sharing raw tokens through browser messages. Backends independently enforce authorization on every protected operation. Cookie/session policies, CSRF protections for cookie-authenticated mutations, CORS and credential handling depend on deployment topology and must be agreed before integration. Session expiry must not silently resubmit a previously confirmed command.</p>
+<h3 id="architecture-h-common-ui-design-system" tabindex="-1">H. Common UI design system</h3>
+<p>Publish semantic tokens for surfaces, text, boundaries, accent, success, warning, error and information; typography, spacing, radius and focus. Components consume the semantic layer rather than arbitrary concept colors. The prototype&#x27;s twelve palettes are alternatives, not twelve production themes to support simultaneously.</p>
+<p>The shared component contract includes accessible names, default/hover/focus/pressed/selected/unselected/disabled states, loading and outcome feedback where applicable. Unselected remains actionable. Disabled is unavailable. Pressed is transient; selected persists. Status is expressed with text and symbols as well as color. Passive statuses do not acquire artificial pressed states.</p>
+<p>Navigation positions remain stable. Explain unavailable applications rather than removing them unexpectedly. Modal confirmation states the action and context, uses conservative initial focus and restores focus. Scope shortcuts so embedded applications retain their own keyboard behavior. No repeated flashing or unnecessary autonomous motion.</p>
+<p>Native HTML behavior is preferred for forms and disclosures. For custom tabs, implement tablist/tab/tabpanel relationships, a single tab stop, arrow keys and optional Home/End as described by the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/">WAI-ARIA tabs pattern</a>. This prototype uses automatic activation on arrow navigation.</p>
+<h3 id="architecture-i-information-and-visualization-models" tabindex="-1">I. Information and visualization models</h3>
+<p>Define the information before choosing a component. The full information inventory is in <a href="#design-requirements">Design Requirements</a>.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="I. Information and visualization models table"><table><thead><tr><th scope="col">WHAT: generic category</th><th scope="col">HOW: candidate representation</th><th scope="col">Reason and constraint</th></tr></thead><tbody>
+<tr><th scope="row">Application identity and selection</th><td>Stable navigation label with selected marker</td><td>Makes current context explicit without prescribing domain content</td></tr>
+<tr><th scope="row">Availability and connection state</th><td>Symbol + text badge and explanation panel</td><td>Separates availability from selection; unknown is not ready</td></tr>
+<tr><th scope="row">Generic measurement</th><td>Value with unit; optional trend</td><td>Supports precise reading; a trend needs scales and time semantics</td></tr>
+<tr><th scope="row">Historical value</th><td>Labeled line chart and text equivalent</td><td>Reveals change only when comparison over time is meaningful</td></tr>
+<tr><th scope="row">Configuration and entered values</th><td>Labeled fields, draft/saved marker</td><td>Distinguishes unsaved edits from accepted state</td></tr>
+<tr><th scope="row">Control availability</th><td>Enabled/disabled treatment with reason</td><td>Prevents misleading controls and clarifies constraints</td></tr>
+<tr><th scope="row">Confirmation</th><td>Context-specific modal</td><td>Makes consequences reviewable before a consequential action</td></tr>
+<tr><th scope="row">Alerts and errors</th><td>Severity symbol, text, recovery action</td><td>Supports rapid recognition independent of hue</td></tr>
+<tr><th scope="row">Time and events</th><td>Explicit time basis and ordered history</td><td>Supports sequence and freshness reasoning</td></tr>
+<tr><th scope="row">Context</th><td>Disclosure or keyboard-accessible tooltip</td><td>Keeps secondary prose available without constant clutter</td></tr>
+</tbody></table></div>
+<p>These categories are an abstract inventory, not requirements assigned to any named application. A gauge is not justified by aesthetics alone; use it only when range and thresholds are meaningful. The prototype&#x27;s trend is explicitly a static reference, not a live measurement.</p>
+<h3 id="architecture-j-failure-and-degraded-operation" tabindex="-1">J. Failure and degraded operation</h3>
+<p>The shell renders independently of application startup. Distinguish unconfigured, initializing, available, unavailable, unauthorized, stale and incompatible states when supported by real evidence. The prototype only illustrates available/unavailable and local control feedback.</p>
+<p>If one application fails, retain its navigation identity, explain the state and allow switching. Offer retry only when it has defined behavior. A launch integration cannot guarantee in-shell health visibility without an owner-provided signal. Frame load events alone do not prove readiness; use a versioned handshake if the application supports one. A missing handshake becomes unknown or unavailable after the agreed timeout.</p>
+<p>Discard late callbacks from inactive host instances. Release subscriptions and cancel requests on unmount. Preserve drafts only under an explicit data-handling policy. Retained data needs visible freshness and must not imply live operation. Shell-wide identity failure requires a consistent session message rather than unrelated per-app errors.</p>
+<h3 id="architecture-k-security-considerations" tabindex="-1">K. Security considerations</h3>
+<p>Treat shell, application origins and backends as separate trust boundaries. Trust is granted through approved configuration, not through UI similarity. Validate launch targets and redirect destinations. Avoid shell tokens in URLs, logs or cross-window events.</p>
+<p>For cross-origin messaging, send to a specific expected origin; validate sender origin, source window, message type, version and payload before acting. Never evaluate message content or allow arbitrary navigation/API calls. The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage">MDN postMessage reference</a> explains origin targeting and receiver validation. Messaging creates an intentional bridge across isolation and should remain minimal.</p>
+<p>Frames require deliberate sandbox and browser feature permissions. Same-origin embedded content can have stronger access than an operator expects; separate origins may be needed for isolation. Web Components provide composition and style scoping, not a hostile-code security boundary. Same-realm micro-frontends are trusted code and require dependency governance.</p>
+<p>Use HTTPS, backend input validation and authorization, appropriate content security policy, secure cookie policy, session expiry handling and minimal sensitive telemetry. The architecture does not establish safety classification or approve operational command semantics. Those require supplied stackup requirements.</p>
+<h3 id="architecture-l-architectural-decisions-and-tradeoffs" tabindex="-1">L. Architectural decisions and tradeoffs</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="L. Architectural decisions and tradeoffs table"><table><thead><tr><th scope="col">Decision</th><th scope="col">Alternative</th><th scope="col">Rationale / consequence</th></tr></thead><tbody>
+<tr><th scope="row">Shell with owner-controlled integrations</th><td>Rewrite all UIs into one app</td><td>Preserves existing BLOS and release independence; visual uniformity will be incremental by agreement</td></tr>
+<tr><th scope="row">Multiple registry-driven integration modes</th><td>Require runtime module composition</td><td>Supports unknown existing UIs; host must explain mode-specific navigation and failures</td></tr>
+<tr><th scope="row">Isolation before deep composition</th><td>Same-realm integration everywhere</td><td>Reduces privilege and failure coupling; embedded focus/session behavior needs validation</td></tr>
+<tr><th scope="row">Shared semantic contracts</th><td>Shared framework mandatory</td><td>Allows independent implementations; conformance needs review and acceptance checks</td></tr>
+<tr><th scope="row">Owner APIs and bounded adapters</th><td>Universal SCOPE domain API</td><td>Avoids invented abstractions; multiple contracts remain visible to integration owners</td></tr>
+<tr><th scope="row">Explicit availability and unknown states</th><td>Hide unavailable applications</td><td>Preserves operator orientation; explanations require space</td></tr>
+<tr><th scope="row">Qualitative style exploration</th><td>Select a winner from aesthetic scores</td><td>Avoids unsupported usability conclusions; operator evidence is still required</td></tr>
+</tbody></table></div>
+<h3 id="architecture-m-open-questions-and-assumptions" tabindex="-1">M. Open questions and assumptions</h3>
+<ul>
+<li>What hosting origins, embedding policies, routes and supported browsers do the four applications provide?</li>
+<li>Does BLOS permit frames, supply lifecycle messages or prefer launch-only integration?</li>
+<li>What identity provider, role model, session policy and network boundaries apply?</li>
+<li>Which API versions, contracts, health evidence and error taxonomies are available?</li>
+<li>Which system-level alerts, if any, need aggregation and who owns acknowledgement?</li>
+<li>What display resolution, physical viewing distance, luminance, ambient lighting and pointer hardware define the console?</li>
+<li>Is simultaneous multi-application viewing needed, and how should navigation preserve unsaved domain work?</li>
+<li>What security, audit, availability and operational assurance requirements apply?</li>
+<li>Who owns registry approval, design-system governance, compatibility testing and rollback?</li>
+</ul>
+<p>Assumptions are limited to browser access, independently developed interfaces and REST backends as supplied by the owner. Generic UI examples are not evidence of actual stackup capabilities. Final architecture and visual selection remain subject to these answers and operator evaluation.</p></article></section>
+<section id="panel-design-requirements" class="document-panel" role="tabpanel" aria-labelledby="tab-design-requirements"><aside class="contents" aria-label="design-requirements contents"><p class="eyebrow">On this tab</p><nav><a href="#design-requirements-purpose-and-operator-environment">Purpose and operator environment</a><a href="#design-requirements-what-information-inventory">WHAT: information inventory</a><a href="#design-requirements-how-information-to-component-mapping">HOW: information-to-component mapping</a><a href="#design-requirements-interaction-requirements">Interaction requirements</a><a href="#design-requirements-control-state-requirements">Control-state requirements</a><a href="#design-requirements-per-concept-style-guide-requirements">Per-concept style-guide requirements</a><a href="#design-requirements-accessibility-and-human-factors">Accessibility and human factors</a><a href="#design-requirements-prototype-constraints">Prototype constraints</a><a href="#design-requirements-acceptance-criteria-and-review-procedure">Acceptance criteria and review procedure</a></nav></aside><article><h2 id="design-requirements" tabindex="-1">SCOPE UI design requirements</h2>
+<h3 id="design-requirements-purpose-and-operator-environment" tabindex="-1">Purpose and operator environment</h3>
+<p>Explore a common operator experience across independent BLOS, Display, Sensor Calibration and Native LOS boundaries. BLOS already exists and is not redesigned. All prototype content is abstract, local and simulated.</p>
+<p>The intended console is used for extended sessions in a dark room with blue ambient lighting. Operators may be familiar with modern gaming interfaces. Borrow responsiveness, legible organization and immediate feedback; avoid decorative science-fiction treatments. Physical display, viewing distance and ambient luminance remain unknown.</p>
+<p>Objectives: fast orientation, low cognitive workload, restrained luminance, stable navigation, recognizable abnormal states and consistent keyboard/mouse behavior. No final concept is selected by this exploration.</p>
+<h3 id="design-requirements-what-information-inventory" tabindex="-1">WHAT: information inventory</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="WHAT: information inventory table"><table><thead><tr><th scope="col">Category</th><th scope="col">Abstract meaning</th><th scope="col">Demonstrator instance</th></tr></thead><tbody>
+<tr><th scope="row">Application identification</th><td>Which independent application is represented</td><td>Four named placeholder entries</td></tr>
+<tr><th scope="row">Availability</th><td>Whether access is available, unavailable or unknown</td><td>Three ready labels; Native LOS unavailable</td></tr>
+<tr><th scope="row">Current selection</th><td>Operator&#x27;s current application context</td><td>Navigation marker and workspace heading</td></tr>
+<tr><th scope="row">System/subsystem state</th><td>State reported through an agreed integration contract</td><td>Abstract availability only; no invented operational state</td></tr>
+<tr><th scope="row">Connection state</th><td>Network/session connectivity and confidence</td><td>Explicit offline/local footer; no live connection</td></tr>
+<tr><th scope="row">Generic status</th><td>Non-domain condition</td><td>Enabled/paused local-feedback label</td></tr>
+<tr><th scope="row">Alerts and notifications</th><td>Outcome, warning or failure information</td><td>Notification, warning boundary and sample error</td></tr>
+<tr><th scope="row">Generic measurement</th><td>Value with a meaningful unit in a real application</td><td>42 generic units, incrementable</td></tr>
+<tr><th scope="row">Configuration state</th><td>Draft versus accepted settings</td><td>Draft / Saved rN</td></tr>
+<tr><th scope="row">User-entered values</th><td>Operator-provided text or choice</td><td>Workspace label, mode and preset</td></tr>
+<tr><th scope="row">Control availability</th><td>Whether an action can be invoked</td><td>Enabled examples and disabled operational placeholder</td></tr>
+<tr><th scope="row">Confirmation</th><td>Review before a consequential action</td><td>Apply/reset modal</td></tr>
+<tr><th scope="row">Errors and warnings</th><td>Invalid input or unavailable resource</td><td>Empty-label error and unavailable application</td></tr>
+<tr><th scope="row">Time and timestamps</th><td>Event order, time basis and freshness</td><td>Synthetic sequence starting 09:00:00; labeled DEMO</td></tr>
+<tr><th scope="row">Event history</th><td>Recent changes with context</td><td>Last five local events</td></tr>
+<tr><th scope="row">Contextual information</th><td>Secondary explanation and integration boundaries</td><td>Tooltip and native disclosure</td></tr>
+<tr><th scope="row">Historical values</th><td>A sequence suitable for comparison</td><td>Static 38, 40, 39, 42, 41, 42-unit reference trend</td></tr>
+</tbody></table></div>
+<p>This inventory identifies candidate information, not a requirement that every application exposes every category. Availability does not prove backend health, and a selected application can be unavailable.</p>
+<h3 id="design-requirements-how-information-to-component-mapping" tabindex="-1">HOW: information-to-component mapping</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="HOW: information-to-component mapping table"><table><thead><tr><th scope="col">Information</th><th scope="col">Presentation</th><th scope="col">Why</th></tr></thead><tbody>
+<tr><th scope="row">Application identity/selection</th><td>Stable labeled navigation with marker and heading</td><td>Redundant context prevents disorientation</td></tr>
+<tr><th scope="row">Availability</th><td>Symbol, word and explanatory panel</td><td>Supports color-independent recognition and recovery</td></tr>
+<tr><th scope="row">Generic value</th><td>Numeric card with unit</td><td>Precise comparison without unnecessary instrumentation</td></tr>
+<tr><th scope="row">History</th><td>Thin static line plus exact accessible values</td><td>Illustrates trend presentation without inventing a domain</td></tr>
+<tr><th scope="row">Mode</th><td>Radio group</td><td>Makes a small exclusive choice visible</td></tr>
+<tr><th scope="row">Independent choice</th><td>Checkbox</td><td>Allows a boolean preference without suggesting exclusivity</td></tr>
+<tr><th scope="row">Immediate boolean state</th><td>Switch and on/off label</td><td>Shows a reversible local state change</td></tr>
+<tr><th scope="row">Preset</th><td>Native dropdown</td><td>Keeps a compact list discoverable and keyboard accessible</td></tr>
+<tr><th scope="row">Editable configuration</th><td>Labeled text input and draft/saved status</td><td>Separates editing from acceptance</td></tr>
+<tr><th scope="row">Current panel</th><td>Selectable cards</td><td>Supports a persistent information choice</td></tr>
+<tr><th scope="row">Action</th><td>Primary, secondary or tertiary button</td><td>Establishes importance and consistent outcomes</td></tr>
+<tr><th scope="row">Confirmation</th><td>Native modal dialog</td><td>Makes the proposed action concrete and cancellable</td></tr>
+<tr><th scope="row">Context</th><td>Details/summary and tooltip</td><td>Discloses secondary prose on demand</td></tr>
+<tr><th scope="row">Failure/outcome</th><td>Visible text, semantic symbol and polite notification</td><td>Immediate feedback without relying on hue</td></tr>
+</tbody></table></div>
+<p>Do not select gauges or charts solely for appearance. Actual measurement visualization needs units, ranges, time basis and data contracts supplied by an owner.</p>
+<h3 id="design-requirements-interaction-requirements" tabindex="-1">Interaction requirements</h3>
+<ul>
+<li>Thirteen top-level tabs: twelve full concept names and Comparison. Only one concept occupies the workspace. Arrow keys and Home/End activate adjacent tabs; Tab leaves the tab list.</li>
+<li>Each concept has Workspace and Style Guide views. The same data and control state persist across concept changes for direct comparison; reload resets the session.</li>
+<li>Application buttons change the placeholder context. Native LOS remains selectable to expose its unavailable explanation. No operational connection or retry is implied.</li>
+<li>Review/Compare radios are exclusive. Locked is disabled and unselected. Style-guide specimens also show disabled-selected independently.</li>
+<li>Checkbox controls an annotation in the disclosure. Switch updates the enabled/paused label. Preset selection updates feedback. Cards update the selected panel and feedback.</li>
+<li>Label editing immediately changes draft context. Apply rejects blank/whitespace-only input and otherwise opens confirmation. Confirm increments a local saved revision; cancel preserves draft edits.</li>
+<li>Increase value adds one. Reset confirms then restores form and value defaults, preserving concept/application selection and event history.</li>
+<li>Sample error reports an intentional local failure; loading example disables repeat activation for 600ms before success.</li>
+<li>Enabled specimen controls provide notification feedback. Native fields, disclosures and navigation produce observable state changes. Disabled controls cannot activate.</li>
+<li>Notifications retain the latest message until another interaction; event history shows five recent logged workbench actions. No backend or persistent storage exists.</li>
+</ul>
+<h3 id="design-requirements-control-state-requirements" tabindex="-1">Control-state requirements</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Control-state requirements table"><table><thead><tr><th scope="col">State</th><th scope="col">Required distinction / implemented example</th></tr></thead><tbody>
+<tr><th scope="row">Default</th><td>Solid neutral border and raised background</td></tr>
+<tr><th scope="row">Hover</th><td>Accent-mixed surface and accent boundary</td></tr>
+<tr><th scope="row">Focus</th><td>Separate 3px accent outline with 3px offset</td></tr>
+<tr><th scope="row">Pressed</th><td>Temporary inset line and 1px movement</td></tr>
+<tr><th scope="row">Selected</th><td>Persistent accent border, leading marker and semantic selection</td></tr>
+<tr><th scope="row">Unselected</th><td>Full contrast, solid neutral boundary; remains enabled</td></tr>
+<tr><th scope="row">Disabled</th><td>Dashed border/label, reduced opacity and native lockout</td></tr>
+<tr><th scope="row">Loading</th><td>Disabled action with Working… and aria-busy</td></tr>
+<tr><th scope="row">Success</th><td>Check + success text and semantic outline</td></tr>
+<tr><th scope="row">Warning</th><td>Triangle + warning text and semantic outline</td></tr>
+<tr><th scope="row">Error</th><td>Cross + error text; invalid input also gains an error boundary</td></tr>
+</tbody></table></div>
+<p>Primary actions use accent fill and dark ink, secondary actions raised fill and a solid border, tertiary actions transparent underlined text. Radios use a native selected dot; checkboxes a tick; switches thumb position and fill. Native glyph activation supplies pressed feedback. Fields use the background token and invalid/error messaging. Cards and navigation share hover/focus/pressed rules with buttons; active cards add selected text. Passive status indicators have no pressed/selected behavior. OS dropdown menus may differ by browser.</p>
+<p>Each guide pins state appearances in labeled specimens while the actual controls demonstrate pointer and keyboard behavior. A pinned focus specimen does not mean it actually holds keyboard focus. Radio specimens use independent groups where necessary; the additional live group demonstrates exclusivity.</p>
+<h3 id="design-requirements-per-concept-style-guide-requirements" tabindex="-1">Per-concept style-guide requirements</h3>
+<p>Each guide describes philosophy, HEX palette, semantic colors, surface colors, font families/sizes/weights, spacing, grid, navigation, buttons, radios, checkbox/switch, fields/dropdowns, cards/panels, statuses, alerts, chart rules, control states, accessibility and dark-room rationale. CSS tokens and concept configuration drive both rendering and guide text.</p>
+<p>Export Style Guide to PDF invokes browser printing of the active concept&#x27;s dedicated guide. The print layout uses paper-friendly ink, lists original screen HEX values, preserves swatches when background graphics is enabled, includes component/state examples and excludes unrelated concepts and workspace. The operator chooses Save as PDF and a filename; the page does not silently download a PDF. Browser pagination and native form-glyph rendering may vary.</p>
+<h3 id="design-requirements-accessibility-and-human-factors" tabindex="-1">Accessibility and human factors</h3>
+<p>Use descriptive labels, headings, fieldsets/legends, native controls and explicit tab relationships. All workbench targets have at least 44px height through their labels; Industrial HMI actions are at least 48px and application buttons 56px. Focus must be distinguishable from hover and selection. Dialogs start on Cancel, contain focus through native modality, support Escape and restore focus. Tooltip information is available on hover, focus or click; Escape dismisses it.</p>
+<p>Use text/symbol redundancy for statuses. Retain stable application order and avoid flashing, glow or autonomous content motion. All layouts stack below 760px, with a common intermediate layout below 1100px. The comparison matrix scrolls in a labeled keyboard-focusable region. Font zoom and narrow viewports require review; no full assistive-technology conformance claim is made.</p>
+<p>Restrict bright areas in the screen interface. Text, controls and status differentiation need contrast review against the actual surfaces; reduced-opacity disabled controls remain identifiable as unavailable. Screen contrast measurements cannot establish dark-room comfort. Evaluate glare, blue ambient lighting, viewing distance, task timing, fatigue and status recognition with representative operators before final selection.</p>
+<h3 id="design-requirements-prototype-constraints" tabindex="-1">Prototype constraints</h3>
+<p>One HTML file with embedded CSS/JavaScript; no external assets, web fonts, packages, runtime requests or server requirement. No production framework or domain functionality. No telemetry or storage. <code>src/</code> remains reserved. Synthetic event timestamps describe local action sequence, not wall-clock activity. Presets and modes change visible local state only; they do not claim to configure an application. The reference chart is intentionally static.</p>
+<h3 id="design-requirements-acceptance-criteria-and-review-procedure" tabindex="-1">Acceptance criteria and review procedure</h3>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Acceptance criteria and review procedure table"><table><thead><tr><th scope="col">Area</th><th scope="col">Acceptance evidence</th></tr></thead><tbody>
+<tr><th scope="row">Repository</th><td>Required files present; clean baseline recorded; final status and diff check; no commit/push</td></tr>
+<tr><th scope="row">Navigation</th><td>12 named concept tabs and Comparison activate without reload; related view panels and application labels update</td></tr>
+<tr><th scope="row">Distinctness</th><td>Each concept changes desktop composition, navigation treatment and hierarchy, not only accent</td></tr>
+<tr><th scope="row">Shared content</th><td>Same form, value, application names, statuses and event model across concepts</td></tr>
+<tr><th scope="row">Interaction</th><td>Exercise radios, checkbox, switch, dropdown, cards, text, apply/cancel/confirm, increment/reset, disclosure, tooltip, loading and error</td></tr>
+<tr><th scope="row">States</th><td>Inspect hover/focus/press separately from persistent selection; disabled cannot activate; radio disabled-selected reference exists</td></tr>
+<tr><th scope="row">Export</th><td>Only chosen guide appears in print media; palette, examples and state contract remain present</td></tr>
+<tr><th scope="row">Documentation</th><td>Architecture defines target boundaries and tradeoffs; no phased plan or inferred domain APIs</td></tr>
+</tbody></table></div>
+<p>For browser review, visit every concept, change each control family, open each guide and inspect comparison. Check keyboard navigation and modal behavior, narrow-screen overflow and print media. Record what was actually executed in the Validation tab in this document; do not substitute unexecuted acceptance criteria for test results.</p></article></section>
+<section id="panel-style-comparison" class="document-panel" role="tabpanel" aria-labelledby="tab-style-comparison"><aside class="contents" aria-label="style-comparison contents"><p class="eyebrow">On this tab</p><nav><a href="#style-comparison-twelve-design-directions">Twelve design directions</a><a href="#style-comparison-1-mission-control-console" class="subsection">1. Mission Control Console</a><a href="#style-comparison-2-modern-engineering-dashboard" class="subsection">2. Modern Engineering Dashboard</a><a href="#style-comparison-3-gaming-inspired-operator-console" class="subsection">3. Gaming-Inspired Operator Console</a><a href="#style-comparison-4-minimal-dark-console" class="subsection">4. Minimal Dark Console</a><a href="#style-comparison-5-modular-engineering-workspace" class="subsection">5. Modular Engineering Workspace</a><a href="#style-comparison-6-tactical-flat-interface" class="subsection">6. Tactical Flat Interface</a><a href="#style-comparison-7-industrial-hmi" class="subsection">7. Industrial HMI</a><a href="#style-comparison-8-command-center-dashboard" class="subsection">8. Command Center Dashboard</a><a href="#style-comparison-9-precision-instrument-console" class="subsection">9. Precision Instrument Console</a><a href="#style-comparison-10-contemporary-desktop-interface" class="subsection">10. Contemporary Desktop Interface</a><a href="#style-comparison-11-adaptive-information-dashboard" class="subsection">11. Adaptive Information Dashboard</a><a href="#style-comparison-12-hybrid-operator-console" class="subsection">12. Hybrid Operator Console</a><a href="#style-comparison-common-comparison-matrix">Common comparison matrix</a><a href="#style-comparison-promising-candidates">Promising candidates</a><a href="#style-comparison-shared-conventions-and-responsive-behavior">Shared conventions and responsive behavior</a><a href="#style-comparison-limitations-and-evidence-needed">Limitations and evidence needed</a></nav></aside><article><h2 id="style-comparison" tabindex="-1">SCOPE UI style comparison</h2>
+<p>These are preliminary qualitative design assessments of the implemented mockups, not experimentally validated usability results. No concept is selected as a final design. All use identical abstract data, controls and shared state. Native LOS is the same intentionally unavailable example in every concept.</p>
+<h3 id="style-comparison-twelve-design-directions" tabindex="-1">Twelve design directions</h3>
+<h4 id="style-comparison-1-mission-control-console" tabindex="-1">1. Mission Control Console</h4>
+<p>A steady operational frame: permanent left navigation, a central workspace and a dedicated event rail.</p>
+<ul>
+<li>Layout and navigation: Three-column 210px / flexible / 260px grid; summary above central controls. Square panel edges and 14px gutters. Persistent left application list; selected item has a leading inset bar.</li>
+<li>Visual treatment: background #0D141E, panel #151F2C, accent #82B9D6; ui-monospace, Consolas, monospace; 3px base corner radius.</li>
+<li>Advantage and limitation: High density and permanent rails suit broad consoles; narrow screens need stacking.</li>
+<li>Human factors: Stable scan paths and subdued steel tones help recognition during long sessions. Monospaced labels can slow prose reading.</li>
+</ul>
+<h4 id="style-comparison-2-modern-engineering-dashboard" tabindex="-1">2. Modern Engineering Dashboard</h4>
+<p>An open dashboard with generous cards, rounded surfaces and horizontal application navigation.</p>
+<ul>
+<li>Layout and navigation: Horizontal application bar, full-width summary, then flexible workspace and 290px event rail. 20px gutters. Top application strip keeps tools together without a permanent left rail.</li>
+<li>Visual treatment: background #111B20, panel #19282D, accent #8FC9BC; system-ui, sans-serif; 14px base corner radius.</li>
+<li>Advantage and limitation: Approachable and legible, with lower peak information density.</li>
+<li>Human factors: Soft panel grouping reduces visual clutter; generous spacing reduces capacity on smaller consoles.</li>
+</ul>
+<h4 id="style-comparison-3-gaming-inspired-operator-console" tabindex="-1">3. Gaming-Inspired Operator Console</h4>
+<p>Responsive, assertive interaction cues with angular navigation and a restrained lavender accent.</p>
+<ul>
+<li>Layout and navigation: 190px left navigation, flexible central workspace, 240px event rail. Uppercase headings and accent edge markers. Angular uppercase application buttons with a strong selected leading edge.</li>
+<li>Visual treatment: background #13131E, panel #1F1F30, accent #B7A2E3; system-ui, sans-serif; 4px base corner radius.</li>
+<li>Advantage and limitation: Strong recognition at the cost of greater visual emphasis.</li>
+<li>Human factors: Immediate selection cues borrow interaction clarity from games. Repeated accent edges may compete with warnings.</li>
+</ul>
+<h4 id="style-comparison-4-minimal-dark-console" tabindex="-1">4. Minimal Dark Console</h4>
+<p>Content first, with a centered single-column workspace, quiet typography and separators instead of boxes.</p>
+<ul>
+<li>Layout and navigation: Centered maximum 1100px single column; inline navigation, summary row, workspace, then event strip. 28px gaps. Inline application buttons above content; section order follows a simple reading path.</li>
+<li>Visual treatment: background #14181C, panel #1B2228, accent #C0C8CE; system-ui, sans-serif; 4px base corner radius.</li>
+<li>Advantage and limitation: Excellent calmness, but less simultaneous context and weaker partitioning.</li>
+<li>Human factors: Few panel edges reduce competing visual cues. Long vertical scans can hide secondary context.</li>
+</ul>
+<h4 id="style-comparison-5-modular-engineering-workspace" tabindex="-1">5. Modular Engineering Workspace</h4>
+<p>A tiled engineering workbench with visibly bounded modules and title bars.</p>
+<ul>
+<li>Layout and navigation: Two equal columns: application tile / stacked summary, then controls / event module. 16px gutters; controls stack. A two-by-two application tile group identifies independent boundaries.</li>
+<li>Visual treatment: background #101720, panel #1A2533, accent #A5BFE6; system-ui, sans-serif; 6px base corner radius.</li>
+<li>Advantage and limitation: Good modular identity; fixed tile proportions may waste space. Tiles are not draggable.</li>
+<li>Human factors: Explicit module edges support chunking. Equal columns give event history more space than some tasks need.</li>
+</ul>
+<h4 id="style-comparison-6-tactical-flat-interface" tabindex="-1">6. Tactical Flat Interface</h4>
+<p>Flat, compact blocks with firm alignment, square targets and subdued olive neutrals.</p>
+<ul>
+<li>Layout and navigation: 180px left application rail, central summary and workspace, then a horizontal event row. 12px gutters. Compact left rail with uppercase section hierarchy and square controls.</li>
+<li>Visual treatment: background #171C18, panel #222B24, accent #B9C59A; system-ui, sans-serif; 0px base corner radius.</li>
+<li>Advantage and limitation: Efficient use of space, with a less relaxed visual rhythm.</li>
+<li>Human factors: Low saturation and predictable edges help scanning. Compact grouping needs spacing review under fatigue.</li>
+</ul>
+<h4 id="style-comparison-7-industrial-hmi" tabindex="-1">7. Industrial HMI</h4>
+<p>Large targets, strong borders and an application bank on the right support deliberate actions.</p>
+<ul>
+<li>Layout and navigation: Flexible controls on the left, 300px right application bank and event area. Two-pixel metric borders; 20px spacing. Right-side application bank uses 56px minimum buttons; other actions are at least 48px high.</li>
+<li>Visual treatment: background #1C1A17, panel #2A2721, accent #E4BD7B; system-ui, sans-serif; 3px base corner radius.</li>
+<li>Advantage and limitation: Highly explicit controls; warm action accent competes with semantic warning color.</li>
+<li>Human factors: Large controls and clear labels reduce fine pointing demands. Amber primary actions need separation from warning badges.</li>
+</ul>
+<h4 id="style-comparison-8-command-center-dashboard" tabindex="-1">8. Command Center Dashboard</h4>
+<p>An overview-led composition with top application navigation and a persistent event column on the left.</p>
+<ul>
+<li>Layout and navigation: Top app bar; 230px event column left of summary and controls. First metric receives extra width and surface emphasis. Horizontal application strip beneath the concept heading.</li>
+<li>Visual treatment: background #121824, panel #1D2739, accent #9BAFE5; system-ui, sans-serif; 6px base corner radius.</li>
+<li>Advantage and limitation: Strong context retention; users must learn the event-first left column.</li>
+<li>Human factors: Event context stays visible beside controls. The wide overview may draw attention away from the current task.</li>
+</ul>
+<h4 id="style-comparison-9-precision-instrument-console" tabindex="-1">9. Precision Instrument Console</h4>
+<p>Measured alignment, numeric typography and small ruler-like marks establish an instrument-panel rhythm.</p>
+<ul>
+<li>Layout and navigation: 220px left navigation with events underneath; summary and controls on the right. 18px gutters and fine rules. Persistent left list with event history immediately below.</li>
+<li>Visual treatment: background #111A1D, panel #1A292E, accent #94CCD1; system-ui, sans-serif; 2px base corner radius.</li>
+<li>Advantage and limitation: Excellent numeric scanning; fine structures need checks at distance.</li>
+<li>Human factors: Tabular values support comparison. Decorative ruler marks are subordinate and carry no measurement meaning.</li>
+</ul>
+<h4 id="style-comparison-10-contemporary-desktop-interface" tabindex="-1">10. Contemporary Desktop Interface</h4>
+<p>A familiar desktop-like composition with a quiet sidebar, inset work surface and softly raised panels.</p>
+<ul>
+<li>Layout and navigation: 200px left sidebar, central controls and 260px event rail. Work surface uses the raised token; rounded window-like panels. Sidebar selection uses a filled surface and leading marker.</li>
+<li>Visual treatment: background #171821, panel #242633, accent #B7B2EA; system-ui, sans-serif; 12px base corner radius.</li>
+<li>Advantage and limitation: Easy onboarding, though multiple surface layers add visual depth.</li>
+<li>Human factors: Familiar patterns reduce initial learning. Nested surfaces must remain distinct at low luminance.</li>
+</ul>
+<h4 id="style-comparison-11-adaptive-information-dashboard" tabindex="-1">11. Adaptive Information Dashboard</h4>
+<p>A task-first workspace with summary and events in a secondary right column, plus progressive disclosure.</p>
+<ul>
+<li>Layout and navigation: Top application bar; wide left controls, 320px right stacked summary and events. Single-column form and expandable context. Top application strip; responsive stacking adapts to viewport, never automatically reorders by live data.</li>
+<li>Visual treatment: background #121C19, panel #1D2D26, accent #A5CCAE; system-ui, sans-serif; 9px base corner radius.</li>
+<li>Advantage and limitation: Low task distraction; more scrolling within the longer main form.</li>
+<li>Human factors: Prioritizes the current task and hides secondary prose. Summary context is less prominent than in overview-led concepts.</li>
+</ul>
+<h4 id="style-comparison-12-hybrid-operator-console" tabindex="-1">12. Hybrid Operator Console</h4>
+<p>Stable left navigation, an overview spanning the workspace and a quieter secondary event rail.</p>
+<ul>
+<li>Layout and navigation: 195px application rail; summary spans center and 250px event rail. Controls stay central; secondary events use dashed framing. Persistent left list preserves application position across selections.</li>
+<li>Visual treatment: background #11191F, panel #1A2832, accent #8FC9CF; system-ui, sans-serif; 7px base corner radius.</li>
+<li>Advantage and limitation: Promising balance; its combined vocabulary needs operator evaluation.</li>
+<li>Human factors: Balances overview and task focus with a restrained cyan accent. Three regions still require a broad display.</li>
+</ul>
+<h3 id="style-comparison-common-comparison-matrix" tabindex="-1">Common comparison matrix</h3>
+<p>?Strong? denotes an apparent presentation advantage. ?Good? is viable with the stated caveat. ?Mixed? marks a concrete limitation. Density and complexity are descriptive, not scores: higher density is not automatically better. Cell explanations provide the rationale; the concept notes above expand the tradeoffs. Shared behavior does not imply independently validated accessibility.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Common comparison matrix table"><table><thead><tr><th scope="col">Concept</th><th scope="col">Dark-room readability</th><th scope="col">Information density</th><th scope="col">Visual hierarchy</th><th scope="col">Navigation clarity</th><th scope="col">Interaction feedback</th><th scope="col">Control-state differentiation</th><th scope="col">Accessibility</th><th scope="col">Consistency</th><th scope="col">Engineering-console suitability</th><th scope="col">Visual complexity</th><th scope="col">Design-system adoption</th></tr></thead><tbody>
+<tr><th scope="row">Mission Control Console</th><td>Strong; low glare</td><td>High; three rails</td><td>Strong; fixed zones</td><td>Strong; left rail</td><td>Clear; explicit text</td><td>Strong; bar + label</td><td>Good; dense labels</td><td>Strong; stable frame</td><td>Strong; persistent context</td><td>Medium; many borders</td><td>Good; reusable zones</td></tr>
+<tr><th scope="row">Modern Engineering Dashboard</th><td>Strong; soft surfaces</td><td>Medium; open spacing</td><td>Strong; large metrics</td><td>Good; top strip</td><td>Clear; direct labels</td><td>Strong; labels + borders</td><td>Good; roomy controls</td><td>Strong; card grammar</td><td>Good; broad overview</td><td>Low; few hard edges</td><td>Strong; familiar patterns</td></tr>
+<tr><th scope="row">Gaming-Inspired Operator Console</th><td>Good; accent restraint</td><td>High; compact rails</td><td>Good; competing edges</td><td>Strong; bold labels</td><td>Strong; emphatic states</td><td>Strong; edge + label</td><td>Good; uppercase restraint</td><td>Good; strong motifs</td><td>Good; operator familiarity</td><td>Higher; repeated accents</td><td>Good; limit decoration</td></tr>
+<tr><th scope="row">Minimal Dark Console</th><td>Strong; neutral palette</td><td>Low; long vertical flow</td><td>Good; quiet headings</td><td>Good; simple inline list</td><td>Clear; text feedback</td><td>Good; subtle active bar</td><td>Good; larger base text</td><td>Strong; spare rules</td><td>Mixed; context below fold</td><td>Low; few surfaces</td><td>Strong; small vocabulary</td></tr>
+<tr><th scope="row">Modular Engineering Workspace</th><td>Good; bounded surfaces</td><td>Medium; equal modules</td><td>Good; title bars</td><td>Good; app tiles</td><td>Clear; local feedback</td><td>Strong; border + text</td><td>Good; stacked fields</td><td>Strong; module headers</td><td>Good; independent modules</td><td>Medium; repeated frames</td><td>Strong; composable panels</td></tr>
+<tr><th scope="row">Tactical Flat Interface</th><td>Good; muted olive</td><td>High; compact spacing</td><td>Strong; aligned blocks</td><td>Strong; left rail</td><td>Clear; firm targets</td><td>Strong; square outlines</td><td>Good; 44px targets</td><td>Strong; flat grammar</td><td>Strong; efficient scans</td><td>Medium; dense groupings</td><td>Strong; simple geometry</td></tr>
+<tr><th scope="row">Industrial HMI</th><td>Good; warm neutrals</td><td>Medium; large targets</td><td>Strong; clear borders</td><td>Good; right bank unusual</td><td>Strong; large actions</td><td>Strong; heavy boundaries</td><td>Strong; large controls</td><td>Strong; repeated geometry</td><td>Strong; deliberate operation</td><td>Medium; heavy framing</td><td>Good; semantic caution</td></tr>
+<tr><th scope="row">Command Center Dashboard</th><td>Good; controlled indigo</td><td>High; persistent rail</td><td>Strong; overview emphasis</td><td>Good; horizontal bar</td><td>Clear; nearby events</td><td>Strong; text + border</td><td>Good; standard controls</td><td>Strong; stable columns</td><td>Strong; broad context</td><td>Medium; overview emphasis</td><td>Good; composable regions</td></tr>
+<tr><th scope="row">Precision Instrument Console</th><td>Good; fine rules</td><td>High; narrow margins</td><td>Strong; numeric rhythm</td><td>Strong; persistent list</td><td>Clear; precise outlines</td><td>Strong; shape + label</td><td>Good; rule visibility review</td><td>Strong; measured alignment</td><td>Strong; numeric readability</td><td>Medium; fine markings</td><td>Good; token discipline</td></tr>
+<tr><th scope="row">Contemporary Desktop Interface</th><td>Good; neutral surfaces</td><td>Medium; panel padding</td><td>Good; familiar hierarchy</td><td>Strong; desktop sidebar</td><td>Clear; conventional states</td><td>Strong; fill + marker</td><td>Good; familiar targets</td><td>Strong; desktop grammar</td><td>Good; low learning burden</td><td>Medium; layered surfaces</td><td>Strong; conventional kit</td></tr>
+<tr><th scope="row">Adaptive Information Dashboard</th><td>Strong; muted surfaces</td><td>Medium; stacked fields</td><td>Strong; task emphasis</td><td>Good; top strip</td><td>Clear; adjacent feedback</td><td>Strong; labels + marker</td><td>Good; natural form order</td><td>Strong; fixed priorities</td><td>Strong; task-focused use</td><td>Low; disclosed context</td><td>Strong; responsive regions</td></tr>
+<tr><th scope="row">Hybrid Operator Console</th><td>Strong; controlled cyan</td><td>High; balanced rails</td><td>Strong; restrained overview</td><td>Strong; stable left rail</td><td>Clear; explicit feedback</td><td>Strong; marker + label</td><td>Good; 44px targets</td><td>Strong; repeated tokens</td><td>Strong; balanced context</td><td>Medium; three regions</td><td>Strong; small shared kit</td></tr>
+</tbody></table></div>
+<h3 id="style-comparison-promising-candidates" tabindex="-1">Promising candidates</h3>
+<p>Hybrid Operator Console balances a stable left rail, broad summary and central task area. It is a promising general console candidate if the target display supports three simultaneous regions.</p>
+<p>Modern Engineering Dashboard favors legibility, familiar components and generous spacing. It merits evaluation when overview and approachability matter more than peak density.</p>
+<p>Mission Control Console offers persistent context and predictable scan paths. It merits evaluation for broad engineering consoles, with particular attention to monospaced prose and sustained visual load.</p>
+<p>These candidates match the Comparison tab. Industrial HMI remains useful when pointing precision and larger targets dominate; Minimal Dark Console is useful as a low-clutter reference. The other concepts test meaningful alternative navigation and hierarchy choices rather than serving as lower-ranked aesthetic variants.</p>
+<h3 id="style-comparison-shared-conventions-and-responsive-behavior" tabindex="-1">Shared conventions and responsive behavior</h3>
+<p>Every concept implements native forms, separate focus and selection, confirmation, local notifications, semantic statuses and a guide with visual state references. At widths below 1100px they converge on a common two-column fallback; below 760px they stack. This intentionally prioritizes usable narrow-screen behavior over preserving every desktop distinction. All concept state survives switching, allowing direct comparison without different data.</p>
+<p>Style guides list actual tokens and explain primary/secondary/tertiary actions, exclusive radios, checkbox/switch states, fields, cards, tabs, notifications and the static reference chart. Print layouts use paper-friendly ink while listing original screen HEX values; browser Save as PDF is user initiated.</p>
+<h3 id="style-comparison-limitations-and-evidence-needed" tabindex="-1">Limitations and evidence needed</h3>
+<p>The matrix judges composition from design reasoning, not operator performance. There are no task completion times, error rates, fatigue measurements or population studies. Younger operators familiar with games are an anticipated audience, not evidence that decorative gaming treatments improve performance.</p>
+<p>Evaluate the intended display and blue ambient environment with representative operators: compare navigation time, error recognition, keyboard-only use, focus visibility, long-session comfort, distance legibility and information density. Vary tasks and ordering to reduce familiarity effects. Assess zoom, screen reader behavior and print pagination separately. Token contrast checks alone do not establish accessibility or dark-room comfort.</p>
+<p>The application content is a generic boundary demonstration. A final design may change once actual information categories, alert semantics, hosting constraints and existing application integration contracts are supplied. See <a href="#architecture">Architecture</a>, <a href="#design-requirements">Design Requirements</a> and <a href="#validation">Validation</a>.</p></article></section>
+<section id="panel-validation" class="document-panel" role="tabpanel" aria-labelledby="tab-validation"><aside class="contents" aria-label="validation contents"><p class="eyebrow">On this tab</p><nav><a href="#validation-executed-checks">Executed checks</a><a href="#validation-browser-verification-limit">Browser verification limit</a><a href="#validation-remaining-manual-review">Remaining manual review</a><a href="#validation-html-documentation-consolidation">HTML documentation consolidation</a></nav></aside><article><h2 id="validation" tabindex="-1">Validation record</h2>
+<p>Date: November 6, 2026. Repository: <code>C:/REPO/SCOPE-UI</code>.</p>
+<h3 id="validation-executed-checks" tabindex="-1">Executed checks</h3>
+<ul>
+<li>Verified working directory and Git root before editing. Initial <code>git status --short</code> was empty. Existing contents were the README, empty <code>.gitignore</code> and empty directories.</li>
+<li>Ran <code>node docs/assets/validate-prototype.cjs</code> successfully. It uses Node built-ins with no dependencies and checks the actual embedded script with <code>vm.Script</code>.</li>
+<li>Generated all twelve concept workspaces and guides plus Comparison in a controlled DOM fixture. Checked thirteen concept tabs with one active tab, unique generated IDs and complete tab/label/described-by references. Checked all four application entries and required controls for every concept.</li>
+<li>Exercised shared interaction handlers for each concept: application switching/unavailability, increment, mode, preset, checkbox, switch, card selection, blank-label rejection, cancel/confirm apply, local error, loading completion and reset. Checked local state/outcome changes. The fixture does not emulate native radio exclusivity, actual focus movement or layout.</li>
+<li>Invoked export for every concept with a stubbed print API. Verified concept-specific guide content, absence of the export button in print fragments and valid field relationships. Verified print CSS excludes other body content. This is print-content validation, not PDF generation.</li>
+<li>Calculated relative-luminance contrast for normal text, secondary text and semantic status colors against each concept&#x27;s background, panel and raised surface: minimum <strong>5.24:1</strong>. Checked primary-action text against all accent fills at 4.5:1 or better. These checks cover token pairs, not every rendered hover/disabled/overlap condition and not ambient-light comfort.</li>
+<li>Checked required deliverable paths, local Markdown links and trailing whitespace across new and modified deliverables with the validation script; also ran <code>git diff --check</code> for tracked changes. Reviewed final <code>git status --short</code>. No Git configuration, remotes or history were changed; no commit or push was run.</li>
+</ul>
+<h3 id="validation-browser-verification-limit" tabindex="-1">Browser verification limit</h3>
+<p>The computer-use tool returned no available browser surfaces. An attempt to open the local HTML using the in-app browser returned <code>Browser is not available: iab</code>. Consequently no browser-rendered screenshots, keyboard/pointer end-to-end tests, actual Save as PDF output, page-break inspection or screen-reader review were performed. The controlled fixture is not evidence that those browser checks passed.</p>
+<h3 id="validation-remaining-manual-review" tabindex="-1">Remaining manual review</h3>
+<p>Open the HTML directly in Chrome, Edge or another supported modern browser. At a wide console resolution, visit all concepts and confirm composition differences and readable fit. At narrow widths and zoom, confirm form and navigation usability and no unwanted horizontal overflow outside the comparison region.</p>
+<p>Exercise native radio arrow navigation and exclusivity; disabled-selected and disabled-unselected guide references; real hover, pressed and focus indicators; tooltip dismissal; details disclosure; modal focus containment, Escape, Cancel and focus return. Verify every enabled control&#x27;s feedback and that disabled controls remain inactive.</p>
+<p>Export several guides, including Industrial HMI and Minimal Dark Console, inspect print preview and Save as PDF. Confirm that state examples, palettes and layout descriptions are legible, page breaks are sensible and unrelated concepts are excluded. Review all twelve before final artifact distribution.</p>
+<p>Evaluate operators on the actual console under blue ambient lighting. Token contrast checks and qualitative concept assessments do not establish accessibility conformance, operational safety, fatigue performance or usability superiority.</p>
+<h3 id="validation-html-documentation-consolidation" tabindex="-1">HTML documentation consolidation</h3>
+<p>The architecture, design requirements, style comparison and validation record are now combined in one self-contained HTML file with four tabs. Original section text and comparison tables are retained. The conceptual architecture has a native HTML diagram with its original diagram source available in a disclosure. The README links to the matching tab anchors. The former four Markdown documents have been replaced.</p>
+<p>Static validation passed for the documentation script syntax, tab/panel and heading relationships, all local links and whitespace. Tab switching, hash navigation, keyboard handlers and print invocation passed in a controlled fixture. A separate content-preservation check found all 629 original headings, paragraphs, list items and table cells in the consolidated HTML. Browser rendering and print pagination remain unverified because browser access was unavailable.</p></article></section></main>
+<footer class="page-footer">SCOPE design exploration · No operational connectivity · Offline, self-contained documentation</footer>
+<script>
+'use strict';
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+const panels = [...document.querySelectorAll('.document-panel')];
+function activate(panelId, focus = false) {
+  const target = panels.find(panel => panel.id === panelId);
+  if (!target) return;
+  for (const panel of panels) panel.hidden = panel !== target;
+  for (const tab of tabs) {
+    const selected = tab.getAttribute('aria-controls') === panelId;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    if (selected && focus) tab.focus();
+  }
+  document.title = 'SCOPE Documentation — ' + tabs.find(tab => tab.getAttribute('aria-controls') === panelId).dataset.label;
+}
+function navigateToHash() {
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch { id = ''; }
+  const target = id ? document.getElementById(id) : null;
+  const panel = target?.closest('.document-panel');
+  activate(panel ? panel.id : panels[0].id);
+  if (target && panel) target.scrollIntoView({block: 'start'});
+}
+for (const tab of tabs) {
+  tab.addEventListener('click', () => {
+    activate(tab.getAttribute('aria-controls'), true);
+    const hash = tab.dataset.anchor;
+    if (location.hash !== '#' + hash) location.hash = '#' + hash;
+    else document.getElementById(hash).scrollIntoView({block: 'start'});
+  });
+  tab.addEventListener('keydown', event => {
+    const index = tabs.indexOf(tab);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : event.key === 'ArrowRight' ? (index + 1) % tabs.length : event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    tabs[next].click();
+  });
+}
+window.addEventListener('hashchange', navigateToHash);
+document.getElementById('print-document').addEventListener('click', () => window.print());
+navigateToHash();
+</script></body></html>

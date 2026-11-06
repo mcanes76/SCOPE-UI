@@ -24,10 +24,7 @@ Choose a concept → Style Guide → **Export Style Guide to PDF**. The browser 
 
 ```text
 docs/
-  SCOPE-UI-Architecture.md        Target architecture, ownership and integration tradeoffs
-  SCOPE-UI-Design-Requirements.md Information model, interactions and acceptance criteria
-  SCOPE-UI-Style-Comparison.md    Twelve concepts and qualitative comparison matrix
-  Validation.md                 Executed checks and verification limits
+  SCOPE-UI-Documentation.html    Tabbed architecture, requirements, comparison and validation
   assets/
     validate-prototype.cjs       Optional dependency-free developer validation
 mockups/
@@ -40,9 +37,11 @@ The concepts are Mission Control Console, Modern Engineering Dashboard, Gaming-I
 
 ## Architecture and current limits
 
-Read [Architecture](docs/SCOPE-UI-Architecture.md) for the recommended framework-neutral shell, approved application registry, independent REST boundaries and integration options. Launch links and isolated frames preserve existing application independence; deeper runtime composition improves visual continuity while increasing trust and compatibility obligations. Shared tokens and component contracts do not require every stackup to use one framework.
+Open [SCOPE-UI-Documentation.html](docs/SCOPE-UI-Documentation.html) directly in a browser. Its four tabs contain Architecture, Design Requirements, Style Comparison and Validation. Each tab has section links; tab and section anchors support direct links. Left/Right and Home/End navigate the tabs. Print active tab / Save PDF prints only the selected document. The HTML includes all content and styling locally, including the architecture diagram; no server or external runtime is needed.
 
-[Design Requirements](docs/SCOPE-UI-Design-Requirements.md) separates WHAT information is represented from HOW it is presented. [Style Comparison](docs/SCOPE-UI-Style-Comparison.md) explains desktop layouts and tradeoffs. At smaller widths the layouts share a usable stacked fallback. The prototype's single-file packaging does not prescribe a monolithic production architecture.
+Read [Architecture](docs/SCOPE-UI-Documentation.html#architecture) for the recommended framework-neutral shell, approved application registry, independent REST boundaries and integration options. Launch links and isolated frames preserve existing application independence; deeper runtime composition improves visual continuity while increasing trust and compatibility obligations. Shared tokens and component contracts do not require every stackup to use one framework.
+
+[Design Requirements](docs/SCOPE-UI-Documentation.html#design-requirements) separates WHAT information is represented from HOW it is presented. [Style Comparison](docs/SCOPE-UI-Documentation.html#style-comparison) explains desktop layouts and tradeoffs. At smaller widths the layouts share a usable stacked fallback. The prototype's single-file packaging does not prescribe a monolithic production architecture.
 
 Actual stackup contracts, embedding capability, authentication, display hardware and operational requirements remain unknown. Assessments are preliminary design judgments, not validated usability findings. No domain controls, real APIs, production security/session integration or backend availability checks are implemented.
 
@@ -56,4 +55,4 @@ git diff --check
 git status --short
 ```
 
-The script checks JavaScript syntax, generated tab/label relationships, shared handlers in a controlled DOM fixture, twelve concept-specific print fragments and token text contrast. It is **not a browser renderer** and does not establish browser interaction, visual layout, accessibility conformance or actual PDF pagination. See [Validation](docs/Validation.md) for performed checks and remaining manual review.
+The script checks JavaScript syntax, generated tab/label relationships, shared handlers in a controlled DOM fixture, twelve concept-specific print fragments and token text contrast. It also checks the consolidated documentation's links, tab relationships, keyboard navigation, direct-link handling and print invocation. It is **not a browser renderer** and does not establish browser interaction, visual layout, accessibility conformance or actual PDF pagination. See [Validation](docs/SCOPE-UI-Documentation.html#validation) for performed checks and remaining manual review.
