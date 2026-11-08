@@ -132,6 +132,11 @@ for(const look of run('looks.map(look=>look.id)'))for(let shell=0;shell<4;shell+
   for(const topic of ['shell','blos','display','calibration','los']){
     run(`state.view='guide';integrated.guideTopic='${topic}';render();`);relationships(pageHTML());run('exportStyleGuide()');relationships(printed);assert(!printed.includes('Export Style Guide to PDF'));assert(!printed.includes('data-guide-topic'));
     assert.equal(printed.includes('White Trim / material definition'),look==='white-trim','Trim guide is opt-in for every coverage topic');
+    assert.equal(printed.includes('Prism Glass / frosted white material definition'),look==='prism','Frost guide is opt-in for every Prism coverage topic');
+    if(look==='prism'){
+      assert.equal(run('lookTokens().Surface'),'#202D3D');assert.equal(run('lookTokens().Raised'),'#2D3B4E');
+      assert(printed.includes('#EFF6FF'));assert(printed.includes('btn-join'));assert(printed.includes('btn-leave'));
+    }
     if(look==='white-trim'){
       assert(printed.includes('#DAE5F3'));assert(printed.includes('#FAFCFF'));
       assert.equal(run('semanticActionClass("group-join")'),'btn-join');assert.equal(run('semanticActionClass("group-leave")'),'btn-leave');

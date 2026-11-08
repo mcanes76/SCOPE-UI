@@ -616,6 +616,101 @@ body[data-look="white-trim"] .look-option[data-look-choice="white-trim"][aria-pr
   #print-guide .white-trim-sample-inner { background:#0D1A2B!important; }
 }
 
+  /* Prism only: white acrylic frost over navy. Category and semantic colors stay on controls/indicators. */
+body[data-look="prism"] .theme,
+body[data-look="prism"] .theme:is(.aperture,.mosaic,.portal,.deck) {
+  --surface:#202D3D;--raised:#2D3B4E;--line:#9CAFC3;
+  --prism-frost:#EFF6FF;--prism-edge:#EAF3FF66;--prism-reflection:#FFFFFF26;
+}
+body[data-look="prism"] {
+  background:#080D18!important;
+  background-image:radial-gradient(ellipse at 15% 0,#DCEBFF0B,transparent 50%),radial-gradient(ellipse at 90% 70%,#CADCFF06,transparent 55%)!important;
+}
+body[data-look="prism"] :is(.shell,.laboratory,.style-guide,.integration-pane,.pane) {
+  background-color:#202D3D!important;
+  background-image:linear-gradient(125deg,#F2F8FF16,transparent 45%),linear-gradient(180deg,#FFFFFF08,#FFFFFF02),linear-gradient(#101C2CB8,#101C2CB8)!important;
+  border-color:#EAF3FF59;
+  box-shadow:0 22px 50px #0007,inset 0 1px #FFFFFF55,inset 0 -1px #DCEAFF12;
+}
+body[data-look="prism"] :is(.shell-top,.surface-top,.integration-pane-header,.pane-header,.app-tabs,.workspace-tools,.deck-nav,.deck-rail) {
+  background-color:#263446!important;
+  background-image:linear-gradient(115deg,#F2F8FF1F,transparent 47%),linear-gradient(180deg,#FFFFFF09,transparent),linear-gradient(#101C2CB8,#101C2CB8)!important;
+  border-color:#EAF3FF42;
+  box-shadow:inset 0 1px #FFFFFF5C,inset 0 -1px #DCEAFF12,0 5px 16px #0003;
+}
+body[data-look="prism"] :is(.owner-surface,.integrated-app,.app-content) {
+  background-color:#101C2C!important;
+  background-image:linear-gradient(130deg,#F2F8FF0D,transparent 58%),linear-gradient(180deg,#FFFFFF03,transparent)!important;
+  border-color:#DAE8F747;
+}
+body[data-look="prism"] :is(.app-summary,.node-info,.alignment-values article,.lab-panel,.viz-card,.shell-context-card,.guide-section,.electric-guide,.white-trim-guide) {
+  background-color:#243244!important;
+  background-image:linear-gradient(125deg,#F2F8FF1C,transparent 44%),linear-gradient(180deg,#FFFFFF08,#FFFFFF02),linear-gradient(#101C2CB8,#101C2CB8)!important;
+  border-color:#DCEAFF52;
+  box-shadow:0 10px 24px #0004,inset 0 1px #FFFFFF47,inset 0 -1px #DCEAFF0D;
+}
+body[data-look="prism"] :is(.directory-card,.deck-app,.shelf-app,.switcher-item),
+body[data-look="prism"] :is(.directory-card,.deck-app,.shelf-app,.switcher-item)[aria-pressed="true"] {
+  background-color:#233143!important;
+  background-image:linear-gradient(125deg,#EFF6FF21,transparent 48%),linear-gradient(180deg,#FFFFFF06,transparent)!important;
+}
+body[data-look="prism"] .directory-card .app-art,
+body[data-look="prism"] .switcher-item .app-art {
+  background:linear-gradient(140deg,#EFF6FF1A,#FFFFFF04);
+  box-shadow:0 9px 18px #0004,inset 0 1px #FFFFFF4D;
+}
+body[data-look="prism"] :is(.directory-card,.deck-app,.shelf-app,.switcher-item)[aria-pressed="true"] {
+  border-color:var(--app,var(--accent));box-shadow:inset 0 -2px var(--app,var(--accent)),0 8px 18px #0004;
+}
+body[data-look="prism"] .aperture-dock {
+  background-color:#28384A!important;
+  background-image:linear-gradient(125deg,#EFF6FF26,#FFFFFF08 52%,#DCEAFF0D)!important;
+  border-color:#EAF3FF80;
+  box-shadow:0 18px 35px #0008,inset 0 1px #FFFFFF80,inset 0 -1px #DCEAFF21;
+}
+body[data-look="prism"] :is(#switcher,#window-manager,#demo-action-dialog,#confirmation) {
+  background-color:#1C2B3C!important;
+  background-image:linear-gradient(130deg,#EFF6FF1F,transparent 48%),linear-gradient(180deg,#FFFFFF06,transparent)!important;
+  border-color:#EAF3FF70;
+  box-shadow:0 30px 80px #0009,inset 0 1px #FFFFFF66;
+}
+body[data-look="prism"] .app-table-wrap {
+  background:linear-gradient(130deg,#EFF6FF09,transparent 56%),#101D2E;
+  border-color:#DCEAFF40;box-shadow:inset 0 2px 10px #0006;
+}
+body[data-look="prism"] .app-table th { background:#EAF3FF0B; }
+body[data-look="prism"] .alignment-editor { background:#0C1726; }
+body[data-look="prism"] .integration-pane.has-focus,
+body[data-look="prism"] .pane.is-focused { border-color:var(--accent);box-shadow:0 16px 32px #0006,inset 0 1px #FFFFFF70,0 0 0 1px color-mix(in srgb,var(--accent) 20%,transparent); }
+@supports(backdrop-filter:blur(1px)) {
+  body[data-look="prism"] :is(.shell,.laboratory,.style-guide,.integration-pane,.pane) {
+    background-color:rgba(239,246,255,.085)!important;
+    backdrop-filter:blur(18px) saturate(.85);
+  }
+  body[data-look="prism"] :is(.shell-top,.surface-top,.integration-pane-header,.pane-header,.app-tabs,.workspace-tools,.deck-nav,.deck-rail) {
+    background-color:rgba(239,246,255,.10)!important;
+    backdrop-filter:blur(14px) saturate(.85);
+  }
+  body[data-look="prism"] :is(.app-summary,.node-info,.alignment-values article,.lab-panel,.viz-card,.shell-context-card,.guide-section,.electric-guide) {
+    background-color:rgba(239,246,255,.075)!important;
+    backdrop-filter:blur(14px) saturate(.85);
+  }
+  body[data-look="prism"] :is(#switcher,#window-manager,#demo-action-dialog,#confirmation,.aperture-dock) {
+    background-color:rgba(32,45,61,.92)!important;
+    backdrop-filter:blur(22px) saturate(.85);
+  }
+}
+.prism-frost-guide { padding:22px;margin:20px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface); }
+.prism-frost-guide h3 { font-size:18px;margin:0 0 14px; }
+.prism-frost-guide p { font-size:12px;line-height:1.8;color:var(--muted);margin:12px 0; }
+.prism-frost-sample { padding:20px;border:1px solid #EAF3FF66;border-radius:14px;background:linear-gradient(125deg,#EFF6FF1C,transparent 48%),#172335;box-shadow:0 12px 25px #0005,inset 0 1px #FFFFFF66; }
+.prism-frost-sample .electric-specimens { margin-top:18px; }
+@media print {
+  #print-guide .prism-frost-guide { background:#FFFFFF!important;box-shadow:none;break-inside:avoid; }
+  #print-guide .prism-frost-sample { background:linear-gradient(125deg,#EFF6FF1C,transparent 48%),#172335!important;box-shadow:none; }
+  #print-guide .prism-frost-sample p { color:#C9D7E8!important; }
+}
+
   </style>
 </head>
 <body data-look="prism">
@@ -1002,10 +1097,10 @@ body[data-look="white-trim"] .look-option[data-look-choice="white-trim"][aria-pr
       }
     });
     const looks = [
-      {id:'prism',name:'Prism Glass',short:'Chromatic depth',swatch:'linear-gradient(135deg,#38E8F2,#9044E9)',bg:'#080D18',surface:['#162A3E','#29233F','#173532','#192C46'],raised:['#2C4057','#3E3654','#2B4846','#30425B'],accent:['#38E8F2','#CEACFF','#49E2CD','#82B2FF'],secondary:['#82B2FF','#38E8F2','#CEACFF','#38E8F2'],line:'#7A95B2',radius:'22px shell / 12–20px panels / 9px controls',font:'system-ui, Segoe UI, sans-serif',
-        philosophy:'Saturated category colors, layered translucent chrome and recessed owner surfaces. Peripheral cyan and violet light creates depth without filling the application with luminous decoration.',
-        material:'Radial ambient lighting, glass-like dock and switcher, inner shadows in the owner region and soft exterior elevation. Glass has opaque fallback fills; no blur is required for legibility.',
-        caution:'The richest material vocabulary. Review glare and separation between translucent surfaces on the actual blue-lit console.'},
+      {id:'prism',name:'Prism Glass',short:'White acrylic frost',swatch:'linear-gradient(125deg,#F2F8FF80,#536275 48%,#172335)',bg:'#080D18',surface:'#202D3D',raised:'#2D3B4E',accent:['#38E8F2','#CEACFF','#49E2CD','#82B2FF'],secondary:['#82B2FF','#38E8F2','#CEACFF','#38E8F2'],line:'#9CAFC3',radius:'22px shell / 12–20px panels / 9px controls',font:'system-ui, Segoe UI, sans-serif',
+        philosophy:'Cool white and silver-white translucent acrylic over dark navy. Low-opacity white fills, soft internal reflections and blur create frosted windows rather than green-tinted glass. Application identity and semantic action colors remain saturated.',
+        material:'White/blue-white #EFF6FF overlays: 8.5% on structural glass, 10% on navigation and 7.5% on raised cards. Supported browsers use 14–18px blur, with 22px for the dark-backed dock/dialogs. A 72% translucent navy backing limits the accumulation of stacked white layers. Opaque navy fallbacks remain available. Recessed owner interiors stay #101C2C with a faint white reflection.',
+        caution:'Evaluate white-overlay area and reflected edge brightness in the blue-lit room. The page stays dark; no bright opaque white blocks, green material wash or animated illumination is used.'},
       {id:'nocturne',name:'Nocturne Ink',short:'Violet frame / black wells',swatch:'linear-gradient(135deg,#171020,#9762DA)',bg:'#100D1B',surface:'#18141F',raised:'#32283E',accent:'#C4A4FF',secondary:'#65E4F5',line:'#91849F',radius:'28px shell / 13–23px panels / 9px controls; capsule navigation',font:'system-ui body; Georgia for owner headlines and directory titles',
         philosophy:'A broad violet shell wraps near-black application and chart wells. Larger quiet dark regions make colored lines, symbols and selected capsules more prominent.',
         material:'Opaque ink cards, restrained corner illumination, violet capsule selection and a plum floating dock. Serif owner headlines contrast with compact technical labels.',
@@ -1590,7 +1685,7 @@ body[data-look="white-trim"] .look-option[data-look-choice="white-trim"][aria-pr
       const panel=`<div class="electric-status ${status.code==='warning'?'warning':status.code==='error'?'error':''}" style="width:100%"><div><strong>${status.label}</strong><small>${status.note}</small></div><span>${sensor.name} / applied r${sensor.revision}</span></div>`;
       return calibrationMaterialRender(view,slot).replace(/<span class="demo-status" style="--status:[^"]+">✓ Local sample ready<\/span>/,panel);
     };
-    function lookTokens(index=state.concept){return {...materialLookTokens(index),...(state.look==='white-trim'?{'Shell trim':'#DAE5F3','Panel trim':'#CBD7E7','Active trim':'#FAFCFF','Top reflection':'#F2F8FF'}:{}),'Positive action':'#00D96C','Negative action':'#D91F35','Negative reference':'#F23545','Warning fill':'#FFD000','Read action':'#00BFFF','Update action':'#7040D9','Configuration reference':'#8B5CF6','Neutral action':'#263A50'};}
+    function lookTokens(index=state.concept){return {...materialLookTokens(index),...(state.look==='prism'?{'Frost white':'#EFF6FF','Glass edge':'#EAF3FF','Reflection white':'#FFFFFF','Recessed interior':'#101C2C'}:{}),...(state.look==='white-trim'?{'Shell trim':'#DAE5F3','Panel trim':'#CBD7E7','Active trim':'#FAFCFF','Top reflection':'#F2F8FF'}:{}),'Positive action':'#00D96C','Negative action':'#D91F35','Negative reference':'#F23545','Warning fill':'#FFD000','Read action':'#00BFFF','Update action':'#7040D9','Configuration reference':'#8B5CF6','Neutral action':'#263A50'};}
     function electricStyleDefinition(print=false){
       const controls=[['btn-join','＋ Join / Enable','#00D96C / #052415'],['btn-leave','− Leave / Disable','#D91F35 / #FFFFFF'],['btn-warning','⚠ Attention','#FFD000 / #2B2300'],['btn-read','↻ Read / Refresh','#00BFFF / #052139'],['btn-update','Edit / Update','#7040D9 / #FFFFFF'],['btn-neutral','Cancel / Neutral','#263A50 / #E8F2FF']];
       return `<section class="electric-guide"><div class="guide-title"><div><div class="eyebrow muted">Electric Glass / shared semantic layer</div><h3>Dimensional glass. Unmistakable actions.</h3><p class="electric-guidance">This layer applies to every shell, material look and application guide. Action semantics override decorative accents. Darkened red/violet fills preserve white-label contrast; reference hues remain explicit below. All actions are local simulation.</p></div>${print?'':'<button class="btn-update" data-action="export-style-guide">Export Style Guide to PDF</button>'}</div><div class="electric-specimens">${controls.map(([cls,label,colors])=>`<div class="electric-sample"><small>${colors}</small><button class="${cls}" data-specimen="${label} Electric Glass">${label}</button></div>`).join('')}</div><p>Reference negative: #F23545; filled white-label negative: #D91F35. Reference configuration: #8B5CF6; filled white-label configuration: #7040D9. Positive green #00D96C, warning yellow #FFD000, and read cyan #00BFFF use dark ink. Status text may use a lighter red or green on dark surfaces to preserve readability; symbol, label and saturated edge remain semantic.</p><div class="electric-row"><button class="btn-read" data-specimen="Default read">Default</button><button class="btn-read electric-force-hover" data-specimen="Hover read">Hover specimen</button><button class="btn-read force-focus" data-specimen="Focused read">Focus specimen</button><button class="btn-read electric-force-pressed" data-specimen="Pressed read">Pressed specimen</button><button class="btn-join" disabled>Join unavailable</button><button class="btn-leave" disabled>Leave unavailable</button><button class="btn-read" disabled aria-busy="true">Working…</button><button class="btn-update" data-outcome="success" data-specimen="Update success">✓ Updated</button><button class="btn-update" data-outcome="error" data-specimen="Update error">× Update failed</button></div><table class="guide-table"><thead><tr><th>Property</th><th>Implemented rule</th></tr></thead><tbody><tr><th>Surface / blur</th><td>Opaque navy #132338 / #142236 fallbacks. Supported browsers add #172C42BA (73%) panel fill and 14px blur; headers use #2B4560B5 (71%) and 14px blur; raised cards use #233B52C7 (78%) and 10px blur.</td></tr><tr><th>Edges / elevation</th><td>1px cool glass edges, a faint inset top reflection, recessed application wells and forms, and soft exterior shadows. Focused panels use cyan boundaries rather than health colors. No heavy map overlay or animated glow.</td></tr><tr><th>Hover / focus / press</th><td>Hover changes the semantic fill and elevation. Keyboard focus uses a 3px light ring offset by 4px. Pressed uses a 1px movement and inset shadow. Selection remains separate and non-red.</td></tr><tr><th>Disabled / loading</th><td>Neutral opaque gray fill, dashed border, subtle hatch and native lockout replace the active semantic color. Loading also says Working… and exposes aria-busy. A disabled green/red action cannot look active.</td></tr><tr><th>Alignment</th><td>Green In Alignment; saturated yellow Out of Alignment; red validation/update failure with explanation. Synthetic thresholds: azimuth ±2°, elevation/roll ±1°. Legal input ranges remain separate: azimuth/roll ±180°, elevation ±90°.</td></tr><tr><th>Tables / diagrams</th><td>Glass table rows and cyan selected-row marker. Group rings use category colors. Health uses green/yellow/red. Display and BLOS link graphs are separate; optional BLOS overlay is dashed violet with its own legend.</td></tr><tr><th>Regional Earth</th><td>Perspective textured 3D sphere rendered in Canvas 2D, with a vector interaction overlay. Approximate fictional SE US/Gulf coordinates, sparse local graphs, per-view cameras and Reset to Network. No RF range/feasibility or live Earth conditions are implied.</td></tr></tbody></table><p>Earth texture: <a href="https://www.solarsystemscope.com/textures/">Solar System Scope / INOVE / Earth Day Map</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Embedded from the 8K JPEG, sampled at 4096×2048, then perspective-projected and shaded locally. This is a real geographic texture with illustrative lighting; it is not a live satellite or terrain model.</p></section>`;
@@ -1598,7 +1693,11 @@ body[data-look="white-trim"] .look-option[data-look-choice="white-trim"][aria-pr
     function whiteTrimStyleDefinition(){
       return `<section class="white-trim-guide"><div class="eyebrow muted">Electric Glass – White Trim / material definition</div><h3>Silver structure. Dark working surfaces. Vivid actions.</h3><p>Fine white trim outlines the SCOPE shell, glass panels, navigation frames and separate application windows. Active split panes and focused Mosaic panes use brighter trim. White is a structural/selection cue, not success, warning or error. Existing green, red, yellow, cyan and violet controls are preserved.</p><div class="guide-swatches">${[['Shell trim','#DAE5F3','77% opacity / #DAE5F3C4'],['Panel trim','#CBD7E7','36% opacity / #CBD7E75C'],['Active edge','#FAFCFF','100% edge; 14% outer line'],['Top reflection','#F2F8FF','60% opacity / #F2F8FF99']].map(([name,color,note])=>`<div class="guide-swatch"><i style="--swatch:${color}"></i>${name}<code>${color}</code><span>${note}</span></div>`).join('')}</div><div class="white-trim-sample"><div class="eyebrow">Structural trim reference / static specimen</div><div class="white-trim-sample-inner" style="margin-top:14px"><strong>Active application surface</strong><p>Bright fine edge, dark interior and a restrained upper reflection.</p><div class="electric-specimens"><button class="btn-join" data-specimen="White Trim join reference">+ Join</button><button class="btn-leave" data-specimen="White Trim leave reference">− Leave</button><button class="btn-warning" data-specimen="White Trim warning reference">⚠ Alignment warning</button><button class="btn-read" data-specimen="White Trim read reference">Read</button><button class="btn-update" data-specimen="White Trim update reference">Update</button></div></div></div><table class="guide-table"><thead><tr><th>Structure</th><th>Implemented styling</th></tr></thead><tbody><tr><th>Main shell</th><td>1px silver perimeter, 1px inset upper highlight, dark exterior shadow and only 3% opacity white illumination over 18px.</td></tr><tr><th>Panels / navigation</th><td>Fine silver boundaries, low-opacity top and bottom edge reflections. The existing glass blur, opaque fallbacks and recessed interiors remain in place.</td></tr><tr><th>Active pane / selected navigation</th><td>Brighter #FAFCFF edge and subtle inset reflection. Active-window trim is independent of green/red status; application identity icons and semantic button fills retain their colors.</td></tr><tr><th>Scope</th><td>Opt-in only. Works with Aperture, Mosaic, Portal, Command Deck, single/split layouts and detached application windows. No data, camera, connectivity or application behavior changes.</td></tr><tr><th>Print</th><td>Original screen HEX/opacity values are listed. Paper-friendly guide ink is used; the dark trim reference remains dark so its white edges can be inspected. Enable background graphics when saving PDF.</td></tr></tbody></table></section>`;
     }
-    function styleGuide(print=false){return (print?'':guideTopics())+electricStyleDefinition(print)+(state.look==='white-trim'?whiteTrimStyleDefinition():'')+(integrated.guideTopic==='shell'?baseStyleGuide(print):applicationStyleGuide(print));}
+    function prismFrostStyleDefinition(){
+      return `<section class="prism-frost-guide"><div class="eyebrow muted">Prism Glass / frosted white material definition</div><h3>White acrylic frost over a dark working plane.</h3><p>Prism uses neutral cool-white and soft silver overlays instead of green panel washes. The dark background, layered translucency, blur and recessed interiors remain. Cyan, blue, violet and teal identify applications; green/red/yellow and read/configuration colors keep their existing action meanings.</p><div class="guide-swatches">${[['Frost white','#EFF6FF','7.5–10% white overlays'],['Edge silver','#EAF3FF','Subtle 26–50% boundaries'],['Reflection','#FFFFFF','Fine 8–50% reflected edges'],['Dark interior','#101C2C','Recessed working surface']].map(([name,color,note])=>`<div class="guide-swatch"><i style="--swatch:${color}"></i>${name}<code>${color}</code><span>${note}</span></div>`).join('')}</div><div class="prism-frost-sample"><strong>Frosted structural glass / static material specimen</strong><p>Neutral white reflection on navy. Bold actions remain colored, not white.</p><div class="electric-specimens"><button class="btn-join" data-specimen="Prism frosted Join reference">+ Join</button><button class="btn-leave" data-specimen="Prism frosted Leave reference">− Leave</button><button class="btn-warning" data-specimen="Prism frosted Warning reference">⚠ Warning</button><button class="btn-read" data-specimen="Prism frosted Read reference">Read</button><button class="btn-update" data-specimen="Prism frosted Update reference">Update</button></div></div><table class="guide-table"><thead><tr><th>Layer</th><th>Implemented treatment</th></tr></thead><tbody><tr><th>Structural windows</th><td>rgba(239,246,255,.085) with an 18px backdrop blur and a soft, low-opacity white reflection. A 72% translucent #101C2C backing beneath the white reflections prevents nested windows from becoming bright or reducing text contrast. Fallback: #202D3D with reflected gradients.</td></tr><tr><th>Navigation / headers</th><td>rgba(239,246,255,.10), 14px blur and fine silver edges. The white fill is translucent, not an opaque header block.</td></tr><tr><th>Raised panels</th><td>rgba(239,246,255,.075), 14px blur, interior highlights and dark exterior shadow. Opaque fallback #243244. Text and semantic indicators retain contrast on the dark backing.</td></tr><tr><th>Dock / dialogs</th><td>Dark-backed rgba(32,45,61,.92), 22px blur and a soft white upper reflection. This higher backing opacity keeps floating controls readable.</td></tr><tr><th>Application interior</th><td>#101C2C with a faint white reflection; the editor is further recessed. No category-green surface wash. Earth imagery, diagrams, status and operational controls are unchanged.</td></tr><tr><th>Scope / export</th><td>Prism only, in every shell and single/split or separate-window host. Other material looks are untouched. PDF uses paper-friendly ink, while preserving screen HEX values and this dark material reference.</td></tr></tbody></table></section>`;
+    }
+    function styleGuide(print=false){return (print?'':guideTopics())+electricStyleDefinition(print)+(state.look==='prism'?prismFrostStyleDefinition():'')+(state.look==='white-trim'?whiteTrimStyleDefinition():'')+(integrated.guideTopic==='shell'?baseStyleGuide(print):applicationStyleGuide(print));}
+
     applicationGuideContent.display.philosophy='A textured perspective 3D Earth with a regional fictional network, sparse separate link layers and explicit camera controls.';
     applicationGuideContent.display.layout='Globe and Node Inventory tabs. The initial perspective view centers the southeastern US/Gulf sample region; Reset to Network restores it in full-width and split panels. Full Earth exposes the globe, while rotation, tilt and zoom remain available.';
     applicationGuideContent.display.interaction='Selecting a node highlights only its associated Display links and optional BLOS-overlay links. Other links dim. Camera, labels, connection visibility and overlay stay per view. Full Earth and regional reset are explicit actions; selection does not move the camera. The Center selected control is separate.';
