@@ -50,6 +50,8 @@ function relationships(source){const ids=new Set(),refs=[];for(const tag of sour
 const staticHTML=html.slice(0,html.indexOf('<script>'));
 function pageHTML(){return staticHTML.replace(/(<div id="concept-panel-\d"[^>]*>)<\/div>/g,(all,start)=>start+get(start.match(/id="([^"]+)/)[1]).innerHTML+'</div>');}
 assert.equal(run('DemoApplicationRegistry.length'),4);
+assert.deepEqual(Array.from(run('looks.map(look=>look.id)')),['prism','nocturne','carbon','spectrum','white-trim']);
+assert.equal(run('state.look'),'prism','Adding a look must not replace the existing default');
 assert.equal(run('DemoNodeStore.nodes().length'),10);
 const snapshot=run('DemoNodeStore.nodes()');snapshot[0].label='mutated';assert.equal(run('DemoNodeStore.get("N01").label'),'West Gulf A');
 // Same application: one data model, independent tabs, selections and expanded lists.
@@ -117,7 +119,7 @@ let actionContrast=21;for(const [fill,hover,ink] of [['#00D96C','#22E986','#0524
 
 // Generated markup across every app/tab, split duplication, shell/look and guide topic.
 let views=0,guides=0;
-for(const look of ['prism','nocturne','carbon','spectrum'])for(let shell=0;shell<4;shell++){
+for(const look of run('looks.map(look=>look.id)'))for(let shell=0;shell<4;shell++){
   run(`state.look='${look}';state.concept=${shell};state.view='workspace';integrated.mode='split';`);
   for(let app=0;app<4;app++){
     run(`integrated.left=${app};integrated.right=${app};render();`);relationships(pageHTML());views++;
@@ -128,11 +130,25 @@ for(const look of ['prism','nocturne','carbon','spectrum'])for(let shell=0;shell
     relationships(pageHTML());assert(markup().includes(`data-app="${app}"`));views++;
   }
   for(const topic of ['shell','blos','display','calibration','los']){
-    run(`state.view='guide';integrated.guideTopic='${topic}';render();`);relationships(pageHTML());run('exportStyleGuide()');relationships(printed);assert(!printed.includes('Export Style Guide to PDF'));assert(!printed.includes('data-guide-topic'));guides++;
+    run(`state.view='guide';integrated.guideTopic='${topic}';render();`);relationships(pageHTML());run('exportStyleGuide()');relationships(printed);assert(!printed.includes('Export Style Guide to PDF'));assert(!printed.includes('data-guide-topic'));
+    assert.equal(printed.includes('White Trim / material definition'),look==='white-trim','Trim guide is opt-in for every coverage topic');
+    if(look==='white-trim'){
+      assert(printed.includes('#DAE5F3'));assert(printed.includes('#FAFCFF'));
+      assert.equal(run('semanticActionClass("group-join")'),'btn-join');assert.equal(run('semanticActionClass("group-leave")'),'btn-leave');
+      assert.equal(run('ElectricSemantic.positive'),'#00D96C');assert.equal(run('ElectricSemantic.negative'),'#D91F35');
+    }
+    guides++;
   }
 }
 // A delayed calibration read must not write calibration feedback into another app.
 run("integrated.mode='split';integrated.right=2;state.view='workspace';render();");
 click({demoAction:'sensor-read',slot:'right'});change({integrationChoice:'right'},'0');get('demo-feedback-right').textContent='';timers.shift()();assert.equal(get('demo-feedback-right').textContent,'');
+// Detached hosts must recognize and retain the new selectable material.
+const previousHref=window.location.href;
+window.location.href='file:///C:/REPO/SCOPE-UI/mockups/scope-integrated-electric-glass.html?scopeWindow=1&look=white-trim&shell=3';
+run('initializeWindowMode();render();');
+assert.equal(run('state.look'),'white-trim');assert.equal(document.body.dataset.look,'white-trim');
+assert(get('exploration').innerHTML.includes('Display'));
+run('detachedContext=null;');window.location.href=previousHref;delete document.body.dataset.detached;
 assert(!/[^\S\r\n]+\r?$/m.test(html),'No trailing whitespace');
 console.log(JSON.stringify({syntax:'pass',dataContracts:'pass',groupCreateJoinLeave:'pass',separateTopologyLinks:'pass',panelStateIsolation:'pass',sameAppDataSynchronization:'pass',globeControls:'pass',calibrationReadUpdateCancelValidation:'pass',staleEditProtection:'pass',nativeLOS:'pass',minimumSemanticButtonContrast:actionContrast.toFixed(2),regionalNodes:10,independentConnectivityModels:'pass',regionalReset:'pass',projectionRoundTrips:'pass',generatedViews:views,exportedGuideFragments:guides,browserRendering:'not tested; controlled fixtures do not verify browser UI, native focus, PDF pagination or pop-ups'},null,2));

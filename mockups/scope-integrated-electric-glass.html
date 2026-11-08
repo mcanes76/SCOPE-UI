@@ -555,6 +555,67 @@ button.btn-neutral[aria-pressed="true"] { border-color:#00BFFF!important;box-sha
 [data-demo-field="los-enabled"]:checked { background:#00D96C;border-color:#00D96C; }
   .earth-stage { max-width:1000px;margin-inline:auto; }
   .app-error:not(:empty) { padding:12px;border:1px solid #F23545;border-left:4px solid #F23545;border-radius:8px;background:#571C2C88;color:#FFD1D9; }
+  /* Opt-in structural trim only: no action fills, map pixels or status colors are changed. */
+body[data-look="white-trim"] .theme {
+  --surface:#162A3E;--raised:#2C4057;--line:#8197B0;--accent:#38E8F2;--companion:#82B2FF;--accent-ink:#102126;
+  --trim-shell:#DAE5F3C4;--trim-panel:#CBD7E75C;--trim-active:#FAFCFF;--trim-reflection:#F2F8FF99;
+}
+body[data-look="white-trim"] .theme.mosaic { --surface:#29233F;--raised:#3E3654;--accent:#CEACFF;--companion:#38E8F2; }
+body[data-look="white-trim"] .theme.portal { --surface:#173532;--raised:#2B4846;--accent:#49E2CD;--companion:#CEACFF; }
+body[data-look="white-trim"] .theme.deck { --surface:#192C46;--raised:#30425B;--accent:#82B2FF;--companion:#38E8F2; }
+body[data-look="white-trim"] .shell {
+  border:1px solid var(--trim-shell);
+  box-shadow:0 24px 65px #0009,0 0 18px #E7F3FF08,inset 0 1px var(--trim-reflection),inset 0 -1px #D8E5F32E;
+}
+body[data-look="white-trim"] :is(.integration-pane,.pane,.owner-surface,.lab-panel,.viz-card,.shell-context-card,.style-guide,.guide-section) {
+  border-color:var(--trim-panel);
+  box-shadow:0 12px 28px #0005,inset 0 1px #F2F8FF38,inset 0 -1px #D8E5F312;
+}
+body[data-look="white-trim"] :is(.integration-pane.has-focus,.pane.is-focused) {
+  border-color:var(--trim-active);
+  box-shadow:0 15px 35px #0007,0 0 0 1px #FAFCFF24,0 0 14px #E7F3FF08,inset 0 1px #FFFFFFAA;
+}
+body[data-look="white-trim"] :is(.shell-top,.surface-top,.integration-pane-header,.pane-header,.app-tabs,.deck-nav,.workspace-tools) {
+  border-color:#D8E5F333;
+  box-shadow:inset 0 1px #F2F8FF55,inset 0 -1px #DAE5F31F,0 5px 16px #0003;
+}
+body[data-look="white-trim"] .aperture-dock {
+  border-color:#E4EDF8A6;
+  background:linear-gradient(130deg,#3B5365E8,#1F3349EF 50%,#2C3451E8);
+  box-shadow:0 18px 34px #0008,0 0 16px #E7F3FF08,inset 0 1px #FFFFFF8C,inset 0 -1px #DAE5F338;
+}
+body[data-look="white-trim"] :is(.deck-app,.shelf-app,.directory-card)[aria-pressed="true"],
+body[data-look="white-trim"] .app-tabs button[aria-selected="true"] {
+  border-color:#FAFCFFE0;box-shadow:inset 0 -2px #FAFCFFB3,0 7px 15px #0004;
+}
+body[data-look="white-trim"] #switcher,
+body[data-look="white-trim"] #window-manager,
+body[data-look="white-trim"] #demo-action-dialog,
+body[data-look="white-trim"] #confirmation {
+  border-color:#DAE5F3C4;box-shadow:0 30px 80px #0009,0 0 18px #E7F3FF08,inset 0 1px #F2F8FF99;
+}
+body[data-look="white-trim"] .look-option[data-look-choice="white-trim"][aria-pressed="true"] {
+  border-color:#FAFCFF;box-shadow:inset 0 -2px #F2F8FF;
+}
+[data-look-preview="white-trim"] { border:1px solid #DAE5F3C4;box-shadow:inset 0 1px #F2F8FF99; }
+[data-look-preview="white-trim"] i { border:1px solid #CBD7E75C;border-top:1px solid #F2F8FF99!important; }
+.white-trim-guide { margin:20px 0;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--surface); }
+.white-trim-guide h3 { font-size:18px;margin:0 0 14px; }
+.white-trim-guide p { color:var(--muted);font-size:12px;line-height:1.8;margin:12px 0; }
+.white-trim-sample {
+  margin:18px 0;padding:20px;border:1px solid #DAE5F3C4;border-radius:16px;
+  background:linear-gradient(130deg,#29435BB5,#142236F2);box-shadow:0 12px 28px #0005,inset 0 1px #F2F8FF99;
+}
+.white-trim-sample-inner { padding:18px;border:1px solid #FAFCFF;border-radius:10px;background:#0D1A2B;box-shadow:inset 0 1px #FFFFFFAA,0 0 0 1px #FAFCFF24; }
+.white-trim-sample .electric-specimens { margin-top:18px; }
+@media(max-width:760px) { .white-trim-guide { padding:18px 14px; }.white-trim-sample { padding:16px; } }
+@media print {
+  #print-guide .white-trim-guide { background:white!important;box-shadow:none;border-color:#7C8BA0;break-inside:avoid; }
+  #print-guide .white-trim-sample { background:#15263A!important;color:#E7EDF5!important;box-shadow:none; }
+  #print-guide .white-trim-sample p { color:#C9D7E8!important; }
+  #print-guide .white-trim-sample-inner { background:#0D1A2B!important; }
+}
+
   </style>
 </head>
 <body data-look="prism">
@@ -956,7 +1017,11 @@ button.btn-neutral[aria-pressed="true"] { border-color:#00BFFF!important;box-sha
       {id:'spectrum',name:'Spectrum Blocks',short:'Color-filled bands / medallions',swatch:'linear-gradient(90deg,#38E8F2 33%,#82B2FF 33% 66%,#CEACFF 66%)',bg:'#0E152B',surface:'#1C2541',raised:'#303D59',accent:'#38E8F2',secondary:'#CEACFF',line:'#8292B4',radius:'18px shell / 18–28px panels / 9px controls; round icon medallions',font:'Trebuchet MS with system-ui fallback',
         philosophy:'Bold category-color headers, larger icon medallions and sculpted application entry tiles. Large color areas are confined to shell chrome and specimen cards, surrounding a recessed dark owner region.',
         material:'Solid bright category bands with dark ink, capsule dock geometry and rounded opaque cards. Laboratory metric cards use full semantic fills with dark text.',
-        caution:'The most assertive color-area treatment. Evaluate whether large colored headers attract attention away from an application task; use this as a deliberate alternative, not an automatic winner.'}
+        caution:'The most assertive color-area treatment. Evaluate whether large colored headers attract attention away from an application task; use this as a deliberate alternative, not an automatic winner.'},
+      {id:'white-trim',name:'Electric Glass – White Trim',short:'Silver structure / vivid actions',swatch:'linear-gradient(135deg,#F2F8FF 0 12%,#172C42 12% 88%,#DAE5F3 88%)',bg:'#070C16',surface:['#162A3E','#29233F','#173532','#192C46'],raised:['#2C4057','#3E3654','#2B4846','#30425B'],accent:['#38E8F2','#CEACFF','#49E2CD','#82B2FF'],secondary:['#82B2FF','#38E8F2','#CEACFF','#38E8F2'],line:'#8197B0',radius:'22px shell / 12–20px panels / 9px controls',font:'system-ui, Segoe UI, sans-serif',
+        philosophy:'Dark Electric Glass with fine white/silver structural edges, brighter active-panel trim and restrained upper-edge reflections. Operational buttons and application indicators keep their semantic colors.',
+        material:'1px #DAE5F3C4 shell trim, #CBD7E75C panel trim and #FAFCFF active trim. Subtle #F2F8FF99 top reflections and low-opacity static white illumination reinforce elevation while interiors remain dark.',
+        caution:'White identifies structural hierarchy and active windows, never health or operational meaning. Verify edge luminance and glare in the real blue-lit room; there is no pulsing or animated glow.'}
     ];
     state.look='prism';
     let originalPrintTitle=null;
@@ -964,10 +1029,10 @@ button.btn-neutral[aria-pressed="true"] { border-color:#00BFFF!important;box-sha
     function currentLook(){return looks.find(look=>look.id===state.look);}
     function materialLookTokens(index=state.concept){
       const look=currentLook(),i=Math.min(index,3);
-      return {Background:look.bg,Surface:lookValue(look.surface,i),Raised:lookValue(look.raised,i),Text:'#E7EDF5','Secondary text':'#B9C7D9',Border:look.line,Primary:lookValue(look.accent,i),Secondary:lookValue(look.secondary,i),'Primary ink':look.id==='prism'?'#102126':look.id==='nocturne'?'#1D1428':look.id==='carbon'?'#101F35':'#111A30',Success:'#7DF5A5',Caution:'#FFD15C',Attention:'#FFB260',Error:'#FF91A4','BLOS identity':'#38E8F2','Display identity':'#82B2FF','Calibration identity':'#CEACFF','Native LOS identity':'#49E2CD'};
+      return {Background:look.bg,Surface:lookValue(look.surface,i),Raised:lookValue(look.raised,i),Text:'#E7EDF5','Secondary text':'#B9C7D9',Border:look.line,Primary:lookValue(look.accent,i),Secondary:lookValue(look.secondary,i),'Primary ink':(look.id==='prism'||look.id==='white-trim')?'#102126':look.id==='nocturne'?'#1D1428':look.id==='carbon'?'#101F35':'#111A30',Success:'#7DF5A5',Caution:'#FFD15C',Attention:'#FFB260',Error:'#FF91A4','BLOS identity':'#38E8F2','Display identity':'#82B2FF','Calibration identity':'#CEACFF','Native LOS identity':'#49E2CD'};
     }
     function lookChoices(){
-      return `<div><div class="eyebrow">Visual material / independent of shell layout</div><p>Four looks × four navigation models. Compare 16 combinations with the same abstract content.</p></div><div class="look-options" role="group" aria-label="Visual look">${looks.map(look=>`<button class="look-option" data-look-choice="${look.id}" aria-pressed="${state.look===look.id}"><span class="look-swatch" style="--look-swatch:${look.swatch}" aria-hidden="true"></span>${look.name}</button>`).join('')}</div>`;
+      return `<div><div class="eyebrow">Visual material / independent of shell layout</div><p>Five looks × four navigation models. Compare 20 combinations with the same abstract content.</p></div><div class="look-options" role="group" aria-label="Visual look">${looks.map(look=>`<button class="look-option" data-look-choice="${look.id}" aria-pressed="${state.look===look.id}"><span class="look-swatch" style="--look-swatch:${look.swatch}" aria-hidden="true"></span>${look.name}</button>`).join('')}</div>`;
     }
     const guideStates=[
       ['Default','Enabled with an opaque or layered surface and a solid boundary.'],
@@ -1005,7 +1070,7 @@ button.btn-neutral[aria-pressed="true"] { border-color:#00BFFF!important;box-sha
       </div><p class="guide-print-note">PDF export is browser-native: select Save as PDF. The printed guide contains only ${c.name} × ${look.name}; paper-friendly component ink differs from the screen, whose exact HEX values are listed above. Enable background graphics for swatches. Browser pagination and native control rendering may vary.</p>${print?'':`<div class="reference-links"><span class="muted">Visual references supplied by the user, interpreted rather than reproduced:</span><a href="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/ee9130183048879.6538c5e9a83f8.png" target="_blank" rel="noopener noreferrer">Violet-frame reference</a><a href="https://justboil.me/static/a7ee34cf5cfd0ff6a2cfd29549895d1c/34fe8/dark.png" target="_blank" rel="noopener noreferrer">Cobalt navigation reference</a><a href="https://www.bootstrapdash.com/blog/wp-content/uploads/2023/07/fily-admin-dark-new.png" target="_blank" rel="noopener noreferrer">Color-block reference</a></div>`}</article>`;
     }
     function lookComparison(){
-      return `<section style="margin-top:28px"><h3>Four different material directions</h3><p class="comparison-endnote">The same shell can be evaluated in all four looks. These are material and hierarchy alternatives, not additional navigation architectures. Select a look above, then open a shell or its Style Guide to inspect the exact combination.</p><div class="look-comparison">${looks.map(look=>`<article><div class="look-preview" style="--look-bg:${look.bg};--look-panel:${lookValue(look.surface,0)};--look-accent:${lookValue(look.accent,0)};--look-radius:${look.id==='carbon'?'3px':'12px'}"><i></i><i></i><i></i></div><h3>${look.name}</h3><p>${look.philosophy}</p><button class="text-button" data-look-choice="${look.id}" aria-pressed="${look.id===state.look}">Use ${look.name}</button></article>`).join('')}</div></section>`;
+      return `<section style="margin-top:28px"><h3>Five different material directions</h3><p class="comparison-endnote">The same shell can be evaluated in all five looks. These are material and hierarchy alternatives, not additional navigation architectures. Select a look above, then open a shell or its Style Guide to inspect the exact combination.</p><div class="look-comparison">${looks.map(look=>`<article><div class="look-preview" data-look-preview="${look.id}" style="--look-bg:${look.bg};--look-panel:${lookValue(look.surface,0)};--look-accent:${lookValue(look.accent,0)};--look-radius:${look.id==='carbon'?'3px':'12px'}"><i></i><i></i><i></i></div><h3>${look.name}</h3><p>${look.philosophy}</p><button class="text-button" data-look-choice="${look.id}" aria-pressed="${look.id===state.look}">Use ${look.name}</button></article>`).join('')}</div></section>`;
     }
     function preparePrintGuide(){
       const root=$('#print-guide');
@@ -1525,12 +1590,15 @@ button.btn-neutral[aria-pressed="true"] { border-color:#00BFFF!important;box-sha
       const panel=`<div class="electric-status ${status.code==='warning'?'warning':status.code==='error'?'error':''}" style="width:100%"><div><strong>${status.label}</strong><small>${status.note}</small></div><span>${sensor.name} / applied r${sensor.revision}</span></div>`;
       return calibrationMaterialRender(view,slot).replace(/<span class="demo-status" style="--status:[^"]+">✓ Local sample ready<\/span>/,panel);
     };
-    function lookTokens(index=state.concept){return {...materialLookTokens(index),'Positive action':'#00D96C','Negative action':'#D91F35','Negative reference':'#F23545','Warning fill':'#FFD000','Read action':'#00BFFF','Update action':'#7040D9','Configuration reference':'#8B5CF6','Neutral action':'#263A50'};}
+    function lookTokens(index=state.concept){return {...materialLookTokens(index),...(state.look==='white-trim'?{'Shell trim':'#DAE5F3','Panel trim':'#CBD7E7','Active trim':'#FAFCFF','Top reflection':'#F2F8FF'}:{}),'Positive action':'#00D96C','Negative action':'#D91F35','Negative reference':'#F23545','Warning fill':'#FFD000','Read action':'#00BFFF','Update action':'#7040D9','Configuration reference':'#8B5CF6','Neutral action':'#263A50'};}
     function electricStyleDefinition(print=false){
       const controls=[['btn-join','＋ Join / Enable','#00D96C / #052415'],['btn-leave','− Leave / Disable','#D91F35 / #FFFFFF'],['btn-warning','⚠ Attention','#FFD000 / #2B2300'],['btn-read','↻ Read / Refresh','#00BFFF / #052139'],['btn-update','Edit / Update','#7040D9 / #FFFFFF'],['btn-neutral','Cancel / Neutral','#263A50 / #E8F2FF']];
       return `<section class="electric-guide"><div class="guide-title"><div><div class="eyebrow muted">Electric Glass / shared semantic layer</div><h3>Dimensional glass. Unmistakable actions.</h3><p class="electric-guidance">This layer applies to every shell, material look and application guide. Action semantics override decorative accents. Darkened red/violet fills preserve white-label contrast; reference hues remain explicit below. All actions are local simulation.</p></div>${print?'':'<button class="btn-update" data-action="export-style-guide">Export Style Guide to PDF</button>'}</div><div class="electric-specimens">${controls.map(([cls,label,colors])=>`<div class="electric-sample"><small>${colors}</small><button class="${cls}" data-specimen="${label} Electric Glass">${label}</button></div>`).join('')}</div><p>Reference negative: #F23545; filled white-label negative: #D91F35. Reference configuration: #8B5CF6; filled white-label configuration: #7040D9. Positive green #00D96C, warning yellow #FFD000, and read cyan #00BFFF use dark ink. Status text may use a lighter red or green on dark surfaces to preserve readability; symbol, label and saturated edge remain semantic.</p><div class="electric-row"><button class="btn-read" data-specimen="Default read">Default</button><button class="btn-read electric-force-hover" data-specimen="Hover read">Hover specimen</button><button class="btn-read force-focus" data-specimen="Focused read">Focus specimen</button><button class="btn-read electric-force-pressed" data-specimen="Pressed read">Pressed specimen</button><button class="btn-join" disabled>Join unavailable</button><button class="btn-leave" disabled>Leave unavailable</button><button class="btn-read" disabled aria-busy="true">Working…</button><button class="btn-update" data-outcome="success" data-specimen="Update success">✓ Updated</button><button class="btn-update" data-outcome="error" data-specimen="Update error">× Update failed</button></div><table class="guide-table"><thead><tr><th>Property</th><th>Implemented rule</th></tr></thead><tbody><tr><th>Surface / blur</th><td>Opaque navy #132338 / #142236 fallbacks. Supported browsers add #172C42BA (73%) panel fill and 14px blur; headers use #2B4560B5 (71%) and 14px blur; raised cards use #233B52C7 (78%) and 10px blur.</td></tr><tr><th>Edges / elevation</th><td>1px cool glass edges, a faint inset top reflection, recessed application wells and forms, and soft exterior shadows. Focused panels use cyan boundaries rather than health colors. No heavy map overlay or animated glow.</td></tr><tr><th>Hover / focus / press</th><td>Hover changes the semantic fill and elevation. Keyboard focus uses a 3px light ring offset by 4px. Pressed uses a 1px movement and inset shadow. Selection remains separate and non-red.</td></tr><tr><th>Disabled / loading</th><td>Neutral opaque gray fill, dashed border, subtle hatch and native lockout replace the active semantic color. Loading also says Working… and exposes aria-busy. A disabled green/red action cannot look active.</td></tr><tr><th>Alignment</th><td>Green In Alignment; saturated yellow Out of Alignment; red validation/update failure with explanation. Synthetic thresholds: azimuth ±2°, elevation/roll ±1°. Legal input ranges remain separate: azimuth/roll ±180°, elevation ±90°.</td></tr><tr><th>Tables / diagrams</th><td>Glass table rows and cyan selected-row marker. Group rings use category colors. Health uses green/yellow/red. Display and BLOS link graphs are separate; optional BLOS overlay is dashed violet with its own legend.</td></tr><tr><th>Regional Earth</th><td>Perspective textured 3D sphere rendered in Canvas 2D, with a vector interaction overlay. Approximate fictional SE US/Gulf coordinates, sparse local graphs, per-view cameras and Reset to Network. No RF range/feasibility or live Earth conditions are implied.</td></tr></tbody></table><p>Earth texture: <a href="https://www.solarsystemscope.com/textures/">Solar System Scope / INOVE / Earth Day Map</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Embedded from the 8K JPEG, sampled at 4096×2048, then perspective-projected and shaded locally. This is a real geographic texture with illustrative lighting; it is not a live satellite or terrain model.</p></section>`;
     }
-    function styleGuide(print=false){return (print?'':guideTopics())+electricStyleDefinition(print)+(integrated.guideTopic==='shell'?baseStyleGuide(print):applicationStyleGuide(print));}
+    function whiteTrimStyleDefinition(){
+      return `<section class="white-trim-guide"><div class="eyebrow muted">Electric Glass – White Trim / material definition</div><h3>Silver structure. Dark working surfaces. Vivid actions.</h3><p>Fine white trim outlines the SCOPE shell, glass panels, navigation frames and separate application windows. Active split panes and focused Mosaic panes use brighter trim. White is a structural/selection cue, not success, warning or error. Existing green, red, yellow, cyan and violet controls are preserved.</p><div class="guide-swatches">${[['Shell trim','#DAE5F3','77% opacity / #DAE5F3C4'],['Panel trim','#CBD7E7','36% opacity / #CBD7E75C'],['Active edge','#FAFCFF','100% edge; 14% outer line'],['Top reflection','#F2F8FF','60% opacity / #F2F8FF99']].map(([name,color,note])=>`<div class="guide-swatch"><i style="--swatch:${color}"></i>${name}<code>${color}</code><span>${note}</span></div>`).join('')}</div><div class="white-trim-sample"><div class="eyebrow">Structural trim reference / static specimen</div><div class="white-trim-sample-inner" style="margin-top:14px"><strong>Active application surface</strong><p>Bright fine edge, dark interior and a restrained upper reflection.</p><div class="electric-specimens"><button class="btn-join" data-specimen="White Trim join reference">+ Join</button><button class="btn-leave" data-specimen="White Trim leave reference">− Leave</button><button class="btn-warning" data-specimen="White Trim warning reference">⚠ Alignment warning</button><button class="btn-read" data-specimen="White Trim read reference">Read</button><button class="btn-update" data-specimen="White Trim update reference">Update</button></div></div></div><table class="guide-table"><thead><tr><th>Structure</th><th>Implemented styling</th></tr></thead><tbody><tr><th>Main shell</th><td>1px silver perimeter, 1px inset upper highlight, dark exterior shadow and only 3% opacity white illumination over 18px.</td></tr><tr><th>Panels / navigation</th><td>Fine silver boundaries, low-opacity top and bottom edge reflections. The existing glass blur, opaque fallbacks and recessed interiors remain in place.</td></tr><tr><th>Active pane / selected navigation</th><td>Brighter #FAFCFF edge and subtle inset reflection. Active-window trim is independent of green/red status; application identity icons and semantic button fills retain their colors.</td></tr><tr><th>Scope</th><td>Opt-in only. Works with Aperture, Mosaic, Portal, Command Deck, single/split layouts and detached application windows. No data, camera, connectivity or application behavior changes.</td></tr><tr><th>Print</th><td>Original screen HEX/opacity values are listed. Paper-friendly guide ink is used; the dark trim reference remains dark so its white edges can be inspected. Enable background graphics when saving PDF.</td></tr></tbody></table></section>`;
+    }
+    function styleGuide(print=false){return (print?'':guideTopics())+electricStyleDefinition(print)+(state.look==='white-trim'?whiteTrimStyleDefinition():'')+(integrated.guideTopic==='shell'?baseStyleGuide(print):applicationStyleGuide(print));}
     applicationGuideContent.display.philosophy='A textured perspective 3D Earth with a regional fictional network, sparse separate link layers and explicit camera controls.';
     applicationGuideContent.display.layout='Globe and Node Inventory tabs. The initial perspective view centers the southeastern US/Gulf sample region; Reset to Network restores it in full-width and split panels. Full Earth exposes the globe, while rotation, tilt and zoom remain available.';
     applicationGuideContent.display.interaction='Selecting a node highlights only its associated Display links and optional BLOS-overlay links. Other links dim. Camera, labels, connection visibility and overlay stay per view. Full Earth and regional reset are explicit actions; selection does not move the camera. The Center selected control is separate.';
