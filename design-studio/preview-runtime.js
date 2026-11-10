@@ -66,7 +66,27 @@
     // Navigation changes retain the engine's per-slot draft/view maps and application stores.
     if((navChanged||modeChanged)&&application&&!detachedContext){selectApp(application);if(integrated.mode==='split'&&rightApplication)selectApp(rightApplication,true);}
     document.body.dataset.scopeDesign='true';document.body.dataset.look=preset.engineLook;
-    style.textContent=core.compileCSS(next);
+    
+    const isNewElectricGlassTheme =
+      preset.engineLook === 'white-trim' &&
+      !looks.some(look => look.id === next.theme);
+
+    const effectiveDesign = isNewElectricGlassTheme
+      ? {
+          ...next,
+          colors: {
+            ...preset.colors,
+            ...next.colors
+          },
+          material: {
+            ...preset.material,
+            ...next.material
+          }
+        }
+      : next;
+
+    style.textContent = core.compileCSS(effectiveDesign);
+
     if(redraw)render(); // Theme/token-only edits do not replace application DOM.
     setUIDetails(options.presentation?true:next.detailsVisible,false);decorate();
   }
