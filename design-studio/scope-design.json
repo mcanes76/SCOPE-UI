@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "name": "TestDesignB",
+  "navigation": "deck",
+  "theme": "white-trim",
+  "colors": {
+    "background": "#182030",
+    "navigation": "#1B3046",
+    "border": "#EBFB04"
+  },
+  "material": {
+    "opacity": 0.76,
+    "radius": 15,
+    "borderWidth": 1.5
+  },
+  "typography": {
+    "family": "Segoe UI",
+    "baseSize": 16,
+    "headingSize": 27,
+    "weight": 600,
+    "density": "spacious",
+    "spacing": 23
+  },
+  "layout": {
+    "mode": "single",
+    "navWidth": 213,
+    "contextWidth": 250,
+    "contextVisible": true,
+    "headerVisible": true,
+    "footerVisible": true,
+    "workspacePadding": 10,
+    "panelGap": 15,
+    "headerHeight": 67
+  },
+  "regions": {},
+  "detailsVisible": true,
+  "notes": {
+    "navigation": "",
+    "theme": "",
+    "colors": "",
+    "typography": "",
+    "layout": "",
+    "review": ""
+  }
+}
+}
