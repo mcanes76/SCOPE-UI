@@ -1,12 +1,485 @@
 {
   "schemaVersion": 1,
   "presets": [
-    { "id": "electric-glass", "name": "Electric Glass", "engineLook": "white-trim", "description": "Navy glass, silver structure and vivid operational controls.", "colors": { "background": "#070C16", "header": "#162A3E", "navigation": "#182E45", "workspace": "#101C2C", "panel": "#23364C", "accent": "#38E8F2", "text": "#E7EDF5", "border": "#DAE5F3" }, "material": { "borderWidth": 1, "radius": 22, "opacity": 0.82, "blur": 18 }, "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 24, "weight": 500, "density": "comfortable", "spacing": 16 } },
-    { "id": "prism", "name": "Prism Glass", "engineLook": "prism", "description": "Cool white acrylic frost with luminous edges.", "colors": { "background": "#080D18", "header": "#202D3D", "navigation": "#2D3B4E", "workspace": "#101C2C", "panel": "#2D3B4E", "accent": "#38E8F2", "text": "#E7EDF5", "border": "#9CAFC3" }, "material": { "borderWidth": 1, "radius": 22, "opacity": 0.72, "blur": 18 }, "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 24, "weight": 500, "density": "comfortable", "spacing": 16 } },
-    { "id": "nocturne", "name": "Nocturne Ink", "engineLook": "nocturne", "description": "Violet frame, capsule navigation and near-black wells.", "colors": { "background": "#100D1B", "header": "#18141F", "navigation": "#32283E", "workspace": "#100D1B", "panel": "#32283E", "accent": "#C4A4FF", "text": "#E7EDF5", "border": "#91849F" }, "material": { "borderWidth": 1, "radius": 28, "opacity": 0.96, "blur": 0 }, "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 26, "weight": 500, "density": "comfortable", "spacing": 18 } },
-    { "id": "carbon", "name": "Carbon Cobalt", "engineLook": "carbon", "description": "Crisp graphite planes and solid cobalt navigation.", "colors": { "background": "#111927", "header": "#192536", "navigation": "#2B3B50", "workspace": "#111927", "panel": "#2B3B50", "accent": "#82B2FF", "text": "#E7EDF5", "border": "#8194AD" }, "material": { "borderWidth": 1, "radius": 7, "opacity": 0.98, "blur": 0 }, "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 24, "weight": 500, "density": "compact", "spacing": 12 } },
-    { "id": "spectrum", "name": "Spectrum Blocks", "engineLook": "spectrum", "description": "Color-filled bands and rounded application medallions.", "colors": { "background": "#0E152B", "header": "#1C2541", "navigation": "#303D59", "workspace": "#0E152B", "panel": "#303D59", "accent": "#38E8F2", "text": "#E7EDF5", "border": "#8292B4" }, "material": { "borderWidth": 1, "radius": 18, "opacity": 0.98, "blur": 0 }, "typography": { "family": "Trebuchet MS", "baseSize": 15, "headingSize": 26, "weight": 500, "density": "spacious", "spacing": 20 } },
-    { "id": "frosted-white", "name": "Frosted White", "engineLook": "prism", "description": "Alias of the existing frosted-white Prism material.", "colors": { "background": "#080D18", "header": "#202D3D", "navigation": "#2D3B4E", "workspace": "#101C2C", "panel": "#2D3B4E", "accent": "#38E8F2", "text": "#E7EDF5", "border": "#9CAFC3" }, "material": { "borderWidth": 1, "radius": 22, "opacity": 0.72, "blur": 18 }, "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 24, "weight": 500, "density": "comfortable", "spacing": 16 } },
-    { "id": "white-trim", "name": "Electric Glass – White Trim", "engineLook": "white-trim", "description": "The existing Electric Glass silver-edge treatment, preserved.", "colors": { "background": "#070C16", "header": "#162A3E", "navigation": "#182E45", "workspace": "#101C2C", "panel": "#23364C", "accent": "#38E8F2", "text": "#E7EDF5", "border": "#DAE5F3" }, "material": { "borderWidth": 1, "radius": 22, "opacity": 0.82, "blur": 18 }, "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 24, "weight": 500, "density": "comfortable", "spacing": 16 } }
+    {
+      "id": "electric-glass",
+      "name": "Electric Glass",
+      "engineLook": "white-trim",
+      "description": "Navy glass, silver structure and vivid operational controls.",
+      "colors": {
+        "background": "#070C16",
+        "header": "#162A3E",
+        "navigation": "#182E45",
+        "workspace": "#101C2C",
+        "panel": "#23364C",
+        "accent": "#38E8F2",
+        "text": "#E7EDF5",
+        "border": "#DAE5F3"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.82,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "prism",
+      "name": "Prism Glass",
+      "engineLook": "prism",
+      "description": "Cool white acrylic frost with luminous edges.",
+      "colors": {
+        "background": "#080D18",
+        "header": "#202D3D",
+        "navigation": "#2D3B4E",
+        "workspace": "#101C2C",
+        "panel": "#2D3B4E",
+        "accent": "#38E8F2",
+        "text": "#E7EDF5",
+        "border": "#9CAFC3"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.72,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "nocturne",
+      "name": "Nocturne Ink",
+      "engineLook": "nocturne",
+      "description": "Violet frame, capsule navigation and near-black wells.",
+      "colors": {
+        "background": "#100D1B",
+        "header": "#18141F",
+        "navigation": "#32283E",
+        "workspace": "#100D1B",
+        "panel": "#32283E",
+        "accent": "#C4A4FF",
+        "text": "#E7EDF5",
+        "border": "#91849F"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 28,
+        "opacity": 0.96,
+        "blur": 0
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 26,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 18
+      }
+    },
+    {
+      "id": "carbon",
+      "name": "Carbon Cobalt",
+      "engineLook": "carbon",
+      "description": "Crisp graphite planes and solid cobalt navigation.",
+      "colors": {
+        "background": "#111927",
+        "header": "#192536",
+        "navigation": "#2B3B50",
+        "workspace": "#111927",
+        "panel": "#2B3B50",
+        "accent": "#82B2FF",
+        "text": "#E7EDF5",
+        "border": "#8194AD"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 7,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "compact",
+        "spacing": 12
+      }
+    },
+    {
+      "id": "spectrum",
+      "name": "Spectrum Blocks",
+      "engineLook": "spectrum",
+      "description": "Color-filled bands and rounded application medallions.",
+      "colors": {
+        "background": "#0E152B",
+        "header": "#1C2541",
+        "navigation": "#303D59",
+        "workspace": "#0E152B",
+        "panel": "#303D59",
+        "accent": "#38E8F2",
+        "text": "#E7EDF5",
+        "border": "#8292B4"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 18,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Trebuchet MS",
+        "baseSize": 15,
+        "headingSize": 26,
+        "weight": 500,
+        "density": "spacious",
+        "spacing": 20
+      }
+    },
+    {
+      "id": "frosted-white",
+      "name": "Frosted White",
+      "engineLook": "prism",
+      "description": "Alias of the existing frosted-white Prism material.",
+      "colors": {
+        "background": "#080D18",
+        "header": "#202D3D",
+        "navigation": "#2D3B4E",
+        "workspace": "#101C2C",
+        "panel": "#2D3B4E",
+        "accent": "#38E8F2",
+        "text": "#E7EDF5",
+        "border": "#9CAFC3"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.72,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "white-trim",
+      "name": "Electric Glass – White Trim",
+      "engineLook": "white-trim",
+      "description": "The existing Electric Glass silver-edge treatment, preserved.",
+      "colors": {
+        "background": "#070C16",
+        "header": "#162A3E",
+        "navigation": "#182E45",
+        "workspace": "#101C2C",
+        "panel": "#23364C",
+        "accent": "#38E8F2",
+        "text": "#E7EDF5",
+        "border": "#DAE5F3"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.82,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-steel",
+      "name": "Electric Steel",
+      "engineLook": "white-trim",
+      "description": "Mission Control-inspired steel blue through frosted silver-edged glass.",
+      "colors": {
+        "background": "#0D141E",
+        "header": "#1A293B",
+        "navigation": "#20364A",
+        "workspace": "#111F30",
+        "panel": "#2B4056",
+        "accent": "#82B9D6",
+        "text": "#E7EDF5",
+        "border": "#CDDDEA"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 18,
+        "opacity": 0.8,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-teal",
+      "name": "Electric Teal",
+      "engineLook": "white-trim",
+      "description": "Modern Engineering-inspired teal glass with luminous pale trim.",
+      "colors": {
+        "background": "#0D171B",
+        "header": "#193037",
+        "navigation": "#1D3B42",
+        "workspace": "#13252A",
+        "panel": "#29464B",
+        "accent": "#8FC9BC",
+        "text": "#E8F4F3",
+        "border": "#D2E8E3"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.78,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-violet",
+      "name": "Electric Violet",
+      "engineLook": "white-trim",
+      "description": "Lavender-tinted frosted windows with restrained electric highlights.",
+      "colors": {
+        "background": "#11101E",
+        "header": "#241E37",
+        "navigation": "#302843",
+        "workspace": "#1B1930",
+        "panel": "#403653",
+        "accent": "#B7A2E3",
+        "text": "#F0EBFA",
+        "border": "#E4DDF6"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.78,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-olive",
+      "name": "Electric Olive",
+      "engineLook": "white-trim",
+      "description": "Tactical olive-gray glass with cool white edge reflections.",
+      "colors": {
+        "background": "#111813",
+        "header": "#242D25",
+        "navigation": "#303D32",
+        "workspace": "#1B281F",
+        "panel": "#3A493D",
+        "accent": "#B9C59A",
+        "text": "#EFF3E8",
+        "border": "#D7E3CD"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 16,
+        "opacity": 0.82,
+        "blur": 16
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-amber",
+      "name": "Electric Amber",
+      "engineLook": "white-trim",
+      "description": "Industrial amber-bronze glass, while warning indicators remain semantic.",
+      "colors": {
+        "background": "#19150F",
+        "header": "#32291E",
+        "navigation": "#403323",
+        "workspace": "#292218",
+        "panel": "#50412E",
+        "accent": "#E4BD7B",
+        "text": "#F9F0E1",
+        "border": "#EEDCC0"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 18,
+        "opacity": 0.82,
+        "blur": 16
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-indigo",
+      "name": "Electric Indigo",
+      "engineLook": "white-trim",
+      "description": "Command Center-inspired indigo frost with bright silver highlights.",
+      "colors": {
+        "background": "#0F1325",
+        "header": "#202B48",
+        "navigation": "#26375A",
+        "workspace": "#171F36",
+        "panel": "#344669",
+        "accent": "#9BAFE5",
+        "text": "#ECF0FC",
+        "border": "#DCE4FA"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.8,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-cyan",
+      "name": "Electric Cyan",
+      "engineLook": "white-trim",
+      "description": "Precision and Hybrid-inspired cyan-blue frosted instrument glass.",
+      "colors": {
+        "background": "#0B171D",
+        "header": "#1A303D",
+        "navigation": "#203A46",
+        "workspace": "#122632",
+        "panel": "#2B4653",
+        "accent": "#94CCD1",
+        "text": "#E6F7F8",
+        "border": "#D7ECEF"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 18,
+        "opacity": 0.8,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-green",
+      "name": "Electric Green",
+      "engineLook": "white-trim",
+      "description": "Adaptive-inspired muted sage green glass with near-white trim.",
+      "colors": {
+        "background": "#0D1916",
+        "header": "#1E332C",
+        "navigation": "#284238",
+        "workspace": "#172B25",
+        "panel": "#354E43",
+        "accent": "#A5CCAE",
+        "text": "#EDF6EF",
+        "border": "#D9EADD"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 22,
+        "opacity": 0.78,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "electric-slate",
+      "name": "Electric Slate",
+      "engineLook": "white-trim",
+      "description": "Minimal Dark-inspired neutral graphite glass and quiet white trim.",
+      "colors": {
+        "background": "#11171C",
+        "header": "#222C35",
+        "navigation": "#2A3742",
+        "workspace": "#18232C",
+        "panel": "#394650",
+        "accent": "#C0C8CE",
+        "text": "#EFF2F5",
+        "border": "#DFE6EC"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 18,
+        "opacity": 0.8,
+        "blur": 18
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    }
   ]
 }
