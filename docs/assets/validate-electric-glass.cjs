@@ -5,15 +5,19 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'../..');
 const html=fs.readFileSync(path.join(root,'mockups/scope-integrated-electric-glass.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'mockups/styles.css'),'utf8');
 const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];new vm.Script(script);
-assert(!/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(/.test(script));
-assert(!/<(?:script|link|img)[^>]+(?:src|href)=/i.test(html));
+assert(!/\b(?:XMLHttpRequest|WebSocket|EventSource)\s*\(/.test(script));
+assert.equal((script.match(/\bfetch\s*\(/g)||[]).length,1,'Only the presentation JSON loader may fetch');
+assert(script.includes("fetch(new URL('params.json',window.location.href)"));
+assert(html.includes('<link rel="stylesheet" href="styles.css">'));assert(!html.includes('<style>'));
+assert(css.includes('object-fit:contain'));assert(css.includes('body[data-ui-details="hidden"] [data-demo-host]>:not(.app-tabs)'));
 const elements=new Map(),listeners={},windowEvents={},timers=[],hosts=new Map();
 class Element {
   constructor(id=''){this.id=id;this.dataset={};this.attrs={};this.innerHTML='';this.textContent='';this.value='';this.checked=false;this.disabled=false;this.open=false;this.isConnected=true;this.events={};this.tagName='BUTTON';this.classList={add(){},remove(){},toggle(){}};}
   setAttribute(k,v){this.attrs[k]=String(v);}getAttribute(k){return this.attrs[k];}removeAttribute(k){delete this.attrs[k];}
   focus(){document.activeElement=this;}remove(){}setSelectionRange(){}
-  closest(selector){if(selector==='[data-demo-action]')return this.dataset.demoAction?this:null;if(selector==='g[data-demo-action]')return this.tagName==='g'&&this.dataset.demoAction?this:null;if(selector==='[data-demo-host]')return null;if(selector==='[role="tab"]')return this.attrs.role==='tab'?this:null;return selector==='button'&&this.tagName!=='BUTTON'?null:this;}
+  closest(selector){if(selector==='[data-ui-details-toggle]')return this.dataset.uiDetailsToggle!==undefined?this:null;if(selector==='[data-demo-action]')return this.dataset.demoAction?this:null;if(selector==='g[data-demo-action]')return this.tagName==='g'&&this.dataset.demoAction?this:null;if(selector==='[data-demo-host]')return null;if(selector==='[role="tab"]')return this.attrs.role==='tab'?this:null;return selector==='button'&&this.tagName!=='BUTTON'?null:this;}
   addEventListener(k,fn){this.events[k]=fn;}querySelectorAll(){return [];}
   showModal(){this.open=true;}close(){this.open=false;this.events.close?.();}
 }
@@ -38,8 +42,9 @@ const document={body:{dataset:{}},activeElement:null,title:'',
   getElementById(id){return get(id);},addEventListener(k,fn){(listeners[k]??=[]).push(fn);}
 };
 let selectedInitialNodes=[],printed='';
+const parentReference={testParent:true};
 const window={location:{href:'file:///C:/REPO/SCOPE-UI/mockups/scope-integrated-electric-glass.html'},screen:{availWidth:1920,availHeight:1080},
-  addEventListener(k,fn){windowEvents[k]=fn;},print(){windowEvents.beforeprint?.();printed=get('print-guide').innerHTML;windowEvents.afterprint?.();},open(){return null;},close(){},opener:null};
+  addEventListener(k,fn){windowEvents[k]=fn;},print(){windowEvents.beforeprint?.();printed=get('print-guide').innerHTML;windowEvents.afterprint?.();},open(){return null;},close(){},opener:parentReference};
 const context=vm.createContext({document,window,URL,setTimeout:fn=>timers.push(fn)});
 vm.runInContext(script,context);
 const run=code=>vm.runInContext(code,context);
@@ -111,7 +116,7 @@ const oldCamera=run("JSON.stringify({yaw:demoView('right',1).yaw,pitch:demoView(
 assert(run("BLOSModule.groups(demoView('left',0),'left')").includes('btn-join'));assert(run("BLOSModule.groups(demoView('left',0),'left')").includes('btn-leave'));
 assert(run("CalibrationModule.render({...CalibrationModule.createView(),sensor:'S2'},'sample')").includes('Out of Alignment'));
 assert.equal(run("demoAlignmentStatus(DemoSensorStore.get('S1')).code"),'ready');
-for(const variant of ['btn-enable','btn-join','btn-leave','btn-disable','btn-read','btn-update','btn-warning','btn-neutral'])assert(html.includes(variant));
+for(const variant of ['btn-enable','btn-join','btn-leave','btn-disable','btn-read','btn-update','btn-warning','btn-neutral'])assert(css.includes(variant));
 function luminance(hex){const c=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];}
 function contrast(a,b){const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
 function highlight(hex){return '#'+hex.slice(1).match(/../g).map(x=>Math.round(parseInt(x,16)+(255-parseInt(x,16))*23/255).toString(16).padStart(2,'0')).join('');}
@@ -157,3 +162,63 @@ assert(get('exploration').innerHTML.includes('Display'));
 run('detachedContext=null;');window.location.href=previousHref;delete document.body.dataset.detached;
 assert(!/[^\S\r\n]+\r?$/m.test(html),'No trailing whitespace');
 console.log(JSON.stringify({syntax:'pass',dataContracts:'pass',groupCreateJoinLeave:'pass',separateTopologyLinks:'pass',panelStateIsolation:'pass',sameAppDataSynchronization:'pass',globeControls:'pass',calibrationReadUpdateCancelValidation:'pass',staleEditProtection:'pass',nativeLOS:'pass',minimumSemanticButtonContrast:actionContrast.toFixed(2),regionalNodes:10,independentConnectivityModels:'pass',regionalReset:'pass',projectionRoundTrips:'pass',generatedViews:views,exportedGuideFragments:guides,browserRendering:'not tested; controlled fixtures do not verify browser UI, native focus, PDF pagination or pop-ups'},null,2));
+
+(async()=>{
+  assert.equal(run('presentation.detailsVisible'),true);
+  const savedView=run("JSON.stringify([...demoViews])"),savedData=run('JSON.stringify([DemoMulticastGroupStore.list(),DemoSensorStore.list(),DemoLOSStore.get()])');
+  click({uiDetailsToggle:''});assert.equal(document.body.dataset.uiDetails,'hidden');
+  assert.equal(run("JSON.stringify([...demoViews])"),savedView);assert.equal(run('JSON.stringify([DemoMulticastGroupStore.list(),DemoSensorStore.list(),DemoLOSStore.get()])'),savedData);
+  assert.equal(new URL(run('appWindowURL(1)')).searchParams.get('uiDetails'),'0');
+  click({uiDetailsToggle:''});assert.equal(document.body.dataset.uiDetails,'shown');assert.equal(run("JSON.stringify([...demoViews])"),savedView);
+  const posted=[];context.detailWindow={closed:false,postMessage:data=>posted.push(data)};run('appWindows.set(0,detailWindow);setUIDetails(false);');assert.equal(posted[0].visible,false);run('appWindows.clear();setUIDetails(true);detachedContext={app:0};');
+  const detailMessage={type:'scope-ui-details',version:1,visible:false};
+  windowEvents.message({source:{},origin:'null',data:detailMessage});assert.equal(run('presentation.detailsVisible'),true);
+  windowEvents.message({source:parentReference,origin:'https://example.invalid',data:detailMessage});assert.equal(run('presentation.detailsVisible'),true);
+  windowEvents.message({source:parentReference,origin:'null',data:detailMessage});assert.equal(run('presentation.detailsVisible'),false);
+  run('setUIDetails(true,false);detachedContext=null;');
+  const logo=new Element();run('handleConfiguredLogoError')(logo);assert.equal(logo.src,'assets/scope-logo.svg');run('handleConfiguredLogoError')(logo);assert.equal(logo.hidden,true);
+  assert.equal(run("normalizePresentationConfig({logoPath:'javascript:alert(1)'}).logoPath"),'assets/logo.png');
+  assert.equal(run("normalizePresentationConfig({applications:{blos:{name:7}}}).applications.blos.name"),'BLOS');
+  const png=fs.readFileSync(path.join(root,'mockups/assets/logo.png'));assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+  assert(fs.readFileSync(path.join(root,'mockups/assets/scope-logo.svg'),'utf8').includes('viewBox="0 0 128 128"'));
+  let requests=0,requestedURL='';
+  context.fetch=async url=>{requests++;requestedURL=String(url);return {ok:true,json:async()=>({
+    branding:{name:'ATLAS',title:'ATLAS / Demo'},logoPath:'assets/company.png',
+    applications:{blos:{name:'Relay & Groups',tabs:{groups:'Teams',discovery:'New nodes',topology:'Connections'}},display:{name:'Map <Lab>',tabs:{globe:'World view',nodes:'Locations'}},los:{name:'Local App'}},
+    labels:{shells:{aperture:'Focus Frame'},views:{workspace:'Work Area'}}
+  })};};
+  window.location.href='file:///C:/REPO/SCOPE-UI/mockups/scope-integrated-electric-glass.html';assert.equal(await run('loadPresentationConfig()'),false);assert.equal(requests,0,'file:// uses defaults without attempting restricted JSON fetch');
+  window.location.href='http://127.0.0.1:8000/mockups/scope-integrated-electric-glass.html?scopeWindow=1';
+  assert.equal(await run('loadPresentationConfig()'),true);assert.equal(new URL(requestedURL).pathname,'/mockups/params.json');
+  assert.deepEqual(Array.from(run('apps.map(app=>app.id)')),['blos','display','calibration','los']);assert.equal(run('apps[0].name'),'Relay & Groups');assert.equal(get('scope-brand-title').textContent,'ATLAS / Demo');
+  assert.equal(get('view-tab-workspace').textContent,'Work Area');assert.equal(run('concepts[0].name'),'Focus Frame');
+  assert(run("BLOSModule.render(demoView('left',0),'left')").includes('Teams'));
+  const displayHTML=run("DisplayModule.render(demoView('right',1),'right')");assert(displayHTML.includes('World view'));assert(displayHTML.includes('Relay &amp; Groups overlay'));assert(!displayHTML.includes('<Lab>'));
+  for(let shell=0;shell<4;shell++){
+    run(`state.concept=${shell};state.view='workspace';integrated.mode='single';state.aperture.active=0;state.deck.active=0;state.portal.active=0;state.portal.route='room';state.mosaic.panes=[0];render();`);
+    assert(get('concept-panel-'+shell).innerHTML.includes('Relay &amp; Groups'));
+    assert(get('concept-panel-'+shell).innerHTML.includes('assets/company.png'));
+  }
+  assert.equal(run('JSON.stringify([DemoMulticastGroupStore.list(),DemoSensorStore.list(),DemoLOSStore.get()])'),savedData,'Configuration cannot mutate application data');
+  run("integrated.guideTopic='display';state.view='guide';render();");assert(get('concept-panel-3').innerHTML.includes('Map &lt;Lab&gt;'));
+  context.fetch=async()=>({ok:false});assert.equal(await run('loadPresentationConfig()'),false);assert.equal(run('apps[0].name'),'Relay & Groups');
+  context.fetch=async()=>({ok:true,json:async()=>{throw Error('Invalid JSON');}});assert.equal(await run('loadPresentationConfig()'),false);
+  run('applyPresentationConfig(DefaultPresentationConfig);render();');assert.equal(run('apps[0].name'),'BLOS');
+  const params=JSON.parse(fs.readFileSync(path.join(root,'mockups/params.json'),'utf8'));assert.deepEqual(params,JSON.parse(run('JSON.stringify(DefaultPresentationConfig)')));
+  // Actual local HTTP requests verify the shipped files and the real fetch/JSON loader.
+  const http=require('node:http'),assets={
+    '/mockups/params.json':['mockups/params.json','application/json'],
+    '/mockups/styles.css':['mockups/styles.css','text/css'],
+    '/mockups/assets/logo.png':['mockups/assets/logo.png','image/png'],
+    '/mockups/assets/scope-logo.svg':['mockups/assets/scope-logo.svg','image/svg+xml'],
+    '/mockups/scope-integrated-electric-glass.html':['mockups/scope-integrated-electric-glass.html','text/html']
+  };
+  const server=http.createServer((request,response)=>{const asset=assets[new URL(request.url,'http://127.0.0.1').pathname];if(!asset){response.writeHead(404);response.end();return;}response.writeHead(200,{'Content-Type':asset[1]});response.end(fs.readFileSync(path.join(root,asset[0])));});
+  try{
+    await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+    const origin='http://127.0.0.1:'+server.address().port;context.fetch=(...args)=>globalThis.fetch(...args);window.location.href=origin+'/mockups/scope-integrated-electric-glass.html';
+    assert.equal(await run('loadPresentationConfig()'),true);assert.equal(run('apps[0].name'),params.applications.blos.name);
+    for(const [route,[relative,mime]] of Object.entries(assets)){const response=await fetch(origin+route);assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),mime);assert(Buffer.from(await response.arrayBuffer()).equals(fs.readFileSync(path.join(root,relative))));}
+  }finally{server.closeAllConnections?.();await new Promise(resolve=>server.close(resolve));}
+  console.log('Presentation passed: retained detail state, tracked-window synchronization/source checks, stable IDs, configurable escaped labels, JSON defaults/failures, PNG/SVG fallback, and real local HTTP loading of JSON/CSS/logo/HTML. Browser rendering remains untested.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

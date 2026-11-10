@@ -6,7 +6,9 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## Open the demonstrator
 
-The newest [Electric Glass Integrated Demo](mockups/scope-integrated-electric-glass.html) preserves the four applications, shell concepts, looks, split views and PDF-exportable style guides while adding saturated semantic action buttons, dimensional glass surfaces and explicit alignment-status panels. Its textured perspective Earth starts on ten fictional southeastern US/Gulf nodes. **Reset to Network** restores the regional camera; **Full Earth** and rotation/zoom expose the entire globe. Display and BLOS use independent sparse graphs; an optional dashed-violet BLOS overlay has its own legend. See [Electric Glass Notes](docs/SCOPE-Demo-Notes.html#electric-glass) for assumptions, embedded-image attribution and verification limits. The licensed Earth texture is embedded, so the file works offline and is larger than the earlier explorations.
+For the customizable Electric Glass mockup, see [Customizing Electric Glass](#customizing-electric-glass) below. Keep its HTML, `styles.css`, `params.json`, and `assets/` together.
+
+The newest [Electric Glass Integrated Demo](mockups/scope-integrated-electric-glass.html) preserves the four applications, shell concepts, looks, split views and PDF-exportable style guides while adding saturated semantic action buttons, dimensional glass surfaces and explicit alignment-status panels. Its textured perspective Earth starts on ten fictional southeastern US/Gulf nodes. **Reset to Network** restores the regional camera; **Full Earth** and rotation/zoom expose the entire globe. Display and BLOS use independent sparse graphs; an optional dashed-violet BLOS overlay has its own legend. See [Electric Glass Notes](docs/SCOPE-Demo-Notes.html#electric-glass) for assumptions, embedded-image attribution and verification limits. The licensed Earth texture remains embedded; the latest file uses sibling CSS, JSON and logo assets as described under Customizing Electric Glass below.
 
 The Electric Glass demo also offers **Electric Glass – White Trim** in its visual style selector. This fifth look adds fine silver/white shell and panel edges, brighter active-pane trim and restrained upper-edge reflections while preserving colored operational buttons and dark application interiors. It works across all four shells, single/split layouts and separate windows. Its material definition is included in every applicable **Style Guide → Export Style Guide to PDF** export. The other four looks remain available.
 
@@ -49,6 +51,9 @@ docs/
     validate-integrated-demo.cjs Integrated app contract/handler/guide validation
     validate-electric-glass.cjs Electric action, regional projection and regression checks
 mockups/
+  params.json                   Presentation labels, branding and logo path
+  styles.css                    Electric Glass styles and print rules
+  assets/                       Replaceable PNG logo and SVG fallback
   scope-integrated-electric-glass.html  Electric Glass, textured regional Earth and independent links
   scope-integrated-demo.html     Four simulated apps, split view and exportable style guides
   scope-ui-concepts.html         Complete offline HTML/CSS/JavaScript demonstrator
@@ -70,6 +75,29 @@ Read [Architecture](docs/SCOPE-UI-Documentation.html#architecture) for the recom
 
 Actual stackup contracts, embedding capability, authentication, display hardware and operational requirements remain unknown. Assessments are preliminary design judgments, not validated usability findings. No domain controls, real APIs, production security/session integration or backend availability checks are implemented.
 
+## Customizing Electric Glass
+
+The latest [Electric Glass mockup](mockups/scope-integrated-electric-glass.html) now uses these sibling files:
+
+- [params.json](mockups/params.json): application display names, internal tab labels, shell/view labels, SCOPE branding text and `logoPath`.
+- [styles.css](mockups/styles.css): the extracted stylesheet, including every existing material look, semantic action style and PDF print rule. Edit this file to adjust appearance.
+- [assets/logo.png](mockups/assets/logo.png): the default 128px transparent crosshair logo. Replace it with your own PNG without changing code. The image keeps its aspect ratio.
+- [assets/scope-logo.svg](mockups/assets/scope-logo.svg): the circular crosshair fallback, used automatically if the configured image fails to load.
+
+To rename BLOS, edit `applications.blos.name` in `params.json`. To rename its tabs, edit `applications.blos.tabs.groups`, `.discovery` and `.topology`. The stable IDs `blos`, `display`, `calibration` and `los`, and tab IDs such as `groups` or `globe`, must stay unchanged; labels do not control behavior. Changing an application's display name does not change its model or membership rules.
+
+Edit `branding.name` for shell wordmarks, and `branding.title`, `.eyebrow` and `.tagline` for the main header text. `labels.shells`, `labels.views` and `labels.laboratory` control navigation labels. Keep `logoPath` as `assets/logo.png`, or set another relative image path such as `assets/company.png`. Keep the SVG fallback file available.
+
+Serve the repository over local HTTP so JSON configuration can load:
+
+```bash
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:8000/mockups/scope-integrated-electric-glass.html`. Reload after editing configuration, images or CSS; use a hard refresh if an old logo remains cached. No build or framework is needed. Missing, invalid or partial configuration falls back to built-in defaults. Browser `file://` access may restrict JSON loading, so direct-file mode deliberately uses defaults; local CSS and default logo assets still work when the folder is kept intact.
+
+**Hide UI Details / Show UI Details** hides and restores application internals, laboratory details and secondary shell data without unmounting the apps. Application selection, internal tabs, drafts, cameras and model state are retained. Navigation, application names and layout containers remain visible. Style guides and PDF exports remain available. Tracked application windows receive the presentation setting; newly opened windows inherit it. No application data is shared through this presentation-only setting.
+
 ## Developer validation
 
 Optional, if Node.js is installed:
@@ -81,3 +109,5 @@ git status --short
 ```
 
 The script checks JavaScript syntax, generated tab/label relationships, shared handlers in a controlled DOM fixture, twelve concept-specific print fragments and token text contrast. It also checks the consolidated documentation's links, tab relationships, keyboard navigation, direct-link handling and print invocation. It is **not a browser renderer** and does not establish browser interaction, visual layout, accessibility conformance or actual PDF pagination. See [Validation](docs/SCOPE-UI-Documentation.html#validation) for performed checks and remaining manual review.
+
+Run `node docs/assets/validate-electric-glass.cjs` for the latest Electric Glass checks, including configuration defaults/renaming, retained detail state, PNG/SVG fallback, source-checked presentation messages, the existing application/guide regressions, and real loopback HTTP requests for the delivered HTML, JSON, CSS and logo assets. These checks still do not replace browser visual, focus or PDF review.
