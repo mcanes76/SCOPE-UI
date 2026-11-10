@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "Customer design",
+  "navigation": "aperture",
+  "theme": "electric-glass",
+  "colors": {},
+  "material": {},
+  "typography": { "family": "system-ui", "baseSize": 15, "headingSize": 24, "weight": 500, "density": "comfortable", "spacing": 16 },
+  "layout": { "mode": "single", "navWidth": 190, "contextWidth": 250, "contextVisible": true, "headerVisible": true, "footerVisible": true, "workspacePadding": 22, "panelGap": 16, "headerHeight": 76 },
+  "regions": {},
+  "detailsVisible": false,
+  "notes": { "navigation": "", "theme": "", "colors": "", "typography": "", "layout": "", "review": "" }
+}

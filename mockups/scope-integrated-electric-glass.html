@@ -1117,6 +1117,15 @@
     if(detachedContext)presentation.detailsVisible=new URL(window.location.href).searchParams.get('uiDetails')!=='0';
     render();updateDetailsControl();
     void loadPresentationConfig();
+    /* SCOPE_STUDIO_LOADER_START: opt-in adapter; ordinary mockups load no Studio code. */
+    if(new URL(window.location.href).searchParams.get('studio')==='1'){
+      (async()=>{
+        for(const file of ['design-core.js','preview-runtime.js','preview-bridge.js']){
+          await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='../design-studio/'+file;script.onload=resolve;script.onerror=reject;document.head.append(script);});
+        }
+      })().catch(()=>console.error('SCOPE Studio adapter could not load. Serve the repository root over HTTP.'));
+    }
+    /* SCOPE_STUDIO_LOADER_END */
 
 
 

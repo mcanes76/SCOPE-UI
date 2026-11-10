@@ -4,7 +4,21 @@ Design exploration and target architecture for a unified SCOPE operator console.
 
 The mockups use **simulated local data** and have no connection to operational systems. BLOS, Display, Sensor Calibration and Native LOS are abstract integration boundaries. The existing BLOS UI is not redesigned. This repository is not a production application or a phased implementation plan.
 
-## Open the demonstrator
+## SCOPE Design Studio
+
+Open [Design Studio](design-studio/index.html) over local HTTP to run a 15-minute customer design workshop around the existing Electric Glass engine. Guided mode covers navigation, material, colors, typography, layout and final review. Advanced mode adds a selectable shell tree, live property inspector, bounded Command Deck rail resizing and preview scaling. Final presentation reveals the simulated applications and hides editor panels.
+
+From the repository root run `python -m http.server 8080 --bind 127.0.0.1`, then visit `http://127.0.0.1:8080/design-studio/`. No build or package installation is required. Serve the repository root; `file://` does not support the Studio's JSON loading and authenticated iframe protocol.
+
+The new `design-studio/` directory separates shared state/schema and CSS compilation (`design-core.js`), workshop/editor (`studio.js`, `studio.css`, `index.html`), preview adapter (`preview-runtime.js`, `preview-bridge.js`), exports (`exports.js`), material defaults (`theme-presets.json`) and initial design (`design-config.json`). It reuses `mockups/params.json`, `styles.css` and logo assets. Rename applications/tab labels in `mockups/params.json`, keeping stable IDs; replace `mockups/assets/logo.png` or configure its relative `logoPath`. Missing logos fall back to the SVG crosshair and aspect ratios are preserved.
+
+Undo/redo tracks design changes; application operations remain independent. Save/restore Baseline and Candidate A/B/C, compare two candidates, record workshop notes, and export/import versioned design JSON. Checkpoints are session-only: export JSON before reloading. Other downloads include shell CSS overrides, a printable HTML decision summary, and a standalone final HTML mockup with CSS, configuration, logos, application code and Earth texture embedded. Application data starts fresh in exported and comparison previews.
+
+See the [complete Studio guide](design-studio/README.html) for the six-step workflow, editor ownership rules, configuration, exports, protocol, known limitations and future enhancements. Existing navigation rerenders retain model stores and per-slot view state, but transient focus/scroll/dialog state can reset when moving hosts. Appearance-only edits preserve application DOM. The Studio changes shell presentation; application internals remain protected. Current Chrome/Edge browser review remains necessary for native controls, layout, fullscreen and downloads when automation is unavailable.
+
+Run `node docs/assets/validate-design-studio.cjs` for the Studio checks, alongside the existing mockup validators. No earlier exploration has been replaced.
+
+## Existing demonstrators
 
 For the customizable Electric Glass mockup, see [Customizing Electric Glass](#customizing-electric-glass) below. Keep its HTML, `styles.css`, `params.json`, and `assets/` together.
 
