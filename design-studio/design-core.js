@@ -3,7 +3,24 @@
   'use strict';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const navigation=['aperture','mosaic','portal','deck'];
-  const themes=['electric-glass','prism','nocturne','carbon','spectrum','frosted-white','white-trim'];
+  const themes=[
+  'electric-glass',
+  'prism',
+  'nocturne',
+  'carbon',
+  'spectrum',
+  'frosted-white',
+  'white-trim',
+  'electric-steel',
+  'electric-teal',
+  'electric-violet',
+  'electric-olive',
+  'electric-amber',
+  'electric-indigo',
+  'electric-cyan',
+  'electric-green',
+  'electric-slate'
+];
   const regions={shell:'.shell',header:'.shell-top',branding:'.shell-brand',navigation:'.aperture-dock,.mosaic-layout>nav,.application-shelf,.portal-location,.directory-grid,.deck-nav',workspace:'.aperture-stage,.mosaic-board,.portal-directory,.portal-room,.deck-main,.integrated-panes',context:'.deck-rail',footer:'.owner-footer,.detached-note'};
   const bounds={borderWidth:[0,3],radius:[0,28],opacity:[0.6,0.98],blur:[0,28],padding:[0,40],gap:[8,28],width:[140,360],height:[56,112]};
   const defaults={schemaVersion:1,name:'Customer design',navigation:'aperture',theme:'electric-glass',colors:{},material:{},typography:{family:'system-ui',baseSize:15,headingSize:24,weight:500,density:'comfortable',spacing:16},layout:{mode:'single',navWidth:190,contextWidth:250,contextVisible:true,headerVisible:true,footerVisible:true,workspacePadding:22,panelGap:16,headerHeight:76},regions:{},detailsVisible:false,notes:{navigation:'',theme:'',colors:'',typography:'',layout:'',review:''}};
