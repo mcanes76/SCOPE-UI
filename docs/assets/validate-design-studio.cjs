@@ -26,15 +26,19 @@ const finalScripts=[...final.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m
 const malicious=C.clone(candidate);malicious.name='</script><img onerror="alert(1)">';malicious.notes.colors='<script>oops</script>';const summary=E.summary(malicious,presets,resources.params);assert(!summary.includes('<script>oops'));assert(summary.includes('&lt;script&gt;oops'));new vm.Script([...E.composeFinal(resources,malicious,presets).matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1]);
 
 // Reuse the baseline's proven application fixture, then run the real adapter against it.
-function engineFixture(exported=false){
+function engineFixture(exported=false,suppliedHTML=null){
+  const scripts=suppliedHTML?[...suppliedHTML.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]):finalScripts;
   const source=read('docs/assets/validate-electric-glass.cjs');let prefix=source.slice(0,source.indexOf('const run=code=>'));
   if(exported)prefix=prefix.replace('vm.runInContext(script,context);','vm.runInContext(testFinalScript,context);');
-  const fixture=new Function('require','__dirname','testFinalScript',prefix+'\nreturn {context,document,window,Element,elements,listeners};')(require,__dirname,finalScripts[0]);
+  const fixture=new Function('require','__dirname','testFinalScript',prefix+'\nreturn {context,document,window,Element,elements,listeners,windowEvents};')(require,__dirname,scripts[0]);
   const {context,document,window,Element}=fixture;document.head=new Element('head');document.head.append=function(el){fixture.elements.set('#'+el.id,el);};document.createElement=()=>new Element();
   Element.prototype.style={};Element.prototype.append=function(){};Element.prototype.hasAttribute=function(k){return k in this.attrs;};
   context.MutationObserver=class{observe(){}};context.requestAnimationFrame=fn=>fn();context.queueMicrotask=fn=>fn();window.parent={postMessage(){}};
   const run=code=>vm.runInContext(code,context);
-  run(resources.core);window.ScopeDesign=context.ScopeDesign;run(resources.runtime);if(exported)run(finalScripts.at(-1));
+  if(suppliedHTML){
+    context.location={href:'about:srcdoc'};context.parent=window.parent;context.URL=URL;context.Blob=Blob;context.fetch=()=>{throw Error('Offline engine attempted a request');};
+    for(const script of scripts.slice(1)){run(script);window.ScopeDesign=context.ScopeDesign;context.ScopePreviewRuntime=window.ScopePreviewRuntime;}
+  }else {run(resources.core);window.ScopeDesign=context.ScopeDesign;run(resources.runtime);if(exported)run(finalScripts.at(-1));}
   // VM globalThis and fixture window are distinct; browser globalThis === window.
   return {...fixture,run};
 }
@@ -69,7 +73,7 @@ const bridgeContext=vm.createContext({URL,location:{href:'http://127.0.0.1/mocku
 const valid={source:parent,origin:'http://127.0.0.1',data:{namespace:'scope-design-studio',version:1,channel:'abc',type:'configure',design:initial,presets,options:{}}};for(const mutate of [e=>e.source={},e=>e.origin='https://evil.invalid',e=>e.data.type='eval',e=>e.data.channel='wrong',e=>e.data.version=2,e=>e.data.namespace='other']){const e={...valid,data:{...valid.data}};mutate(e);handler(e);}assert.equal(applies,0);handler(valid);assert.equal(applies,1);
 
 // Real editor handlers with a minimal controlled DOM. Native rendering is deliberately excluded.
-async function editorFixture(){
+async function editorFixture(offlineAssets=null){
   const els=new Map(),events={};
   class Element{
     constructor(id=''){this.id=id;this.dataset={};this.value='';this.checked=false;this.disabled=false;this.hidden=false;this.style={};this.attrs={};this.children=[];this.files=[];this.innerHTML='';this.textContent='';this.events={};this.classList={toggle(){},add(){},remove(){}};this.contentWindow={postMessage(){}};}
@@ -78,6 +82,14 @@ async function editorFixture(){
   const get=id=>{if(!els.has(id))els.set(id,new Element(id));return els.get(id);};
   const document={body:new Element('body'),documentElement:new Element(),querySelector:s=>get(s.replace(/^#/,'')),querySelectorAll:()=>[],getElementById:get,createElement:()=>new Element(),addEventListener:(k,fn)=>events[k]=fn};
   const downloaded=[],context=vm.createContext({document,window:{addEventListener(){}},location:{origin:'http://127.0.0.1',href:'http://127.0.0.1/design-studio/'},crypto:{randomUUID:()=>Math.random().toString()},URL,ScopeDesign:C,ScopeExports:{...E,download:(...args)=>downloaded.push(args)},fetch:async url=>({ok:true,json:async()=>url==='theme-presets.json'?{presets}:url==='design-config.json'?initial:resources.params}),setTimeout:()=>0,clearTimeout(){},console});
+  let networkRequests=0;
+  if(offlineAssets){
+    context.location={origin:'null',href:'file:///customer/SCOPE-Design-Studio.html'};context.window.origin='null';context.Blob=Blob;
+    context.ScopeOfflineAssets=offlineAssets;context.window.ScopeOfflineAssets=offlineAssets;
+    context.fetch=()=>{networkRequests++;throw Error('Offline editor attempted a request');};
+    vm.runInContext(read('design-studio/exports.js'),context);context.ScopeExports.download=(...args)=>downloaded.push(args);
+    vm.runInContext(read('design-studio/offline.js'),context);
+  }
   let source=read('design-studio/studio.js');source=source.replace(/\}\)\(\);\s*$/,'globalThis.fixture={get store(){return store;},get mode(){return mode;},get step(){return step;},get presenting(){return presenting;},get region(){return region;}};})();');await vm.runInContext(source,context);
   const click=async(dataset={},id='')=>{const b=new Element(id);b.dataset=dataset;await events.click({target:b});};
   const input=(dataset,value,id='',type='range')=>{const el=new Element(id);el.dataset=dataset;el.value=value;el.type=type;el.checked=Boolean(value);events.input({target:el});};
@@ -91,6 +103,8 @@ async function editorFixture(){
   get('import-file').files=[{size:50,text:async()=>JSON.stringify(initial)}];await get('import-file').events.change({target:get('import-file')});assert.deepEqual(f.store.value,C.defaults);
   get('import-file').files=[{size:50,text:async()=>'{"schemaVersion":99}'}];await get('import-file').events.change({target:get('import-file')});assert.deepEqual(f.store.value,C.defaults);
   await click({action:'export-css'});assert(downloaded.at(-1)[0].includes('data-scope-design'));await click({action:'export-summary'});assert(downloaded.at(-1)[0].includes('Customer decisions'));
+  if(offlineAssets){await click({action:'export-final'});assert.equal(downloaded.at(-1)[1],'scope-final-mockup.html');assert(downloaded.at(-1)[0].includes(offlineAssets.resources.logo));assert.equal(networkRequests,0);assert(get('preview').srcdoc.includes('ScopeEmbeddedTransport'));assert(get('preview').attrs.sandbox.includes('allow-scripts'));assert(!get('preview').attrs.sandbox.includes('allow-same-origin'));}
+  return {context,get,downloaded};
 }
 async function servedResources(){
   const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(root,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.end(fs.readFileSync(file));}catch{res.writeHead(404).end();}});
@@ -98,4 +112,5 @@ async function servedResources(){
   try{const base='http://127.0.0.1:'+server.address().port;for(const asset of ['design-studio/','design-studio/studio.css','design-studio/studio.js','design-studio/design-core.js','design-studio/exports.js','design-studio/design-config.json','design-studio/theme-presets.json','design-studio/preview-runtime.js','design-studio/preview-bridge.js','mockups/scope-integrated-electric-glass.html','mockups/styles.css','mockups/params.json','mockups/assets/logo.png','mockups/assets/scope-logo.svg']){const response=await fetch(base+'/'+asset);assert.equal(response.status,200,asset);assert((await response.arrayBuffer()).byteLength>0);}}
   finally{await new Promise(resolve=>server.close(resolve));}
 }
-(async()=>{await editorFixture();await servedResources();console.log(JSON.stringify({syntax:'pass',validatedShellMaterialCombinations:combinations,stateHistoryCandidatesImport:'pass',constrainedDimensions:'pass',runtimeAppearanceDOMRetention:'pass',independentApplicationModels:'pass',previewAuthentication:'pass',guidedAdvancedPresentationHandlers:'pass',sixWorkshopNotes:'pass',standaloneResourcesAndScriptAssembly:'pass',realLocalHTTPResources:14,browserRendering:'not tested; no browser surface available. Native layout, dragging, fullscreen, downloads and Chrome/Edge review remain manual.'},null,2));})().catch(error=>{console.error(error);process.exitCode=1;});
+module.exports={editorFixture,engineFixture};
+if(require.main===module)(async()=>{await editorFixture();await servedResources();console.log(JSON.stringify({syntax:'pass',validatedShellMaterialCombinations:combinations,stateHistoryCandidatesImport:'pass',constrainedDimensions:'pass',runtimeAppearanceDOMRetention:'pass',independentApplicationModels:'pass',previewAuthentication:'pass',guidedAdvancedPresentationHandlers:'pass',sixWorkshopNotes:'pass',standaloneResourcesAndScriptAssembly:'pass',realLocalHTTPResources:14,browserRendering:'not tested; no browser surface available. Native layout, dragging, fullscreen, downloads and Chrome/Edge review remain manual.'},null,2));})().catch(error=>{console.error(error);process.exitCode=1;});

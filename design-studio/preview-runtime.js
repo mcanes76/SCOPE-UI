@@ -67,28 +67,10 @@
     if((navChanged||modeChanged)&&application&&!detachedContext){selectApp(application);if(integrated.mode==='split'&&rightApplication)selectApp(rightApplication,true);}
     document.body.dataset.scopeDesign='true';document.body.dataset.look=preset.engineLook;
     
-    const isNewElectricGlassTheme =
-      preset.engineLook === 'white-trim' &&
-      !looks.some(look => look.id === next.theme);
-
-    const effectiveDesign = isNewElectricGlassTheme
-      ? {
-          ...next,
-          colors: {
-            ...preset.colors,
-            ...next.colors
-          },
-          material: {
-            ...preset.material,
-            ...next.material
-          }
-        }
-      : next;
-
-    style.textContent = core.compileCSS(effectiveDesign);
+    style.textContent=core.compileCSS(core.effectiveDesign(next,preset));
 
     if(redraw)render(); // Theme/token-only edits do not replace application DOM.
     setUIDetails(options.presentation?true:next.detailsVisible,false);decorate();
   }
-  window.ScopePreviewRuntime={apply,onEvent(fn){callback=fn;},highlight(region){selected=region;decorate();}};
+  window.ScopePreviewRuntime={apply,snapshot(){return core.clone(design);},onEvent(fn){callback=fn;},highlight(region){selected=region;decorate();}};
 })();

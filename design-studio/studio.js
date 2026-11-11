@@ -5,10 +5,11 @@
   const regionNames={shell:'SCOPE Shell',header:'Header',branding:'Branding / Logo',navigation:'Navigation',workspace:'Main Workspace Container',context:'Context Rail',footer:'Footer / Status Area'};
   const navDescriptions={aperture:'One focused workspace; navigation on demand.',mosaic:'Concurrent applications on a spatial workbench.',portal:'Application directory leading to dedicated rooms.',deck:'Persistent navigation and a context rail.'};
   let presets=[],params={},store,mode='guided',step=0,region='shell',application='blos',rightApplication='display',presenting=false,priorMode='guided',noticeTimer;
-  const clients=new Map(),origin=location.origin;
+  const offline=window.ScopeOfflineRuntime;
+  const clients=new Map(),origin=offline?'null':location.origin;
   function notice(message,error=false){$('#notice').textContent=message;$('#notice').dataset.error=String(error);clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('#notice').textContent='',6500);}
-  function register(frame,design=null){const channel=crypto.randomUUID();clients.set(channel,{frame,design,ready:false});frame.src='../mockups/scope-integrated-electric-glass.html?studio=1&studioChannel='+encodeURIComponent(channel);return channel;}
-  function send(client,channel){if(!client.ready)return;client.frame.contentWindow.postMessage({namespace:'scope-design-studio',version:1,channel,type:'configure',design:client.design||store.value,presets,options:{editing:!client.design&&mode==='advanced'&&!presenting,region:client.design?'':region,application:client.design?'blos':application,rightApplication:client.design?'display':rightApplication,presentation:!client.design&&presenting}},origin);}
+  function register(frame,design=null){const channel=crypto.randomUUID();clients.set(channel,{frame,design,ready:false});if(offline)offline.preview(frame,channel);else frame.src='../mockups/scope-integrated-electric-glass.html?studio=1&studioChannel='+encodeURIComponent(channel);return channel;}
+  function send(client,channel){if(!client.ready)return;client.frame.contentWindow.postMessage({namespace:'scope-design-studio',version:1,channel,type:'configure',design:client.design||store.value,presets,options:{editing:!client.design&&mode==='advanced'&&!presenting,region:client.design?'':region,application:client.design?'blos':application,rightApplication:client.design?'display':rightApplication,presentation:!client.design&&presenting}},offline?'*':origin);}
   function sync(){for(const [channel,client] of clients)send(client,channel);}
   window.addEventListener('message',event=>{
     const m=event.data;if(event.origin!==origin||m?.namespace!=='scope-design-studio'||m.version!==1)return;
@@ -113,16 +114,16 @@
   $('#comparison').addEventListener('close',clearComparison);for(const id of ['compare-left','compare-right'])$('#'+id).addEventListener('change',renderComparison);
   $('#import-file').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>100000)throw Error('Configuration exceeds 100 KB');store.set(JSON.parse(await file.text()));renderControls();notice('Design imported. Application simulation state was retained.');}catch(error){notice('Import failed: '+error.message,true);}finally{event.target.value='';}});
   try{
-    if(origin==='null')throw Error('Open the Studio over HTTP. From the repository root run: python -m http.server 8080');
-    const results=await Promise.all(['theme-presets.json','design-config.json','../mockups/params.json'].map(async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Cannot load '+url);return r.json();}));
+    if(origin==='null'&&!offline)throw Error('Open the development Studio over HTTP, or double-click dist/SCOPE-Design-Studio.html.');
+    const results=offline?offline.configuration():await Promise.all(['theme-presets.json','design-config.json','../mockups/params.json'].map(async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Cannot load '+url);return r.json();}));
     [presets,,params]=[results[0].presets,results[1],results[2]];store=new C.DesignStore(results[1]);
     // Keep preset input under the same trusted schema as imported design tokens.
     for(const p of presets)C.validate({...C.defaults,theme:p.id,colors:p.colors,material:p.material,typography:p.typography});
     store.subscribe(()=>{sync();updateStatus();});
     $('#studio-brand').textContent=params.branding?.name||'SCOPE';document.title=(params.branding?.name||'SCOPE')+' Design Studio';
-    const logo=$('#studio-logo'),path=params.logoPath||'assets/logo.png';if(!/^(?:[a-z][a-z0-9+.-]*:|\/|\\)/i.test(path)&&!path.includes('\\'))logo.src=new URL(path,new URL('../mockups/',location.href)).href;logo.addEventListener('error',()=>{if(!logo.dataset.fallback){logo.dataset.fallback='1';logo.src='../mockups/assets/scope-logo.svg';}else logo.hidden=true;});
+    const logo=$('#studio-logo'),path=params.logoPath||'assets/logo.png';if(offline)logo.src=offline.logo;else if(!/^(?:[a-z][a-z0-9+.-]*:|\/|\\)/i.test(path)&&!path.includes('\\'))logo.src=new URL(path,new URL('../mockups/',location.href)).href;logo.addEventListener('error',()=>{if(!logo.dataset.fallback){logo.dataset.fallback='1';logo.src=offline?offline.fallback:'../mockups/assets/scope-logo.svg';}else logo.hidden=true;});
     for(const id of ['application','right-application'])$('#'+id).innerHTML=Object.entries(params.applications).map(([key,value])=>`<option value="${key}">${escape(value.name)}</option>`).join('');$('#right-application').value=rightApplication;
     renderControls();register($('#preview'));
-    setTimeout(()=>{if(![...clients.values()].some(c=>c.ready))notice('Preview not connected. Check that the repository root is served over HTTP.',true);},12000);
+    setTimeout(()=>{if(![...clients.values()].some(c=>c.ready))notice(offline?'Embedded preview did not connect. Reopen the complete generated HTML in Edge or Chrome.':'Preview not connected. Check that the repository root is served over HTTP.',true);},12000);
   }catch(error){notice(error.message,true);$('#controls').textContent=error.message;$('#preview-status').textContent='Not connected';}
 })();

@@ -6,9 +6,13 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## SCOPE Design Studio
 
+For customers, copy or extract [dist/SCOPE-Design-Studio.html](dist/SCOPE-Design-Studio.html) and double-click it in Edge or Chrome. The complete offline Studio embeds all scripts, styles, configuration, logos, Earth imagery and Help. It requires no server, installation, launcher, internet, extension or browser security changes. All four navigation modes, all 16 current presets/schemes, editing modes, history, candidates, comparison, notes and exports use the same source implementation.
+
+Developers regenerate the customer edition with `node scripts/build-standalone.cjs` and validate it with `node docs/assets/validate-standalone.cjs`. Node is a build-time requirement only. Distribute the generated HTML alone; rebuild after changing source, presets, startup configuration or logo assets. Do not hand-edit the bundle. The offline adapter uses sandboxed `iframe.srcdoc`, embedded resource acquisition and authenticated frame messages; independent windows and downloads use local Blob URLs. The source edition remains below.
+
 Open [Design Studio](design-studio/index.html) over local HTTP to run a 15-minute customer design workshop around the existing Electric Glass engine. Guided mode covers navigation, material, colors, typography, layout and final review. Advanced mode adds a selectable shell tree, live property inspector, bounded Command Deck rail resizing and preview scaling. Final presentation reveals the simulated applications and hides editor panels.
 
-From the repository root run `python -m http.server 8080 --bind 127.0.0.1`, then visit `http://127.0.0.1:8080/design-studio/`. No build or package installation is required. Serve the repository root; `file://` does not support the Studio's JSON loading and authenticated iframe protocol.
+For development, run `python -m http.server 8080 --bind 127.0.0.1` from the repository root, then visit `http://127.0.0.1:8080/design-studio/`. No build or package installation is required for that edition. Serve the repository root; direct `file://` launch uses the generated customer HTML instead of this modular entry.
 
 The new `design-studio/` directory separates shared state/schema and CSS compilation (`design-core.js`), workshop/editor (`studio.js`, `studio.css`, `index.html`), preview adapter (`preview-runtime.js`, `preview-bridge.js`), exports (`exports.js`), material defaults (`theme-presets.json`) and initial design (`design-config.json`). It reuses `mockups/params.json`, `styles.css` and logo assets. Rename applications/tab labels in `mockups/params.json`, keeping stable IDs; replace `mockups/assets/logo.png` or configure its relative `logoPath`. Missing logos fall back to the SVG crosshair and aspect ratios are preserved.
 
@@ -17,6 +21,8 @@ Undo/redo tracks design changes; application operations remain independent. Save
 See the [complete Studio guide](design-studio/README.html) for the six-step workflow, editor ownership rules, configuration, exports, protocol, known limitations and future enhancements. Existing navigation rerenders retain model stores and per-slot view state, but transient focus/scroll/dialog state can reset when moving hosts. Appearance-only edits preserve application DOM. The Studio changes shell presentation; application internals remain protected. Current Chrome/Edge browser review remains necessary for native controls, layout, fullscreen and downloads when automation is unavailable.
 
 Run `node docs/assets/validate-design-studio.cjs` for the Studio checks, alongside the existing mockup validators. No earlier exploration has been replaced.
+
+The packaging validator audits all 64 shell/preset combinations, checks deterministic generation and embedded resources, and runs actual editor/preview handlers with network calls blocked in controlled fixtures. These tests are not browser rendering tests. No Edge/Chrome `file://` browser test was possible in the current environment; native layout, downloads, fullscreen, pop-ups and printing remain to be checked on the target workstation. See [Studio architecture](docs/SCOPE-Design-Studio-Architecture.html) and [Studio guide](design-studio/README.html) for runtime boundaries and distribution details.
 
 ## Existing demonstrators
 

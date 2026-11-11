@@ -115,6 +115,14 @@
     save(name){if(!['Candidate A','Candidate B','Candidate C'].includes(name))throw Error('Choose Candidate A, B or C');this.candidates[name]=clone(this.value);}
     restore(name){if(!this.candidates[name])throw Error('This checkpoint has not been saved');this.set(this.candidates[name]);}
   }
-  const api={clone,defaults,navigation,themes,regions,bounds,validate,compileCSS,DesignStore};
+  function effectiveDesign(input,preset){
+    const d=validate(input);
+    // These schemes use the existing White Trim material with preset palette
+    // and glass tokens. Explicit customer overrides retain precedence.
+    return preset.engineLook==='white-trim'&&d.theme!=='white-trim'
+      ? {...d,colors:{...preset.colors,...d.colors},material:{...preset.material,...d.material}}
+      : d;
+  }
+  const api={clone,defaults,navigation,themes,regions,bounds,validate,compileCSS,effectiveDesign,DesignStore};
   root.ScopeDesign=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
