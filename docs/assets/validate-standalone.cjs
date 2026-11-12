@@ -4,7 +4,9 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const root=path.resolve(__dirname,'../..'),builder=require('../../scripts/build-standalone.cjs');
 const C=require('../../design-studio/design-core.js'),E=require('../../design-studio/exports.js');
 const fixtures=require('./validate-design-studio.cjs');
-const result=builder.build(),html=fs.readFileSync(result.file,'utf8');
+// Validation must never replace a hand-corrected distribution before acceptance.
+const validationOutput=path.join(root,'.validation','standalone-validation','SCOPE-Design-Studio.html');
+const result=builder.build({output:validationOutput}),html=fs.readFileSync(result.file,'utf8');
 const payload=JSON.parse(html.match(/<script type="application\/json" id="scope-offline-assets">([\s\S]*?)<\/script>/)[1]);
 assert(payload.resources.html.startsWith('<!doctype html>'));assert.equal(payload.themes.presets.length,JSON.parse(fs.readFileSync(path.join(root,'design-studio/theme-presets.json'),'utf8')).presets.length);
 function audit(document){
@@ -16,7 +18,7 @@ function audit(document){
   return scripts.length;
 }
 audit(html);
-assert.equal(fs.readFileSync(result.file,'utf8'),(builder.build(),fs.readFileSync(result.file,'utf8')),'Build must be deterministic');
+assert.equal(fs.readFileSync(result.file,'utf8'),(builder.build({output:validationOutput}),fs.readFileSync(result.file,'utf8')),'Build must be deterministic');
 (async()=>{
   const editor=await fixtures.editorFixture(payload),frame=editor.get('preview');audit(frame.srcdoc);
   const preview=fixtures.engineFixture(true,frame.srcdoc),messages=[];
@@ -36,7 +38,7 @@ assert.equal(fs.readFileSync(result.file,'utf8'),(builder.build(),fs.readFileSyn
     combinations++;
   }
   // All export types used by the offline editor have already run with fetch throwing.
-  const final=editor.downloaded.find(d=>d[1]==='scope-final-mockup.html')[0];audit(final);
+  const final=editor.downloaded.find(d=>d[1]==='SCOPE-Operator-Standalone.html')[0];audit(final);
   const exported=fixtures.engineFixture(true,final);assert.equal(exported.run('presentation.detailsVisible'),true);assert.equal(exported.run('DemoNodeStore.nodes().length'),10);
   // Run the embedded window factory and inspect its actual local Blob output.
   // The clone fixture models document serialization, not native pop-up behavior.

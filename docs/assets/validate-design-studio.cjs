@@ -32,7 +32,8 @@ function engineFixture(exported=false,suppliedHTML=null){
   if(exported)prefix=prefix.replace('vm.runInContext(script,context);','vm.runInContext(testFinalScript,context);');
   const fixture=new Function('require','__dirname','testFinalScript',prefix+'\nreturn {context,document,window,Element,elements,listeners,windowEvents};')(require,__dirname,scripts[0]);
   const {context,document,window,Element}=fixture;document.head=new Element('head');document.head.append=function(el){fixture.elements.set('#'+el.id,el);};document.createElement=()=>new Element();
-  Element.prototype.style={setProperty(){},removeProperty(){}};Element.prototype.before=function(){};Element.prototype.querySelector=function(){return null;};Element.prototype.removeEventListener=function(){};document.body.append=function(){};Element.prototype.append=function(){};Element.prototype.hasAttribute=function(k){return k in this.attrs;};
+  fixture.insertions=[];fixture.downloads=[];
+  Element.prototype.style={setProperty(){},removeProperty(){}};Element.prototype.before=function(el){fixture.insertions.push(el);};Element.prototype.click=function(){fixture.downloads.push({href:this.href,name:this.download});};Element.prototype.querySelector=function(){return null;};Element.prototype.removeEventListener=function(){};document.body.append=function(){};Element.prototype.append=function(){};Element.prototype.hasAttribute=function(k){return k in this.attrs;};
   context.MutationObserver=class{observe(){}};context.requestAnimationFrame=fn=>fn();context.queueMicrotask=fn=>fn();context.crypto=require('node:crypto').webcrypto;window.parent={postMessage(){}};
   const run=code=>{const result=vm.runInContext(code,context);window.ScopeVisuals=context.ScopeVisuals;window.ScopeParameters=context.ScopeParameters;context.ScopeOperator=window.ScopeOperator;return result;};
   if(suppliedHTML){
@@ -104,8 +105,8 @@ async function editorFixture(offlineAssets=null){
   get('import-file').files=[{size:50,text:async()=>JSON.stringify(initial)}];await get('import-file').events.change({target:get('import-file')});assert.deepEqual(f.store.value,C.defaults);
   get('import-file').files=[{size:50,text:async()=>'{"schemaVersion":99}'}];await get('import-file').events.change({target:get('import-file')});assert.deepEqual(f.store.value,C.defaults);
   await click({action:'export-css'});assert(downloaded.at(-1)[0].includes('data-scope-design'));await click({action:'export-summary'});assert(downloaded.at(-1)[0].includes('Customer decisions'));
-  if(offlineAssets){await click({action:'export-final'});assert.equal(downloaded.at(-1)[1],'scope-final-mockup.html');assert(downloaded.at(-1)[0].includes(offlineAssets.resources.logo));assert.equal(networkRequests,0);assert(get('preview').srcdoc.includes('ScopeEmbeddedTransport'));assert(get('preview').attrs.sandbox.includes('allow-scripts'));assert(!get('preview').attrs.sandbox.includes('allow-same-origin'));}
-  return {context,get,downloaded};
+  if(offlineAssets){await click({action:'export-final'});assert.equal(downloaded.at(-1)[1],'SCOPE-Operator-Standalone.html');assert(downloaded.at(-1)[0].includes(offlineAssets.resources.logo));assert.equal(networkRequests,0);assert(get('preview').srcdoc.includes('ScopeEmbeddedTransport'));assert(get('preview').attrs.sandbox.includes('allow-scripts'));assert(!get('preview').attrs.sandbox.includes('allow-same-origin'));}
+  return {context,get,downloaded,click,input};
 }
 async function servedResources(){
   const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(root,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.end(fs.readFileSync(file));}catch{res.writeHead(404).end();}});

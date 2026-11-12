@@ -14,7 +14,7 @@
       if(colors.includes(k)){if(typeof v!=='string'||!/^#[\da-f]{6}$/i.test(v))throw Error('Invalid component color');out[k]=v.toUpperCase();}
       else if(limits[k]){if(typeof v!=='number'||!Number.isFinite(v))throw Error('Invalid component dimension');out[k]=Math.max(limits[k][0],Math.min(limits[k][1],v));}
       else if(k==='borderStyle'&&['solid','dashed'].includes(v))out[k]=v;
-      else if(k==='fontFamily'&&['system-ui','Segoe UI','Arial','Georgia','Consolas','Trebuchet MS'].includes(v))out[k]=v;
+      else if(k==='fontFamily'&&["system-ui","Segoe UI","Arial","Aptos","Calibri","Tahoma","Verdana","Trebuchet MS","Bahnschrift","Georgia","Consolas","Courier New","Lucida Console","Arial Narrow"].includes(v))out[k]=v;
       else if(k==='elevation'&&['flat','raised','inset'].includes(v))out[k]=v;
       else throw Error('Unsupported component property: '+k);
     }return out;

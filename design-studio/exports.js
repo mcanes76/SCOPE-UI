@@ -28,7 +28,7 @@
     const safeScript=s=>s.replace(/<\/script/gi,'<\\/script');
     const bootstrap='window.ScopePreviewRuntime.apply('+json(d)+','+json(presets)+',{presentation:'+(!options.preview)+',editing:false});';
     html=html.replace('</body>',()=>'<script>'+safeScript(resources.core)+'</script><script>'+safeScript(resources.runtime)+'</script><script>'+bootstrap+'</script></body>');
-    if(!html.includes(bootstrap)||/src="\.\.\/design-studio\//.test(html))throw Error('Standalone export assembly failed');
+    if(!html.includes(bootstrap)||/src="\.\.\/design-studio\//.test(html)||html.includes('class="studio-header"')||html.includes('id="studio-layout"'))throw Error('Standalone export assembly failed: Studio UI found in operator artifact');
     return html;
   }
   async function fetchText(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Cannot embed '+url);return r.text();}

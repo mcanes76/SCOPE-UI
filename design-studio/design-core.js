@@ -43,7 +43,7 @@
     for(const key of ['colors','material','typography','layout','regions','notes'])if(input[key]!==undefined)assert(object(input[key]),key+' must be an object');
     for(const [key,v] of Object.entries(input.colors||{})){assert(['background','header','navigation','workspace','panel','accent','text','border'].includes(key),'Unknown color token');d.colors[key]=color(v);}
     for(const [key,v] of Object.entries(input.material||{})){assert(bounds[key]&&['borderWidth','radius','opacity','blur'].includes(key),'Unknown material token');d.material[key]=numeric(v,...bounds[key],key);}
-    const typeRules={family:['system-ui','Segoe UI','Arial','Trebuchet MS','Georgia','Consolas'],baseSize:[14,20],headingSize:[18,36],weight:[400,700],density:['compact','comfortable','spacious'],spacing:[8,28]};
+    const typeRules={family:["system-ui","Segoe UI","Arial","Aptos","Calibri","Tahoma","Verdana","Trebuchet MS","Bahnschrift","Georgia","Consolas","Courier New","Lucida Console","Arial Narrow"],baseSize:[14,20],headingSize:[18,36],weight:[400,700],density:['compact','comfortable','spacious'],spacing:[8,28]};
     for(const [k,v] of Object.entries(input.typography||{})){assert(Object.hasOwn(typeRules,k),'Unknown typography token');if(['family','density'].includes(k)){assert(typeRules[k].includes(v),'Invalid '+k);d.typography[k]=v;}else d.typography[k]=numeric(v,...typeRules[k],k);}
     const layoutRules={navWidth:[140,280],contextWidth:[180,360],workspacePadding:[8,40],panelGap:[8,28],headerHeight:[56,112]};
     for(const [k,v] of Object.entries(input.layout||{})){

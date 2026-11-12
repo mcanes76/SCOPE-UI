@@ -1,5 +1,6 @@
 /* Developer-only packaging. Customers receive the generated HTML alone.
  * Run: node scripts/build-standalone.cjs
+ * Review first: node scripts/build-standalone.cjs --output .validation/candidate.html
  */
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
@@ -9,7 +10,7 @@ const E=require('../design-studio/exports.js');
 const read=rel=>fs.readFileSync(path.join(root,rel),'utf8');
 const parse=rel=>{try{return JSON.parse(read(rel));}catch(error){throw Error(rel+': '+error.message);}};
 const encodeJSON=value=>JSON.stringify(value).replace(/</g,'\\u003c');
-const inlineScript=text=>'<script>'+text.replace(/<\/script/gi,'<\\/script')+'</script>';
+const inlineScript=text=>'<script>'+text.replace(/\r\n/g,'\n').replace(/<\/script/gi,'<\\/script')+'</script>';
 function resources(){
   const params=parse('mockups/params.json'),presets=parse('design-studio/theme-presets.json');
   const fallback='data:image/svg+xml;base64,'+fs.readFileSync(path.join(root,'mockups/assets/scope-logo.svg')).toString('base64');
@@ -26,7 +27,7 @@ function resources(){
   const runtime=read('design-studio/operator-runtime.js')+'\n'+read('design-studio/preview-runtime.js')+'\nwindow.ScopePortablePresets='+encodeJSON(presets.presets)+';\n'+read('design-studio/embedded-windows.js');
   return {html:read('mockups/scope-integrated-electric-glass.html'),css:read('mockups/styles.css'),core:['visual-system.js','parameters.js','design-core.js'].map(f=>read('design-studio/'+f)).join('\n'),runtime,params,logo,fallback};
 }
-function build(){
+function build(options={}){
   const themes=parse('design-studio/theme-presets.json'),initial=C.validate(parse('design-studio/design-config.json'));
   for(const p of themes.presets)C.validate({...C.defaults,theme:p.id,colors:p.colors,material:p.material,typography:p.typography});
   const payload={version:1,themes,initial,resources:resources(),bridge:read('design-studio/preview-bridge.js'),help:read('design-studio/README.html')};
@@ -37,7 +38,7 @@ function build(){
   html=html.replace('</body>',()=>'<script type="application/json" id="scope-offline-assets">'+encodeJSON(payload)+'</script>'+inlineScript("window.ScopeOfflineAssets=JSON.parse(document.getElementById('scope-offline-assets').textContent);")+['visual-system.js','parameters.js','design-core.js','archive.js','exports.js','offline.js','component-editor.js','studio.js'].map(file=>inlineScript(read('design-studio/'+file))).join('')+'</body>');
   // Verify preview assembly now; never ship a bundle with drifted engine markers.
   E.composeFinal(payload.resources,initial,themes.presets,{preview:true});
-  const destination=path.join(root,'dist','SCOPE-Design-Studio.html');fs.mkdirSync(path.dirname(destination),{recursive:true});fs.writeFileSync(destination,html,'utf8');
+  const destination=options.output?path.resolve(root,options.output):path.join(root,'dist','SCOPE-Design-Studio.html');fs.mkdirSync(path.dirname(destination),{recursive:true});fs.writeFileSync(destination,html,'utf8');
   return {file:destination,bytes:Buffer.byteLength(html),sha256:crypto.createHash('sha256').update(html).digest('hex'),navigationModels:C.navigation.length,themes:themes.presets.length};
 }
-module.exports={build,resources};if(require.main===module)console.log(JSON.stringify(build(),null,2));
+module.exports={build,resources};if(require.main===module){const args=process.argv.slice(2);if(args.length&&!(args.length===2&&args[0]==='--output'))throw Error('Usage: node scripts/build-standalone.cjs [--output path]');console.log(JSON.stringify(build({output:args[1]}),null,2));}

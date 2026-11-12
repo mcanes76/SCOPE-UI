@@ -6,6 +6,10 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## SCOPE Design Studio
 
+The corrected offline Studio is synchronized back into its modular source, including all 14 font choices, operator-only export guards/filenames and pop-out toolbar cleanup. A source build reproduces the corrected distribution byte-for-byte. See [source synchronization and validation](docs/SCOPE-Source-Synchronization.html).
+
+To verify a candidate without overwriting `/dist`, run `node scripts/build-standalone.cjs --output .validation/source-sync/candidate.html` and `node docs/assets/validate-source-sync.cjs --reference dist/SCOPE-Design-Studio.html`. Packaging validation also uses temporary output. The normal `node scripts/build-standalone.cjs` command still generates the distribution after review.
+
 The latest extension adds Visual Family ? Palette ? Component customization, four families and 30 selectable palette IDs (DISCO derived from the supplied BLOS v11 visual reference). Actual application bodies and controls inherit the canonical theme. Advanced mode supports global/category/application/instance overrides, per-corner geometry, interaction states, Reset to Inherited Style, branding and logo import.
 
 The operator toolbar is included in exported mockups: single/split switching, independent app selectors, keyboard/pointer divider resizing, focus/expand/restore and pop-out/return. Detached data models remain independent; only design updates are messaged. Export either a standalone HTML with explicit Parameters JSON/logo import and Save Updated Mockup, or a configurable folder ZIP with params.json and local logo assets. See [Visual systems, windowing and parameters](docs/SCOPE-Visual-Systems.html) and [params.example.json](design-studio/params.example.json). Run `node docs/assets/validate-visual-systems.cjs` for the new subsystem checks.

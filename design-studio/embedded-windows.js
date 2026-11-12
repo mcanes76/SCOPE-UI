@@ -7,7 +7,7 @@
     const current=ScopePreviewRuntime.snapshot();
     if(!current)return '';
     const clone=document.documentElement.cloneNode(true);
-    clone.querySelectorAll('[data-scope-preview-bridge],[data-scope-portable-launch],#scope-studio-frame,#scope-design-overrides').forEach(el=>el.remove());
+    clone.querySelectorAll('[data-scope-preview-bridge],[data-scope-portable-launch],#scope-studio-frame,#scope-design-overrides,.operator-bar,.operator-divider').forEach(el=>el.remove());
     const launch=document.createElement('script');launch.dataset.scopePortableLaunch='';
     const token=crypto.randomUUID();window.ScopeDetachedTokens??=new Map();window.ScopeDetachedTokens.set(index,token);
     launch.textContent='window.ScopePortableWindow='+JSON.stringify({app:index,look:state.look,shell:state.concept,details:presentation.detailsVisible,token}).replace(/</g,'\\u003c')+';';
