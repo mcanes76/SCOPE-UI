@@ -29,7 +29,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "prism",
@@ -59,7 +60,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "nocturne",
@@ -89,7 +91,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 18
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "carbon",
@@ -119,7 +122,8 @@
         "weight": 500,
         "density": "compact",
         "spacing": 12
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "spectrum",
@@ -149,7 +153,8 @@
         "weight": 500,
         "density": "spacious",
         "spacing": 20
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "frosted-white",
@@ -179,7 +184,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "white-trim",
@@ -209,7 +215,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-steel",
@@ -239,7 +246,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-teal",
@@ -269,7 +277,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-violet",
@@ -299,7 +308,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-olive",
@@ -329,7 +339,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-amber",
@@ -359,7 +370,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-indigo",
@@ -389,7 +401,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-cyan",
@@ -419,7 +432,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-green",
@@ -449,7 +463,8 @@
         "weight": 500,
         "density": "comfortable",
         "spacing": 16
-      }
+      },
+      "family": "glass"
     },
     {
       "id": "electric-slate",
@@ -474,6 +489,555 @@
       },
       "typography": {
         "family": "system-ui",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      },
+      "family": "glass"
+    },
+    {
+      "id": "slate-light",
+      "name": "Slate Light",
+      "family": "professional",
+      "mode": "light",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#DCE3EB",
+        "header": "#E8EDF3",
+        "navigation": "#E8EDF3",
+        "workspace": "#CFD9E5",
+        "panel": "#F4F7FA",
+        "accent": "#214E97",
+        "text": "#17283A",
+        "border": "#526781"
+      },
+      "roles": {
+        "inset": "#FFFFFF",
+        "raised": "#F4F7FA",
+        "secondary": "#344454",
+        "muted": "#405164"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "graphite-dark",
+      "name": "Graphite Dark",
+      "family": "professional",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#151B23",
+        "header": "#202A36",
+        "navigation": "#202A36",
+        "workspace": "#18222E",
+        "panel": "#2B3746",
+        "accent": "#8CB7F5",
+        "text": "#E9F1FA",
+        "border": "#788DA5"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#2B3746",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "technical-teal",
+      "name": "Technical Teal",
+      "family": "professional",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#0E2024",
+        "header": "#183439",
+        "navigation": "#183439",
+        "workspace": "#11292F",
+        "panel": "#25454B",
+        "accent": "#72E0CD",
+        "text": "#E2F5F3",
+        "border": "#6F9B9D"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#25454B",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "disco",
+      "name": "DISCO",
+      "family": "technical",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "BLOS v11 reference: slate canvas, near-black overlay panels, blue highlights, compact system type and rounded controls.",
+      "colors": {
+        "background": "#0F172A",
+        "header": "#0F172A",
+        "navigation": "#020617",
+        "workspace": "#0F172A",
+        "panel": "#020617",
+        "accent": "#93C5FD",
+        "text": "#E5E7EB",
+        "border": "#334155"
+      },
+      "roles": {
+        "raised": "#1F2937",
+        "inset": "#0B1220",
+        "secondary": "#CBD5E1",
+        "muted": "#94A3B8",
+        "hover": "#374151",
+        "pressed": "#111827",
+        "selection": "#164E63",
+        "disabled": "#475569"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 10,
+        "opacity": 0.95,
+        "blur": 0
+      },
+      "typography": {
+        "family": "system-ui",
+        "baseSize": 14,
+        "headingSize": 18,
+        "weight": 400,
+        "density": "compact",
+        "spacing": 12
+      },
+      "geometry": {
+        "controlRadius": 6,
+        "panelRadius": 10,
+        "controlHeight": 36
+      },
+      "surfaceTreatment": "overlay",
+      "surfaceOpacity": 0.95,
+      "reference": {
+        "filename": "blos_typology_display_prototype_v11.html",
+        "sha256": "64a5a2431ae2a7a9d33a5b8637dc9facfb8c18062c0972360925c82ce895d69c",
+        "scope": "Visual material, color, geometry and typography only. No reference application logic, data or network semantics imported."
+      }
+    },
+    {
+      "id": "ide-workbench",
+      "name": "IDE Workbench",
+      "family": "technical",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Dense instruments, hard geometry and clear working planes.",
+      "colors": {
+        "background": "#161A20",
+        "header": "#242C36",
+        "navigation": "#242C36",
+        "workspace": "#1B232D",
+        "panel": "#303D4B",
+        "accent": "#9CBDF8",
+        "text": "#EEF3FA",
+        "border": "#8798AC"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#303D4B",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 3,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Consolas",
+        "baseSize": 14,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "compact",
+        "spacing": 12
+      }
+    },
+    {
+      "id": "industrial-hmi",
+      "name": "Industrial HMI",
+      "family": "technical",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Dense instruments, hard geometry and clear working planes.",
+      "colors": {
+        "background": "#202528",
+        "header": "#30393F",
+        "navigation": "#30393F",
+        "workspace": "#242F35",
+        "panel": "#3A474F",
+        "accent": "#F3D06C",
+        "text": "#F2F5F3",
+        "border": "#9AAEBA"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#3A474F",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 3,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Consolas",
+        "baseSize": 14,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "compact",
+        "spacing": 12
+      }
+    },
+    {
+      "id": "field-day",
+      "name": "Field Ops ? Day",
+      "family": "field",
+      "mode": "light",
+      "engineLook": "carbon",
+      "description": "Restrained field-console exploration; no qualification claimed.",
+      "colors": {
+        "background": "#D8DED0",
+        "header": "#E6E9DF",
+        "navigation": "#E6E9DF",
+        "workspace": "#CED7C8",
+        "panel": "#F1F0E7",
+        "accent": "#3C6346",
+        "text": "#263126",
+        "border": "#64725C"
+      },
+      "roles": {
+        "inset": "#FFFFFF",
+        "raised": "#F1F0E7",
+        "secondary": "#344454",
+        "muted": "#405164"
+      },
+      "material": {
+        "borderWidth": 2,
+        "radius": 4,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Arial",
+        "baseSize": 16,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "spacious",
+        "spacing": 18
+      }
+    },
+    {
+      "id": "field-night",
+      "name": "Field Ops ? Night",
+      "family": "field",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Restrained field-console exploration; no qualification claimed.",
+      "colors": {
+        "background": "#151D18",
+        "header": "#253027",
+        "navigation": "#253027",
+        "workspace": "#1B261F",
+        "panel": "#344137",
+        "accent": "#A4C891",
+        "text": "#E1E9DA",
+        "border": "#899D7D"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#344137",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 2,
+        "radius": 4,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Arial",
+        "baseSize": 16,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "spacious",
+        "spacing": 18
+      }
+    },
+    {
+      "id": "neutral-tactical",
+      "name": "Neutral Tactical",
+      "family": "field",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Restrained field-console exploration; no qualification claimed.",
+      "colors": {
+        "background": "#22251F",
+        "header": "#34372E",
+        "navigation": "#34372E",
+        "workspace": "#292C25",
+        "panel": "#45473C",
+        "accent": "#D4C99B",
+        "text": "#F1EFE2",
+        "border": "#A4A48C"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#45473C",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 2,
+        "radius": 4,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Arial",
+        "baseSize": 16,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "spacious",
+        "spacing": 18
+      }
+    },
+    {
+      "id": "slate-indigo",
+      "name": "Slate + Indigo",
+      "family": "professional",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#171B24",
+        "header": "#262D3B",
+        "navigation": "#262D3B",
+        "workspace": "#1C2330",
+        "panel": "#354158",
+        "accent": "#AABDFF",
+        "text": "#EEF2FC",
+        "border": "#8797B3"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#354158",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "sage-teal",
+      "name": "Sage + Teal",
+      "family": "professional",
+      "mode": "light",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#DDE6E0",
+        "header": "#EDF2EE",
+        "navigation": "#EDF2EE",
+        "workspace": "#D1DED5",
+        "panel": "#F5F8F4",
+        "accent": "#1D6B60",
+        "text": "#253E35",
+        "border": "#5C7B6C"
+      },
+      "roles": {
+        "inset": "#FFFFFF",
+        "raised": "#F5F8F4",
+        "secondary": "#344454",
+        "muted": "#405164"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "sand-bronze",
+      "name": "Sand + Bronze",
+      "family": "professional",
+      "mode": "light",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#E4DFD6",
+        "header": "#EEE9E0",
+        "navigation": "#EEE9E0",
+        "workspace": "#D8CFC0",
+        "panel": "#F8F3EA",
+        "accent": "#77502B",
+        "text": "#403529",
+        "border": "#89745E"
+      },
+      "roles": {
+        "inset": "#FFFFFF",
+        "raised": "#F8F3EA",
+        "secondary": "#344454",
+        "muted": "#405164"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      }
+    },
+    {
+      "id": "slate-cyan",
+      "name": "Slate + Cyan",
+      "family": "technical",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "Dense instruments, hard geometry and clear working planes.",
+      "colors": {
+        "background": "#14212B",
+        "header": "#223543",
+        "navigation": "#223543",
+        "workspace": "#182B38",
+        "panel": "#304B5C",
+        "accent": "#6FE1F8",
+        "text": "#EAF6FC",
+        "border": "#7DA4B8"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#304B5C",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 3,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Consolas",
+        "baseSize": 14,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "compact",
+        "spacing": 12
+      }
+    },
+    {
+      "id": "civic-blue",
+      "name": "Civic Neutral + Blue",
+      "family": "professional",
+      "mode": "light",
+      "engineLook": "carbon",
+      "description": "Coordinated neutral layers and clear work areas.",
+      "colors": {
+        "background": "#DCE4EB",
+        "header": "#EDF1F5",
+        "navigation": "#EDF1F5",
+        "workspace": "#CEDBE8",
+        "panel": "#F7F9FB",
+        "accent": "#255B93",
+        "text": "#18334F",
+        "border": "#5D7690"
+      },
+      "roles": {
+        "inset": "#FFFFFF",
+        "raised": "#F7F9FB",
+        "secondary": "#344454",
+        "muted": "#405164"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 8,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
         "baseSize": 15,
         "headingSize": 24,
         "weight": 500,

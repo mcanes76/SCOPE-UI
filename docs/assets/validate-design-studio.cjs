@@ -20,7 +20,7 @@ for(const navigation of C.navigation)for(const p of presets){
   const d=C.validate({...initial,navigation,theme:p.id,material:p.material,typography:p.typography});const css=C.compileCSS(d);assert(css.includes('body[data-scope-design="true"]'));assert(!css.includes('.app-content')&&!css.includes('.btn-enable')&&!css.includes('.btn-leave'));if(navigation==='deck')assert(css.includes('@media(min-width:1251px)'));else assert(!css.includes('grid-template-columns:190px'));combinations++;
 }
 const outputCSS=E.css(candidate,presets);assert(outputCSS.includes('#FFFFFF'));assert(outputCSS.includes('border-radius:8px'));assert(outputCSS.includes('white-trim'));
-const resources={html:read('mockups/scope-integrated-electric-glass.html'),css:read('mockups/styles.css'),core:read('design-studio/design-core.js'),runtime:read('design-studio/preview-runtime.js'),params:JSON.parse(read('mockups/params.json')),logo:'data:image/png;base64,'+fs.readFileSync(path.join(root,'mockups/assets/logo.png')).toString('base64'),fallback:'data:image/svg+xml;base64,'+fs.readFileSync(path.join(root,'mockups/assets/scope-logo.svg')).toString('base64')};
+const resources={html:read('mockups/scope-integrated-electric-glass.html'),css:read('mockups/styles.css'),core:['visual-system.js','parameters.js','design-core.js'].map(f=>read('design-studio/'+f)).join('\n'),runtime:read('design-studio/preview-runtime.js'),params:JSON.parse(read('mockups/params.json')),logo:'data:image/png;base64,'+fs.readFileSync(path.join(root,'mockups/assets/logo.png')).toString('base64'),fallback:'data:image/svg+xml;base64,'+fs.readFileSync(path.join(root,'mockups/assets/scope-logo.svg')).toString('base64')};
 const final=E.composeFinal(resources,candidate,presets);assert(!final.includes('SCOPE_STUDIO_LOADER_START'));assert(!final.includes('void loadPresentationConfig();'));assert(!final.includes('href="styles.css"'));assert(!final.includes('src="assets/logo.png"'));assert(!final.includes("'assets/scope-logo.svg'"));assert(final.includes(resources.logo)&&final.includes(resources.fallback));assert(final.includes('data:image/jpeg;base64,'));assert(!/<(?:link|script|img)[^>]+(?:href|src)="(?!data:|#)/.test(final.replace(/<script>[\s\S]*?<\/script>/g,"")));
 const finalScripts=[...final.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);assert.equal(finalScripts.length,4);finalScripts.forEach(s=>new vm.Script(s));assert(finalScripts.at(-1).includes('"detailsVisible":true'));assert(finalScripts.at(-1).includes('presentation:true,editing:false'));
 const malicious=C.clone(candidate);malicious.name='</script><img onerror="alert(1)">';malicious.notes.colors='<script>oops</script>';const summary=E.summary(malicious,presets,resources.params);assert(!summary.includes('<script>oops'));assert(summary.includes('&lt;script&gt;oops'));new vm.Script([...E.composeFinal(resources,malicious,presets).matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1]);
@@ -32,9 +32,9 @@ function engineFixture(exported=false,suppliedHTML=null){
   if(exported)prefix=prefix.replace('vm.runInContext(script,context);','vm.runInContext(testFinalScript,context);');
   const fixture=new Function('require','__dirname','testFinalScript',prefix+'\nreturn {context,document,window,Element,elements,listeners,windowEvents};')(require,__dirname,scripts[0]);
   const {context,document,window,Element}=fixture;document.head=new Element('head');document.head.append=function(el){fixture.elements.set('#'+el.id,el);};document.createElement=()=>new Element();
-  Element.prototype.style={};Element.prototype.append=function(){};Element.prototype.hasAttribute=function(k){return k in this.attrs;};
-  context.MutationObserver=class{observe(){}};context.requestAnimationFrame=fn=>fn();context.queueMicrotask=fn=>fn();window.parent={postMessage(){}};
-  const run=code=>vm.runInContext(code,context);
+  Element.prototype.style={setProperty(){},removeProperty(){}};Element.prototype.before=function(){};Element.prototype.querySelector=function(){return null;};Element.prototype.removeEventListener=function(){};document.body.append=function(){};Element.prototype.append=function(){};Element.prototype.hasAttribute=function(k){return k in this.attrs;};
+  context.MutationObserver=class{observe(){}};context.requestAnimationFrame=fn=>fn();context.queueMicrotask=fn=>fn();context.crypto=require('node:crypto').webcrypto;window.parent={postMessage(){}};
+  const run=code=>{const result=vm.runInContext(code,context);window.ScopeVisuals=context.ScopeVisuals;window.ScopeParameters=context.ScopeParameters;context.ScopeOperator=window.ScopeOperator;return result;};
   if(suppliedHTML){
     context.location={href:'about:srcdoc'};context.parent=window.parent;context.URL=URL;context.Blob=Blob;context.fetch=()=>{throw Error('Offline engine attempted a request');};
     for(const script of scripts.slice(1)){run(script);window.ScopeDesign=context.ScopeDesign;context.ScopePreviewRuntime=window.ScopePreviewRuntime;}
@@ -90,6 +90,7 @@ async function editorFixture(offlineAssets=null){
     vm.runInContext(read('design-studio/exports.js'),context);context.ScopeExports.download=(...args)=>downloaded.push(args);
     vm.runInContext(read('design-studio/offline.js'),context);
   }
+  context.ScopeVisuals=require('../../design-studio/visual-system.js');vm.runInContext(read('design-studio/component-editor.js'),context);
   let source=read('design-studio/studio.js');source=source.replace(/\}\)\(\);\s*$/,'globalThis.fixture={get store(){return store;},get mode(){return mode;},get step(){return step;},get presenting(){return presenting;},get region(){return region;}};})();');await vm.runInContext(source,context);
   const click=async(dataset={},id='')=>{const b=new Element(id);b.dataset=dataset;await events.click({target:b});};
   const input=(dataset,value,id='',type='range')=>{const el=new Element(id);el.dataset=dataset;el.value=value;el.type=type;el.checked=Boolean(value);events.input({target:el});};

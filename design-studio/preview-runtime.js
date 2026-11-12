@@ -9,6 +9,7 @@
   let design=null,selected='',editing=false,dragging=false,callback=()=>{},application='',rightApplication='';
   const selector=region=>core.regions[region];
   function decorate(){
+    annotate();window.ScopeOperator?.decorate();
     document.querySelectorAll('[data-studio-highlight]').forEach(el=>el.removeAttribute('data-studio-highlight'));
     if(editing&&selected)document.querySelectorAll(selector(selected)).forEach(el=>{if(!el.closest('[data-demo-host]'))el.setAttribute('data-studio-highlight','');});
     if(dragging)return;
@@ -34,7 +35,7 @@
     });
   }
   let queued=false;
-  new MutationObserver(records=>{if(records.some(r=>r.type==='childList'&&[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.classList?.contains('studio-resize')))&&!queued){queued=true;requestAnimationFrame(()=>{queued=false;decorate();});}}).observe(document.getElementById('exploration'),{childList:true,subtree:true});
+  new MutationObserver(records=>{if(records.some(r=>r.type==='childList'&&[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.classList?.contains('studio-resize')&&!n.classList?.contains('operator-divider')))&&!queued){queued=true;requestAnimationFrame(()=>{queued=false;decorate();});}}).observe(document.getElementById('exploration'),{childList:true,subtree:true});
   function reportApplication(){
       if(!design||detachedContext)return;
       const index=integrated.mode==='split'?integrated.left:design.navigation==='aperture'?state.aperture.active:design.navigation==='deck'?state.deck.active:design.navigation==='portal'?state.portal.active:state.mosaic.focus;
@@ -55,22 +56,36 @@
   }
   function apply(input,presets,options={}){
     const next=core.validate(input),preset=presets.find(p=>p.id===next.theme);
+    if(next.operator)options={application:next.operator.left,rightApplication:next.operator.right,...options};
     if(!preset||!looks.some(l=>l.id===preset.engineLook))throw Error('Unknown preview theme');
     const navChanged=!design||next.navigation!==design.navigation;
     const modeChanged=!design||next.layout.mode!==design.layout.mode;
+    if(modeChanged)integrated.expanded=null;
     design=next;editing=Boolean(options.editing);selected=options.region&&Object.hasOwn(core.regions,options.region)?options.region:'';
-    state.look=preset.engineLook;state.concept=core.navigation.indexOf(next.navigation);state.view='workspace';integrated.mode=next.layout.mode;
+    state.look=preset.engineLook;state.concept=core.navigation.indexOf(next.navigation);if(navChanged)state.view='workspace';integrated.mode=next.layout.mode;
     let redraw=navChanged||modeChanged;
     if(options.application&&options.application!==application){application=options.application;redraw=selectApp(application)||redraw;}
     if(options.rightApplication&&options.rightApplication!==rightApplication){rightApplication=options.rightApplication;if(integrated.mode==='split')redraw=selectApp(rightApplication,true)||redraw;}
     // Navigation changes retain the engine's per-slot draft/view maps and application stores.
     if((navChanged||modeChanged)&&application&&!detachedContext){selectApp(application);if(integrated.mode==='split'&&rightApplication)selectApp(rightApplication,true);}
-    document.body.dataset.scopeDesign='true';document.body.dataset.look=preset.engineLook;
+    document.body.dataset.scopeDesign='true';document.body.dataset.look=preset.engineLook;document.body.dataset.theme=next.theme;document.body.dataset.family=preset.family||'glass';
     
-    style.textContent=core.compileCSS(core.effectiveDesign(next,preset));
+    style.textContent=core.compileDesign(next,preset);
+    window.ScopeOperator?.configure(next,presets,options);window.ScopeComponentPicker=Boolean(options.componentPicker);
 
     if(redraw)render(); // Theme/token-only edits do not replace application DOM.
     setUIDetails(options.presentation?true:next.detailsVisible,false);decorate();
   }
-  window.ScopePreviewRuntime={apply,snapshot(){return core.clone(design);},onEvent(fn){callback=fn;},highlight(region){selected=region;decorate();}};
+  function annotate(){
+    document.querySelectorAll('.owner-surface[data-owner]').forEach(()=>{});
+    document.querySelectorAll('[data-demo-host]').forEach(host=>{
+      const id=ApplicationIds[Number(host.dataset.app)];host.closest('.owner-surface')?.setAttribute('data-owner',id);host.setAttribute('data-owner',id);
+      const counts={};host.querySelectorAll('button').forEach(button=>{const action=button.dataset.demoAction||button.dataset.demoTab||button.dataset.demoDialog||'button';const n=counts[action]||0;counts[action]=n+1;button.setAttribute('data-style-id',id+':'+action.replace(/[^a-z0-9:_-]/g,'-')+':'+n);});
+    });
+  }
+  document.addEventListener('click',event=>{
+    if(!editing||!window.ScopeComponentPicker)return;const b=event.target.closest('[data-style-id]');if(!b)return;
+    event.preventDefault();event.stopImmediatePropagation();callback('component',{id:b.dataset.styleId,app:b.closest('[data-owner]').dataset.owner,label:b.textContent.trim().slice(0,80),semantic:!!b.closest('.btn-join,.btn-enable,.btn-leave,.btn-disable,.btn-update,.btn-warning')});
+  },true);
+  window.ScopePreviewRuntime={apply,snapshot(){return core.clone(design);},onEvent(fn){callback=fn;if(window.ScopeOperator)window.ScopeOperator.onChange=d=>callback('operator',{design:d});},highlight(region){selected=region;decorate();},pick(value){window.ScopeComponentPicker=Boolean(value);}};
 })();

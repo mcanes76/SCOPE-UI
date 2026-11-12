@@ -6,7 +6,11 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## SCOPE Design Studio
 
-For customers, copy or extract [dist/SCOPE-Design-Studio.html](dist/SCOPE-Design-Studio.html) and double-click it in Edge or Chrome. The complete offline Studio embeds all scripts, styles, configuration, logos, Earth imagery and Help. It requires no server, installation, launcher, internet, extension or browser security changes. All four navigation modes, all 16 current presets/schemes, editing modes, history, candidates, comparison, notes and exports use the same source implementation.
+The latest extension adds Visual Family ? Palette ? Component customization, four families and 30 selectable palette IDs (DISCO derived from the supplied BLOS v11 visual reference). Actual application bodies and controls inherit the canonical theme. Advanced mode supports global/category/application/instance overrides, per-corner geometry, interaction states, Reset to Inherited Style, branding and logo import.
+
+The operator toolbar is included in exported mockups: single/split switching, independent app selectors, keyboard/pointer divider resizing, focus/expand/restore and pop-out/return. Detached data models remain independent; only design updates are messaged. Export either a standalone HTML with explicit Parameters JSON/logo import and Save Updated Mockup, or a configurable folder ZIP with params.json and local logo assets. See [Visual systems, windowing and parameters](docs/SCOPE-Visual-Systems.html) and [params.example.json](design-studio/params.example.json). Run `node docs/assets/validate-visual-systems.cjs` for the new subsystem checks.
+
+For customers, copy or extract [dist/SCOPE-Design-Studio.html](dist/SCOPE-Design-Studio.html) and double-click it in Edge or Chrome. The complete offline Studio embeds all scripts, styles, configuration, logos, Earth imagery and Help. It requires no server, installation, launcher, internet, extension or browser security changes. All four navigation modes, all 30 current presets/schemes, editing modes, history, candidates, comparison, notes and exports use the same source implementation.
 
 Developers regenerate the customer edition with `node scripts/build-standalone.cjs` and validate it with `node docs/assets/validate-standalone.cjs`. Node is a build-time requirement only. Distribute the generated HTML alone; rebuild after changing source, presets, startup configuration or logo assets. Do not hand-edit the bundle. The offline adapter uses sandboxed `iframe.srcdoc`, embedded resource acquisition and authenticated frame messages; independent windows and downloads use local Blob URLs. The source edition remains below.
 
@@ -22,7 +26,7 @@ See the [complete Studio guide](design-studio/README.html) for the six-step work
 
 Run `node docs/assets/validate-design-studio.cjs` for the Studio checks, alongside the existing mockup validators. No earlier exploration has been replaced.
 
-The packaging validator audits all 64 shell/preset combinations, checks deterministic generation and embedded resources, and runs actual editor/preview handlers with network calls blocked in controlled fixtures. These tests are not browser rendering tests. No Edge/Chrome `file://` browser test was possible in the current environment; native layout, downloads, fullscreen, pop-ups and printing remain to be checked on the target workstation. See [Studio architecture](docs/SCOPE-Design-Studio-Architecture.html) and [Studio guide](design-studio/README.html) for runtime boundaries and distribution details.
+The packaging validator audits all 120 shell/preset combinations, checks deterministic generation and embedded resources, and runs actual editor/preview handlers with network calls blocked in controlled fixtures. These tests are not browser rendering tests. No Edge/Chrome `file://` browser test was possible in the current environment; native layout, downloads, fullscreen, pop-ups and printing remain to be checked on the target workstation. See [Studio architecture](docs/SCOPE-Design-Studio-Architecture.html) and [Studio guide](design-studio/README.html) for runtime boundaries and distribution details.
 
 ## Existing demonstrators
 

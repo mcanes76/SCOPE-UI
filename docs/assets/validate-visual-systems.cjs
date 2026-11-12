@@ -1,0 +1,37 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..');
+const C=require('../../design-studio/design-core.js'),V=require('../../design-studio/visual-system.js'),P=require('../../design-studio/parameters.js');globalThis.ScopeDesign=C;
+const E=require('../../design-studio/exports.js'),builder=require('../../scripts/build-standalone.cjs'),fixture=require('./validate-design-studio.cjs');
+const presets=JSON.parse(fs.readFileSync(path.join(root,'design-studio/theme-presets.json'),'utf8')).presets;
+const disco=presets.find(p=>p.id==='disco');
+assert.equal(disco.name,'DISCO');assert.equal(disco.colors.background,'#0F172A');assert.equal(disco.colors.panel,'#020617');assert.equal(disco.colors.border,'#334155');assert.equal(disco.colors.text,'#E5E7EB');assert.equal(disco.colors.accent,'#93C5FD');
+assert.equal(disco.roles.raised,'#1F2937');assert.equal(disco.roles.inset,'#0B1220');assert.equal(disco.roles.hover,'#374151');assert.equal(disco.typography.family,'system-ui');assert.equal(disco.typography.baseSize,14);
+assert.equal(disco.reference.filename,'blos_typology_display_prototype_v11.html');assert.match(disco.reference.sha256,/^[a-f0-9]{64}$/);
+const discoCSS=C.compileDesign({...C.defaults,theme:'disco',typography:disco.typography},disco);
+assert(discoCSS.includes('color-mix(in srgb,#020617 95%,transparent)'));assert(discoCSS.includes('border-radius:6px'));assert(discoCSS.includes('border-radius:10px'));assert(discoCSS.includes('box-shadow:0 12px 24px #00000059'));
+let min=100;
+for(const preset of presets){const t=V.tokens(C.defaults,preset);for(const role of ['workspace','panel','inset','raised','nav']){const ratio=V.contrast(t.text,t[role]);assert(ratio>=4.5,preset.id+' '+role+' contrast');min=Math.min(min,ratio);}for(const navigation of C.navigation){const css=C.compileDesign({...C.defaults,theme:preset.id,navigation},preset);assert(css.includes('[data-theme="'+preset.id+'"]'));assert(css.includes('[data-demo-host]'));assert(css.includes('color-scheme:'));assert(css.includes('prefers-reduced-motion'));}}
+let d=C.clone(C.defaults);d.components={global:{buttons:{radius:0}},classes:{join:{borderStyle:'dashed'}},applications:{blos:{buttons:{radius:9}}},instances:{'blos:group-join:0':{radius:24,border:'#FF00FF',hoverBg:'#205030',focusColor:'#FFAABB',disabledText:'#778899'}}};d.parameters={branding:{name:'Customer Console'},applications:{blos:{name:'Link Manager'}}};d.operator={left:'blos',right:'display',ratio:50,allowed:['single','split','popout']};
+assert.deepEqual(C.validate(JSON.parse(JSON.stringify(d))),d);const preset=presets.find(p=>p.id==='electric-glass'),css=C.compileDesign(d,preset);assert(css.includes('border-radius:24px!important'));assert(css.includes('[data-style-id][data-style-id]'));assert(css.includes('outline:3px solid #FFAABB'));assert(css.indexOf('border-radius:0px!important')<css.indexOf('border-radius:9px!important'));assert(css.indexOf('border-radius:9px!important')<css.indexOf('border-radius:24px!important'));
+const store=new C.DesignStore(d);store.save('Candidate B');store.update(x=>delete x.components.instances['blos:group-join:0']);store.undo();assert.equal(store.value.components.instances['blos:group-join:0'].radius,24);store.restore('Candidate B');assert.equal(store.value.parameters.branding.name,'Customer Console');
+for(const bad of [{schemaVersion:9},{logoPath:'https://invalid.example/logo.png'},{logoPath:'javascript:alert(1)'},{applications:{blos:{visible:false},display:{visible:false},calibration:{visible:false},los:{visible:false}}},{allowedModes:['popout']},{initial:{theme:'unknown'}},{initial:{left:'other'}},{unknown:2}])assert.throws(()=>P.validate(bad));
+assert.equal(P.validate({branding:{name:'Migrated'}}).schemaVersion,2);assert.equal(P.validate({schemaVersion:1}).schemaVersion,2);
+assert.throws(()=>C.validate({...d,components:{instances:{'script:evil':{background:'#112233'}}}}));assert.throws(()=>C.validate({...d,components:{global:{buttons:{position:'fixed'}}}}));
+const resources=builder.resources(),html=E.composeFinal(resources,d,presets),engine=fixture.engineFixture(true,html),run=engine.run,op=engine.window.ScopeOperator;
+assert.equal(run('apps[0].name'),'Link Manager');assert.equal(run('appConfig.branding.name'),'Customer Console');
+run("demoView('right',1).node='N06';DemoMulticastGroupStore.create('Keep operations',['N07']);");const before=run('JSON.stringify(DemoMulticastGroupStore.list())');
+op.transition({mode:'single'});assert.equal(run('integrated.mode'),'single');op.transition({mode:'split'});assert.equal(run('integrated.mode'),'split');assert.equal(run('integrated.left'),0);assert.equal(run('integrated.right'),1);
+function click(dataset){const b=new engine.Element();b.dataset=dataset;for(const fn of engine.listeners.click)fn({target:b,preventDefault(){},stopImmediatePropagation(){}});}
+click({integrationAction:'focus',panel:'left'});assert.equal(run('integrated.focus'),'left');click({integrationAction:'expand',panel:'left'});assert.equal(run('integrated.expanded'),'left');click({integrationAction:'restore'});assert.equal(run('integrated.expanded'),null);
+op.transition({operator:{ratio:1000}});assert.equal(op.snapshot().ratio,75);assert.equal(run("demoView('right',1).node"),'N06');assert.equal(run('JSON.stringify(DemoMulticastGroupStore.list())'),before);
+(async()=>{
+  const params=P.validate({branding:{name:'Renamed Offline'},applications:{blos:{name:'Regional Links'}},labels:{shells:{deck:'Operator Deck'}},initial:{theme:'slate-light',navigation:'deck',mode:'split',left:'blos',right:'display'},buttonGeometry:'square'});
+  await op.importParameters(params);assert.equal(run('appConfig.branding.name'),'Renamed Offline');assert.equal(run('apps[0].name'),'Regional Links');assert.equal(run('state.concept'),3);assert.equal(engine.document.body.dataset.theme,'slate-light');assert.equal(run('JSON.stringify(DemoMulticastGroupStore.list())'),before);
+  op.transition({operator:{left:'los',right:'calibration'}});assert.equal(run('integrated.left'),3);assert.equal(run('integrated.right'),2);
+  const withDefaults={...C.defaults,operator:{left:'display',right:'los',ratio:50,allowed:['single','split','popout']}};const initialPair=fixture.engineFixture(true,E.composeFinal(resources,withDefaults,presets));assert.equal(initialPair.run('state.aperture.active'),1,'Standalone initial left application must be restored');
+  // Source-authenticated child windows receive only design updates. App stores remain independent.
+  const exports=await fixture.editorFixture();assert(exports);
+  globalThis.ScopeOfflineAssets={resources};const zip=await E.folder(d,presets);assert.equal(new DataView(zip.buffer).getUint32(0,true),0x04034b50);const output=path.join(root,'.validation','scope-configurable-mockup.zip');fs.writeFileSync(output,zip);delete globalThis.ScopeOfflineAssets;
+  console.log(JSON.stringify({families:4,presets:presets.length,shellPaletteCombinations:presets.length*4,minimumDefaultTextContrast:min.toFixed(2),componentCascadeAndResetUndoCandidates:'pass',parameterMigrationAndValidation:'pass',singleSplitFocusExpandRestore:'pass (controlled handlers)',independentApplicationState:'pass',configurableZIP:output,browser:'not tested; no browser surface',DISCO:'BLOS v11 reference tokens, material, geometry and typography: pass'},null,2));
+})().catch(error=>{console.error(error);process.exitCode=1;});

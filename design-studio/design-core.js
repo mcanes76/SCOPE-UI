@@ -1,6 +1,8 @@
 /* Shared, dependency-free schema, history and shell CSS compiler. */
 (function(root){
   'use strict';
+  const V=root.ScopeVisuals||(typeof require==='function'?require('./visual-system.js'):null);
+  const P=root.ScopeParameters||(typeof require==='function'?require('./parameters.js'):null);
   const clone=value=>JSON.parse(JSON.stringify(value));
   const navigation=['aperture','mosaic','portal','deck'];
   const themes=[
@@ -21,6 +23,7 @@
   'electric-green',
   'electric-slate'
 ];
+  themes.push(...V.paletteIds);
   const regions={shell:'.shell',header:'.shell-top',branding:'.shell-brand',navigation:'.aperture-dock,.mosaic-layout>nav,.application-shelf,.portal-location,.directory-grid,.deck-nav',workspace:'.aperture-stage,.mosaic-board,.portal-directory,.portal-room,.deck-main,.integrated-panes',context:'.deck-rail',footer:'.owner-footer,.detached-note'};
   const bounds={borderWidth:[0,3],radius:[0,28],opacity:[0.6,0.98],blur:[0,28],padding:[0,40],gap:[8,28],width:[140,360],height:[56,112]};
   const defaults={schemaVersion:1,name:'Customer design',navigation:'aperture',theme:'electric-glass',colors:{},material:{},typography:{family:'system-ui',baseSize:15,headingSize:24,weight:500,density:'comfortable',spacing:16},layout:{mode:'single',navWidth:190,contextWidth:250,contextVisible:true,headerVisible:true,footerVisible:true,workspacePadding:22,panelGap:16,headerHeight:76},regions:{},detailsVisible:false,notes:{navigation:'',theme:'',colors:'',typography:'',layout:'',review:''}};
@@ -31,14 +34,16 @@
   function validate(input){
     assert(object(input)&&input.schemaVersion===1,'Unsupported design schema. Expected version 1.');
     const d=clone(defaults);
-    const known=new Set(Object.keys(d));for(const k of Object.keys(input))assert(known.has(k),'Unknown design field: '+k);
+    if(input.components!==undefined)d.components=V.validateComponents(input.components);
+    if(input.parameters!==undefined)d.parameters=P.validate(input.parameters,true);
+    const known=new Set([...Object.keys(d),'components','parameters','operator']);for(const k of Object.keys(input))assert(known.has(k),'Unknown design field: '+k);
     for(const key of ['navigation','theme']){if(input[key]!==undefined){assert((key==='navigation'?navigation:themes).includes(input[key]),'Unknown '+key);d[key]=input[key];}}
     if(input.name!==undefined){assert(typeof input.name==='string'&&input.name.trim().length>0&&input.name.length<=100,'Design name must contain 1–100 characters');d.name=input.name.trim();}
     if(input.detailsVisible!==undefined){assert(typeof input.detailsVisible==='boolean','Details must be boolean');d.detailsVisible=input.detailsVisible;}
     for(const key of ['colors','material','typography','layout','regions','notes'])if(input[key]!==undefined)assert(object(input[key]),key+' must be an object');
     for(const [key,v] of Object.entries(input.colors||{})){assert(['background','header','navigation','workspace','panel','accent','text','border'].includes(key),'Unknown color token');d.colors[key]=color(v);}
     for(const [key,v] of Object.entries(input.material||{})){assert(bounds[key]&&['borderWidth','radius','opacity','blur'].includes(key),'Unknown material token');d.material[key]=numeric(v,...bounds[key],key);}
-    const typeRules={family:['system-ui','Segoe UI','Arial','Trebuchet MS','Georgia'],baseSize:[14,20],headingSize:[18,36],weight:[400,700],density:['compact','comfortable','spacious'],spacing:[8,28]};
+    const typeRules={family:['system-ui','Segoe UI','Arial','Trebuchet MS','Georgia','Consolas'],baseSize:[14,20],headingSize:[18,36],weight:[400,700],density:['compact','comfortable','spacious'],spacing:[8,28]};
     for(const [k,v] of Object.entries(input.typography||{})){assert(Object.hasOwn(typeRules,k),'Unknown typography token');if(['family','density'].includes(k)){assert(typeRules[k].includes(v),'Invalid '+k);d.typography[k]=v;}else d.typography[k]=numeric(v,...typeRules[k],k);}
     const layoutRules={navWidth:[140,280],contextWidth:[180,360],workspacePadding:[8,40],panelGap:[8,28],headerHeight:[56,112]};
     for(const [k,v] of Object.entries(input.layout||{})){
@@ -57,6 +62,7 @@
       }
     }
     for(const [key,v] of Object.entries(input.notes||{})){assert(Object.hasOwn(defaults.notes,key)&&typeof v==='string'&&v.length<=3000,'Invalid decision note');d.notes[key]=v;}
+    if(input.operator!==undefined){const o=input.operator;assert(object(o),'Invalid operator defaults');d.operator={left:'blos',right:'display',ratio:50,allowed:['single','split','popout']};for(const [k,v] of Object.entries(o)){assert(['left','right','ratio','allowed'].includes(k),'Unknown operator field');if(k==='left'||k==='right'){assert(V.appIds.includes(v),'Invalid application ID');d.operator[k]=v;}else if(k==='ratio')d.operator.ratio=numeric(v,25,75,k);else {assert(Array.isArray(v)&&v.length&&v.every(x=>['single','split','popout'].includes(x)),'Invalid allowed modes');d.operator.allowed=[...new Set(v)];}}assert(d.operator.allowed.includes(d.layout.mode),'Initial mode must be allowed');}
     return d;
   }
   function compileCSS(input){
@@ -123,6 +129,7 @@
       ? {...d,colors:{...preset.colors,...d.colors},material:{...preset.material,...d.material}}
       : d;
   }
-  const api={clone,defaults,navigation,themes,regions,bounds,validate,compileCSS,effectiveDesign,DesignStore};
+  const compileDesign=(input,preset)=>compileCSS(effectiveDesign(input,preset))+'\n'+V.compile(validate(input),preset);
+  const api={clone,defaults,navigation,themes,regions,bounds,validate,compileCSS,compileDesign,effectiveDesign,DesignStore};
   root.ScopeDesign=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

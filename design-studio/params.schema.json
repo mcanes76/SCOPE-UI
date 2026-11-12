@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCOPE Mockup Parameters",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "enum": [
+        1,
+        2
+      ],
+      "default": 2
+    },
+    "branding": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    },
+    "logoPath": {
+      "type": "string",
+      "description": "Relative local image filename/path for folder edition; embedded PNG/JPEG/WebP/GIF data URI for standalone. Import Logo Image embeds bytes."
+    },
+    "applications": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "blos": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "visible": {
+              "type": "boolean",
+              "default": true
+            },
+            "tabs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "display": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "visible": {
+              "type": "boolean",
+              "default": true
+            },
+            "tabs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "calibration": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "visible": {
+              "type": "boolean",
+              "default": true
+            },
+            "tabs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "los": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "visible": {
+              "type": "boolean",
+              "default": true
+            },
+            "tabs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              }
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "properties": {
+        "shells": {
+          "type": "object",
+          "properties": {
+            "aperture": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "mosaic": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "portal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "deck": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            }
+          }
+        }
+      }
+    },
+    "initial": {
+      "type": "object",
+      "properties": {
+        "theme": {
+          "type": "string"
+        },
+        "navigation": {
+          "enum": [
+            "aperture",
+            "mosaic",
+            "portal",
+            "deck"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "single",
+            "split"
+          ]
+        },
+        "left": {
+          "enum": [
+            "blos",
+            "display",
+            "calibration",
+            "los"
+          ]
+        },
+        "right": {
+          "enum": [
+            "blos",
+            "display",
+            "calibration",
+            "los"
+          ]
+        }
+      }
+    },
+    "allowedModes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "single",
+          "split",
+          "popout"
+        ]
+      }
+    },
+    "buttonGeometry": {
+      "enum": [
+        "inherit",
+        "square",
+        "slight",
+        "rounded",
+        "pill"
+      ]
+    }
+  }
+}

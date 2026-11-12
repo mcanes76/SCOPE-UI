@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "branding": {
+    "name": "SCOPE",
+    "eyebrow": "SCOPE / Premium shell exploration 03",
+    "title": "SCOPE / Electric Glass.",
+    "tagline": "Regional Earth · Electric semantic actions · Independent application simulations."
+  },
+  "logoPath": "assets/logo.png",
+  "applications": {
+    "blos": {
+      "name": "BLOS",
+      "visible": true,
+      "tabs": {
+        "groups": "Multicast Groups",
+        "discovery": "Discovery Channel",
+        "topology": "Network Topology"
+      }
+    },
+    "display": {
+      "name": "Display",
+      "visible": true,
+      "tabs": {
+        "globe": "Regional Globe",
+        "nodes": "Node Inventory"
+      }
+    },
+    "calibration": {
+      "name": "Sensor Calibration",
+      "visible": true,
+      "tabs": {}
+    },
+    "los": {
+      "name": "Native LOS",
+      "visible": true,
+      "tabs": {}
+    }
+  },
+  "labels": {
+    "shells": {
+      "aperture": "Aperture",
+      "mosaic": "Mosaic",
+      "portal": "Portal",
+      "deck": "Command Deck"
+    },
+    "views": {
+      "workspace": "SCOPE Workspace",
+      "lab": "Component Laboratory",
+      "guide": "Style Guide"
+    },
+    "laboratory": {
+      "gallery": "Generic Visualization Gallery",
+      "controls": "Interactive Controls & States"
+    },
+    "comparison": "Visual Comparison",
+    "hideDetails": "Hide UI Details",
+    "showDetails": "Show UI Details"
+  },
+  "initial": {
+    "theme": "slate-light",
+    "navigation": "deck",
+    "mode": "split",
+    "left": "blos",
+    "right": "display"
+  },
+  "allowedModes": [
+    "single",
+    "split",
+    "popout"
+  ],
+  "buttonGeometry": "rounded"
+}

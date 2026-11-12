@@ -6,7 +6,7 @@ const C=require('../../design-studio/design-core.js'),E=require('../../design-st
 const fixtures=require('./validate-design-studio.cjs');
 const result=builder.build(),html=fs.readFileSync(result.file,'utf8');
 const payload=JSON.parse(html.match(/<script type="application\/json" id="scope-offline-assets">([\s\S]*?)<\/script>/)[1]);
-assert(payload.resources.html.startsWith('<!doctype html>'));assert.equal(payload.themes.presets.length,16);
+assert(payload.resources.html.startsWith('<!doctype html>'));assert.equal(payload.themes.presets.length,JSON.parse(fs.readFileSync(path.join(root,'design-studio/theme-presets.json'),'utf8')).presets.length);
 function audit(document){
   const scripts=[...document.matchAll(/<script(?:\s([^>]*))?>([\s\S]*?)<\/script>/g)];
   for(const script of scripts)if(!script[1]?.includes('application/json'))new vm.Script(script[2]);
@@ -46,7 +46,7 @@ assert.equal(fs.readFileSync(result.file,'utf8'),(builder.build(),fs.readFileSyn
   }};
   const popupURL=preview.run('appWindowURL(2)');assert(popupURL.startsWith('blob:'));
   const popupHTML=await(await fetch(popupURL)).text();audit(popupHTML);assert(!popupHTML.includes('<script data-scope-preview-bridge>'));
-  const popup=fixtures.engineFixture(true,popupHTML);assert.equal(popup.run('detachedContext.app'),2);assert.equal(popup.run('state.look'),'white-trim');assert.equal(popup.run('DemoMulticastGroupStore.list().some(g=>g.name==="Offline retention")'),false,'Independent windows start fresh simulations');URL.revokeObjectURL(popupURL);
+  const popup=fixtures.engineFixture(true,popupHTML);assert.equal(popup.run('detachedContext.app'),2);assert.equal(popup.run('state.look'),payload.themes.presets.at(-1).engineLook);assert.equal(popup.run('DemoMulticastGroupStore.list().some(g=>g.name==="Offline retention")'),false,'Independent windows start fresh simulations');URL.revokeObjectURL(popupURL);
   // Documentation IDs, links and script syntax remain intact after targeted edits.
   for(const name of ['SCOPE-Design-Studio-Architecture.html','SCOPE-UI-Documentation.html','SCOPE-Demo-Notes.html']){
     const doc=fs.readFileSync(path.join(root,'docs',name),'utf8'),ids=[...doc.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,name+' duplicate ID');
