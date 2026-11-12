@@ -1,6 +1,7 @@
 /* Shared, dependency-free schema, history and shell CSS compiler. */
 (function(root){
   'use strict';
+  const W=root.ScopeWorkspace||(typeof require==='function'?require('./workspace.js'):null);
   const V=root.ScopeVisuals||(typeof require==='function'?require('./visual-system.js'):null);
   const P=root.ScopeParameters||(typeof require==='function'?require('./parameters.js'):null);
   const clone=value=>JSON.parse(JSON.stringify(value));
@@ -37,7 +38,7 @@
     if(input.components!==undefined)d.components=V.validateComponents(input.components);
     if(input.parameters!==undefined)d.parameters=P.validate(input.parameters,true);
     if(input.visual!==undefined)d.visual=V.validateVisual(input.visual);
-    const known=new Set([...Object.keys(d),'components','parameters','operator','visual']);for(const k of Object.keys(input))assert(known.has(k),'Unknown design field: '+k);
+    const known=new Set([...Object.keys(d),'components','parameters','operator','visual','workspace']);for(const k of Object.keys(input))assert(known.has(k),'Unknown design field: '+k);
     for(const key of ['navigation','theme']){if(input[key]!==undefined){assert((key==='navigation'?navigation:themes).includes(input[key]),'Unknown '+key);d[key]=input[key];}}
     if(input.name!==undefined){assert(typeof input.name==='string'&&input.name.trim().length>0&&input.name.length<=100,'Design name must contain 1–100 characters');d.name=input.name.trim();}
     if(input.detailsVisible!==undefined){assert(typeof input.detailsVisible==='boolean','Details must be boolean');d.detailsVisible=input.detailsVisible;}
@@ -50,7 +51,7 @@
     for(const [k,v] of Object.entries(input.layout||{})){
       assert(Object.hasOwn(defaults.layout,k),'Unknown layout token');
       if(layoutRules[k])d.layout[k]=numeric(v,...layoutRules[k],k);
-      else if(k==='mode'){assert(['single','split'].includes(v),'Invalid workspace mode');d.layout[k]=v;}
+      else if(k==='mode'){assert(['single','split','stacked'].includes(v),'Invalid workspace mode');d.layout[k]=v;}
       else {assert(typeof v==='boolean','Visibility must be boolean');d.layout[k]=v;}
     }
     for(const [region,values] of Object.entries(input.regions||{})){
@@ -63,7 +64,8 @@
       }
     }
     for(const [key,v] of Object.entries(input.notes||{})){assert(Object.hasOwn(defaults.notes,key)&&typeof v==='string'&&v.length<=3000,'Invalid decision note');d.notes[key]=v;}
-    if(input.operator!==undefined){const o=input.operator;assert(object(o),'Invalid operator defaults');d.operator={left:'blos',right:'display',ratio:50,allowed:['single','split','popout']};for(const [k,v] of Object.entries(o)){assert(['left','right','ratio','allowed'].includes(k),'Unknown operator field');if(k==='left'||k==='right'){assert(V.appIds.includes(v),'Invalid application ID');d.operator[k]=v;}else if(k==='ratio')d.operator.ratio=numeric(v,25,75,k);else {assert(Array.isArray(v)&&v.length&&v.every(x=>['single','split','popout'].includes(x)),'Invalid allowed modes');d.operator.allowed=[...new Set(v)];}}assert(d.operator.allowed.includes(d.layout.mode),'Initial mode must be allowed');}
+    if(input.operator!==undefined){const o=input.operator;assert(object(o),'Invalid operator defaults');d.operator={left:'blos',right:'display',ratio:50,allowed:['single','split','popout']};for(const [k,v] of Object.entries(o)){assert(['left','right','ratio','allowed'].includes(k),'Unknown operator field');if(k==='left'||k==='right'){assert(V.appIds.includes(v),'Invalid application ID');d.operator[k]=v;}else if(k==='ratio')d.operator.ratio=numeric(v,10,90,k);else {assert(Array.isArray(v)&&v.length&&v.every(x=>['single','split','stacked','popout'].includes(x)),'Invalid allowed modes');d.operator.allowed=[...new Set(v)];}}assert(d.operator.allowed.includes(d.layout.mode),'Initial mode must be allowed');}
+    if(input.workspace!==undefined){d.workspace=W.validate(input.workspace,W.fromDesign(d));d.layout.mode=d.workspace.layout;d.operator=W.operator(d.workspace);}
     return d;
   }
   function compileCSS(input){

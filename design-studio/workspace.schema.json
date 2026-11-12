@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCOPE Workspace Settings v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "layout": {
+      "enum": [
+        "single",
+        "split",
+        "stacked"
+      ]
+    },
+    "left": {
+      "enum": [
+        "blos",
+        "display",
+        "calibration",
+        "los"
+      ]
+    },
+    "right": {
+      "enum": [
+        "blos",
+        "display",
+        "calibration",
+        "los"
+      ]
+    },
+    "ratio": {
+      "type": "number",
+      "minimum": 10,
+      "maximum": 90
+    },
+    "focused": {
+      "enum": [
+        "left",
+        "right"
+      ]
+    },
+    "expanded": {
+      "enum": [
+        null,
+        "left",
+        "right"
+      ]
+    },
+    "previousLayout": {
+      "enum": [
+        "single",
+        "split",
+        "stacked"
+      ]
+    },
+    "minPaneWidth": {
+      "type": "number",
+      "minimum": 160,
+      "maximum": 640
+    },
+    "minPaneHeight": {
+      "type": "number",
+      "minimum": 120,
+      "maximum": 480
+    },
+    "allowedLayouts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "single",
+          "split",
+          "stacked"
+        ]
+      }
+    },
+    "popout": {
+      "type": "boolean"
+    },
+    "preserveViews": {
+      "type": "boolean"
+    }
+  }
+}

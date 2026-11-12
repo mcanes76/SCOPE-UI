@@ -38,13 +38,14 @@
     const [html,style,core,runtime,config,fallback]=await Promise.all([fetchText('../mockups/scope-integrated-electric-glass.html'),fetchText('../mockups/styles.css'),fetchText('design-core.js'),fetchText('preview-runtime.js'),fetchText('../mockups/params.json'),dataURL('../mockups/assets/scope-logo.svg')]);
     const params=JSON.parse(config);let logo=fallback;const path=params.logoPath||'assets/logo.png';
     if(!/^(?:[a-z][a-z0-9+.-]*:|\/|\\)/i.test(path)&&!path.includes('\\'))try{logo=await dataURL(new URL(path,new URL('../mockups/',location.href)));}catch{}
-    const extra=await Promise.all(['visual-system.js','parameters.js','operator-runtime.js','embedded-windows.js','theme-tokens.js'].map(fetchText));
-    return composeFinal({html,css:style,core:extra[4]+'\n'+extra[0]+'\n'+extra[1]+'\n'+core,runtime:extra[2]+'\n'+runtime+'\nwindow.ScopePortablePresets='+json(presets)+';\n'+extra[3],params,logo,fallback},design,presets);
+    const extra=await Promise.all(['visual-system.js','parameters.js','operator-runtime.js','embedded-windows.js','theme-tokens.js','workspace.js'].map(fetchText));
+    return composeFinal({html,css:style,core:extra[5]+'\n'+extra[4]+'\n'+extra[0]+'\n'+extra[1]+'\n'+core,runtime:extra[2]+'\n'+runtime+'\nwindow.ScopePortablePresets='+json(presets)+';\n'+extra[3],params,logo,fallback},design,presets);
   }
   async function folder(design,presets){
     const P=root.ScopeParameters||(typeof require==='function'?require('./parameters.js'):null);
     const base=root.ScopeOfflineAssets?.resources.params||JSON.parse(await fetchText('../mockups/params.json'));
-    const params=P.validate({...base,...design.parameters,initial:{theme:design.theme,navigation:design.navigation,mode:design.layout.mode,left:design.operator?.left||'blos',right:design.operator?.right||'display'},allowedModes:design.operator?.allowed||['single','split','popout']});
+    const W=root.ScopeWorkspace||(typeof require==='function'?require('./workspace.js'):null),workspace=W.fromDesign(design);
+    const params=P.validate({...base,...design.parameters,workspace,initial:{theme:design.theme,navigation:design.navigation,mode:design.layout.mode,left:design.operator?.left||'blos',right:design.operator?.right||'display'},allowedModes:W.operator(workspace).allowed});
     const asset=design.parameters?.logoPath?.startsWith('data:image/')?design.parameters.logoPath:root.ScopeOfflineAssets?.resources.logo||await dataURL('../mockups/assets/logo.png');
     const extension=asset.startsWith('data:image/svg+xml')?'svg':asset.startsWith('data:image/jpeg')?'jpg':asset.startsWith('data:image/webp')?'webp':asset.startsWith('data:image/gif')?'gif':'png';const logoFile='assets/logo.'+extension;params.logoPath=logoFile;
     let html=await finalHTML(design,presets);

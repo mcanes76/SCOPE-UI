@@ -22,7 +22,7 @@ const resources=builder.resources(),html=E.composeFinal(resources,d,presets),eng
 assert.equal(run('apps[0].name'),'Link Manager');assert.equal(run('appConfig.branding.name'),'Customer Console');
 run("demoView('right',1).node='N06';DemoMulticastGroupStore.create('Keep operations',['N07']);");const before=run('JSON.stringify(DemoMulticastGroupStore.list())');
 op.transition({mode:'single'});assert.equal(run('integrated.mode'),'single');op.transition({mode:'split'});assert.equal(run('integrated.mode'),'split');assert.equal(run('integrated.left'),0);assert.equal(run('integrated.right'),1);
-function click(dataset){const b=new engine.Element();b.dataset=dataset;for(const fn of engine.listeners.click)fn({target:b,preventDefault(){},stopImmediatePropagation(){}});}
+function click(dataset){const b=new engine.Element();b.dataset=dataset;let stopped=false;for(const fn of [...(engine.captures.click||[]),...engine.listeners.click.filter(fn=>!(engine.captures.click||[]).includes(fn))]){if(stopped)break;fn({target:b,preventDefault(){},stopImmediatePropagation(){stopped=true;}});}}
 click({integrationAction:'focus',panel:'left'});assert.equal(run('integrated.focus'),'left');click({integrationAction:'expand',panel:'left'});assert.equal(run('integrated.expanded'),'left');click({integrationAction:'restore'});assert.equal(run('integrated.expanded'),null);
 op.transition({operator:{ratio:1000}});assert.equal(op.snapshot().ratio,75);assert.equal(run("demoView('right',1).node"),'N06');assert.equal(run('JSON.stringify(DemoMulticastGroupStore.list())'),before);
 (async()=>{

@@ -103,7 +103,7 @@
     return {descriptor:info,values,sources,warnings};
   }
   function splitSelectors(value){let depth=0,quote='',start=0;const out=[];for(let i=0;i<value.length;i++){const ch=value[i];if(quote){if(ch===quote&&value[i-1]!=='\\')quote='';}else if(ch==='"'||ch==="'")quote=ch;else if(ch==='('||ch==='[')depth++;else if(ch===')'||ch===']')depth--;else if(ch===','&&!depth){out.push(value.slice(start,i).trim());start=i+1;}}out.push(value.slice(start).trim());return out;}
-  const selectors={buttons:'button',headers:'.surface-top,.pane-header,.integration-pane-header',panels:'[data-demo-host] section,[data-demo-host] fieldset,[data-demo-host] .demo-card',tabs:'.app-tabs button',navigation:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room]',frames:'.owner-surface,.integration-pane,.pane',join:'.btn-join,.btn-enable',leave:'.btn-leave,.btn-disable',warning:'.btn-warning',configuration:'.btn-update',info:'.btn-read',neutral:'.btn-neutral'};
+  const selectors={buttons:'button,.operator-bar select,.integration-pane-header select',headers:'.surface-top,.pane-header,.integration-pane-header',panels:'[data-demo-host] section,[data-demo-host] fieldset,[data-demo-host] .demo-card',tabs:'.app-tabs button',navigation:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room]',frames:'.owner-surface,.integration-pane,.pane,.operator-divider',join:'.btn-join,.btn-enable',leave:'.btn-leave,.btn-disable',warning:'.btn-warning',configuration:'.btn-update',info:'.btn-read',neutral:'.btn-neutral'};
   function compile(design,preset){
     const t=tokens(design,preset),out=[],prefix='body[data-scope-design="true"][data-theme="'+design.theme+'"]';
     const rule=(s,p)=>out.push(splitSelectors(s).map(x=>prefix+' '+x.trim()).join(',')+'{'+p+'}');
@@ -138,6 +138,7 @@
     };
     // Every control starts a new property scope; header/panel properties cannot leak into child buttons.
     rule('button',colors.concat(['opacity','gradient','gradientAngle']).map(k=>'--scope-component-'+k+':initial').join(';'));
+    rule('.operator-bar select,.integration-pane-header select',paint(t.control,t.controlText)+';border-color:'+variable('border',t.controlBorder)+'!important');
     rule('button',paint(t.control,t.controlText)+';border-color:'+variable('border',t.controlBorder)+'!important;border-radius:'+t.f.controlRadius+'px;min-height:'+t.f.controlHeight+'px');
     rule('button:hover:not(:disabled)',paint(t.hover,t.theme.states.hover.foreground,'hover'));rule('button:active:not(:disabled)',paint(t.pressed,t.theme.states.pressed.foreground,'pressed'));
     rule('button[aria-pressed="true"],button[aria-selected="true"]',paint(t.selection,t.theme.states.selected.foreground,'selected'));

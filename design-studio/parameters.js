@@ -2,7 +2,7 @@
 (function(root){
   'use strict';
   const apps=['blos','display','calibration','los'],nav=['aperture','mosaic','portal','deck'];
-  const defaults={schemaVersion:2,branding:{name:'SCOPE'},logoPath:'assets/logo.png',applications:{blos:{name:'BLOS',visible:true,tabs:{}},display:{name:'Display',visible:true,tabs:{}},calibration:{name:'Sensor Calibration',visible:true,tabs:{}},los:{name:'Native LOS',visible:true,tabs:{}}},labels:{shells:{aperture:'Aperture',mosaic:'Mosaic',portal:'Portal',deck:'Command Deck'}},initial:{theme:'electric-glass',navigation:'aperture',mode:'single',left:'blos',right:'display'},allowedModes:['single','split','popout'],buttonGeometry:'inherit',componentStyles:{global:{},classes:{},applications:{},instances:{}}};
+  const defaults={schemaVersion:2,branding:{name:'SCOPE'},logoPath:'assets/logo.png',applications:{blos:{name:'BLOS',visible:true,tabs:{}},display:{name:'Display',visible:true,tabs:{}},calibration:{name:'Sensor Calibration',visible:true,tabs:{}},los:{name:'Native LOS',visible:true,tabs:{}}},labels:{shells:{aperture:'Aperture',mosaic:'Mosaic',portal:'Portal',deck:'Command Deck'}},initial:{theme:'electric-glass',navigation:'aperture',mode:'single',left:'blos',right:'display'},allowedModes:['single','split','stacked','popout'],buttonGeometry:'inherit',workspace:{},componentStyles:{global:{},classes:{},applications:{},instances:{}}};
   const clone=x=>JSON.parse(JSON.stringify(x));
   const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   function validate(input,partial=false){
@@ -11,6 +11,7 @@
     if(input.schemaVersion!==undefined&&![1,2].includes(input.schemaVersion))throw Error('Unsupported parameter schema version');
     function merge(a,b){const out=clone(a);for(const [k,v] of Object.entries(b)){if(['__proto__','constructor','prototype'].includes(k))throw Error('Invalid parameter key');out[k]=obj(v)&&obj(out[k])?merge(out[k],v):clone(v);}return out;}
     const p=merge(defaults,input);p.schemaVersion=2;
+    if(input.workspace!==undefined){const W=root.ScopeWorkspace||(typeof require==='function'?require('./workspace.js'):null);p.workspace=W.validate(input.workspace,{...W.defaults,layout:p.initial.mode,left:p.initial.left,right:p.initial.right,allowedLayouts:input.allowedModes?p.allowedModes.filter(m=>m!=='popout'):W.defaults.allowedLayouts,popout:p.allowedModes.includes('popout')});p.initial.mode=p.workspace.layout;p.initial.left=p.workspace.left;p.initial.right=p.workspace.right;p.allowedModes=[...p.workspace.allowedLayouts,...(p.workspace.popout?['popout']:[])];}
     const visuals=root.ScopeVisuals||(typeof require==='function'?require('./visual-system.js'):null);
     p.componentStyles=visuals.validateComponents(p.componentStyles);
     let safeSVG=false;
@@ -22,14 +23,14 @@
     for(const id of apps){const a=p.applications[id];if(!obj(a))throw Error('Invalid application');text(a.name,'application name');if(typeof a.visible!=='boolean'||!obj(a.tabs))throw Error('Invalid application options');for(const v of Object.values(a.tabs))text(v,'tab label');}
     if(!apps.some(id=>p.applications[id].visible))throw Error('At least one application must remain visible');
     for(const id of nav)text(p.labels.shells[id],'navigation label');
-    if(!nav.includes(p.initial.navigation)||!['single','split'].includes(p.initial.mode)||!apps.includes(p.initial.left)||!apps.includes(p.initial.right))throw Error('Invalid initial arrangement');
-    if(!p.applications[p.initial.left].visible||p.initial.mode==='split'&&!p.applications[p.initial.right].visible)throw Error('Initial applications must be visible');
+    if(!nav.includes(p.initial.navigation)||!['single','split','stacked'].includes(p.initial.mode)||!apps.includes(p.initial.left)||!apps.includes(p.initial.right))throw Error('Invalid initial arrangement');
+    if(!p.applications[p.initial.left].visible||p.initial.mode!=='single'&&!p.applications[p.initial.right].visible)throw Error('Initial applications must be visible');
     const known=root.ScopeDesign?.themes||root.ScopeVisuals?.paletteIds||[];
     if(!['electric-glass','prism','nocturne','carbon','spectrum','frosted-white','white-trim','electric-steel','electric-teal','electric-violet','electric-olive','electric-amber','electric-indigo','electric-cyan','electric-green','electric-slate',...known].includes(p.initial.theme))throw Error('Invalid initial palette');
     const theme=root.ScopeTheme||(typeof require==='function'?require('./theme-tokens.js'):null),derived=theme.familyForPalette(p.initial.theme),requested=input.initial?.family;
     if(requested!==undefined&&theme.normalizeFamily(requested)!==derived)throw Error('Initial family does not match the selected palette');
     p.initial.family=derived;
-    if(!Array.isArray(p.allowedModes)||!p.allowedModes.length||p.allowedModes.some(m=>!['single','split','popout'].includes(m))||!p.allowedModes.includes(p.initial.mode))throw Error('Allowed modes must include the initial mode');
+    if(!Array.isArray(p.allowedModes)||!p.allowedModes.length||p.allowedModes.some(m=>!['single','split','stacked','popout'].includes(m))||!p.allowedModes.includes(p.initial.mode))throw Error('Allowed modes must include the initial mode');
     if(!['inherit','square','slight','rounded','pill'].includes(p.buttonGeometry))throw Error('Invalid button geometry');
     if(partial){const out=clone(input);if(Object.hasOwn(input,'componentStyles'))out.componentStyles=p.componentStyles;if(out.initial?.family!==undefined)out.initial.family=derived;delete out.schemaVersion;return out;}return p;
   }

@@ -167,7 +167,8 @@
         "mode": {
           "enum": [
             "single",
-            "split"
+            "split",
+            "stacked"
           ]
         },
         "left": {
@@ -208,6 +209,7 @@
         "enum": [
           "single",
           "split",
+          "stacked",
           "popout"
         ]
       }
@@ -224,6 +226,10 @@
     "componentStyles": {
       "$ref": "component-styles.schema.json",
       "description": "Inherited component defaults. Explicit design overrides have precedence at the same scope."
+    },
+    "workspace": {
+      "$ref": "workspace.schema.json",
+      "description": "Version 1 workspace defaults take precedence over legacy initial mode/apps and allowedModes. Runtime window identities are never exported."
     }
   }
 }

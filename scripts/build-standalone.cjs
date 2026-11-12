@@ -25,7 +25,7 @@ function resources(){
     }
   }
   const runtime=read('design-studio/operator-runtime.js')+'\n'+read('design-studio/preview-runtime.js')+'\nwindow.ScopePortablePresets='+encodeJSON(presets.presets)+';\n'+read('design-studio/embedded-windows.js');
-  return {html:read('mockups/scope-integrated-electric-glass.html'),css:read('mockups/styles.css'),core:['theme-tokens.js','visual-system.js','parameters.js','design-core.js'].map(f=>read('design-studio/'+f)).join('\n'),runtime,params,logo,fallback};
+  return {html:read('mockups/scope-integrated-electric-glass.html'),css:read('mockups/styles.css'),core:['workspace.js','theme-tokens.js','visual-system.js','parameters.js','design-core.js'].map(f=>read('design-studio/'+f)).join('\n'),runtime,params,logo,fallback};
 }
 function build(options={}){
   const themes=parse('design-studio/theme-presets.json'),initial=C.validate(parse('design-studio/design-config.json'));
@@ -42,7 +42,7 @@ function build(options={}){
   html=html.replace(/<script defer src="[^"]+"><\/script>/g,'');
   html=html.replace('<link rel="stylesheet" href="studio.css">',()=>'<style>'+read('design-studio/studio.css')+'</style>');
   html=html.replace('href="../mockups/assets/scope-logo.svg"','href="'+payload.resources.fallback+'"').replace('src="../mockups/assets/logo.png"','src="'+payload.resources.logo+'"');
-  html=html.replace('</body>',()=>'<script type="application/json" id="scope-offline-assets">'+encodeJSON(payload)+'</script>'+inlineScript("window.ScopeOfflineAssets=JSON.parse(document.getElementById('scope-offline-assets').textContent);")+['theme-tokens.js','visual-system.js','parameters.js','design-core.js','archive.js','exports.js','offline.js','component-editor.js','studio.js'].map(file=>inlineScript(read('design-studio/'+file))).join('')+'</body>');
+  html=html.replace('</body>',()=>'<script type="application/json" id="scope-offline-assets">'+encodeJSON(payload)+'</script>'+inlineScript("window.ScopeOfflineAssets=JSON.parse(document.getElementById('scope-offline-assets').textContent);")+['workspace.js','theme-tokens.js','visual-system.js','parameters.js','design-core.js','archive.js','exports.js','offline.js','component-editor.js','studio.js'].map(file=>inlineScript(read('design-studio/'+file))).join('')+'</body>');
   // Verify preview assembly now; never ship a bundle with drifted engine markers.
   E.composeFinal(payload.resources,initial,themes.presets,{preview:true});
   const destination=options.output?path.resolve(root,options.output):path.join(root,'dist','SCOPE-Design-Studio.html');fs.mkdirSync(path.dirname(destination),{recursive:true});fs.writeFileSync(destination,html,'utf8');

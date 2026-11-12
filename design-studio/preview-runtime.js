@@ -64,13 +64,14 @@
     const next=core.validate(input),preset=presets.find(p=>p.id===next.theme);
     if(next.operator)options={application:next.operator.left,rightApplication:next.operator.right,...options};
     if(!preset||!looks.some(l=>l.id===preset.engineLook))throw Error('Unknown preview theme');
+    const expansionChanged=!design||(next.workspace?.expanded??null)!==(design.workspace?.expanded??null);
     const navChanged=!design||next.navigation!==design.navigation;
-    const modeChanged=!design||next.layout.mode!==design.layout.mode;
+    const modeChanged=!design||(next.layout.mode==='single')!==(design.layout.mode==='single');
     comparisonFrozen=Boolean(options.comparisonFrozen);document.body.dataset.themeComparison=String(comparisonFrozen);
     if(modeChanged)integrated.expanded=null;
     design=next;editing=Boolean(options.editing);selected=options.region&&Object.hasOwn(core.regions,options.region)?options.region:'';selectedComponent=visual.validId(options.componentSelection)?visual.canonicalId(options.componentSelection):'';
-    state.look=preset.engineLook;state.concept=core.navigation.indexOf(next.navigation);if(navChanged)state.view='workspace';integrated.mode=next.layout.mode;
-    let redraw=navChanged||modeChanged;
+    state.look=preset.engineLook;state.concept=core.navigation.indexOf(next.navigation);if(navChanged)state.view='workspace';integrated.mode=next.layout.mode==='stacked'?'split':next.layout.mode;
+    let redraw=navChanged||modeChanged||expansionChanged;
     if(options.application&&options.application!==application){application=options.application;redraw=selectApp(application)||redraw;}
     if(options.rightApplication&&options.rightApplication!==rightApplication){rightApplication=options.rightApplication;if(integrated.mode==='split')redraw=selectApp(rightApplication,true)||redraw;}
     // Navigation changes retain the engine's per-slot draft/view maps and application stores.
@@ -94,10 +95,12 @@
       const appIndex=d.deckApp??d.enterRoom??d.switchApp??d.membership??d.paneFocus;
       if(appIndex!==undefined&&ApplicationIds[Number(appIndex)])id='shell.navigation.button.'+ApplicationIds[Number(appIndex)];
       else if(d.integrationAction)id='shell.window.button.'+safe(d.integrationAction)+(d.panel?'.'+safe(d.panel):'');
-      else if(d.operator)id='shell.window.button.'+safe(d.operator)+(d.mode?'.'+safe(d.mode):'');
+      else if(d.operator)id='shell.window.button.'+safe(d.operator)+(d.mode?'.'+safe(d.mode):'')+(d.slot?'.'+safe(d.slot):'');
       else if(d.action)id='shell.button.'+safe(d.action);
       if(id)button.setAttribute('data-style-id',id);
     });
+    document.querySelectorAll('[data-operator-select]').forEach(el=>el.setAttribute('data-style-id','shell.window.button.selector-'+el.dataset.operatorSelect));
+    document.querySelectorAll('.operator-divider').forEach(el=>el.setAttribute('data-style-id','shell.window.button.divider'));
     if(typeof demoDialog==='object'&&demoDialog){
       const host=document.querySelector('[data-demo-host][data-slot="'+demoDialog.slot+'"]'),id=ApplicationIds[Number(host?.dataset.app)],dialog=document.getElementById('demo-action-dialog');
       if(id&&dialog){dialog.setAttribute('data-owner',id);dialog.querySelectorAll('[data-demo-dialog]').forEach(button=>button.setAttribute('data-style-id',visual.componentId(id,(demoDialog.kind||'dialog')+'-'+button.dataset.demoDialog)));}
