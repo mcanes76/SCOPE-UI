@@ -2,7 +2,7 @@
 (function(root){
   'use strict';
   const apps=['blos','display','calibration','los'],nav=['aperture','mosaic','portal','deck'];
-  const defaults={schemaVersion:2,branding:{name:'SCOPE'},logoPath:'assets/logo.png',applications:{blos:{name:'BLOS',visible:true,tabs:{}},display:{name:'Display',visible:true,tabs:{}},calibration:{name:'Sensor Calibration',visible:true,tabs:{}},los:{name:'Native LOS',visible:true,tabs:{}}},labels:{shells:{aperture:'Aperture',mosaic:'Mosaic',portal:'Portal',deck:'Command Deck'}},initial:{theme:'electric-glass',navigation:'aperture',mode:'single',left:'blos',right:'display'},allowedModes:['single','split','popout'],buttonGeometry:'inherit'};
+  const defaults={schemaVersion:2,branding:{name:'SCOPE'},logoPath:'assets/logo.png',applications:{blos:{name:'BLOS',visible:true,tabs:{}},display:{name:'Display',visible:true,tabs:{}},calibration:{name:'Sensor Calibration',visible:true,tabs:{}},los:{name:'Native LOS',visible:true,tabs:{}}},labels:{shells:{aperture:'Aperture',mosaic:'Mosaic',portal:'Portal',deck:'Command Deck'}},initial:{theme:'electric-glass',navigation:'aperture',mode:'single',left:'blos',right:'display'},allowedModes:['single','split','popout'],buttonGeometry:'inherit',componentStyles:{global:{},classes:{},applications:{},instances:{}}};
   const clone=x=>JSON.parse(JSON.stringify(x));
   const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   function validate(input,partial=false){
@@ -11,6 +11,8 @@
     if(input.schemaVersion!==undefined&&![1,2].includes(input.schemaVersion))throw Error('Unsupported parameter schema version');
     function merge(a,b){const out=clone(a);for(const [k,v] of Object.entries(b)){if(['__proto__','constructor','prototype'].includes(k))throw Error('Invalid parameter key');out[k]=obj(v)&&obj(out[k])?merge(out[k],v):clone(v);}return out;}
     const p=merge(defaults,input);p.schemaVersion=2;
+    const visuals=root.ScopeVisuals||(typeof require==='function'?require('./visual-system.js'):null);
+    p.componentStyles=visuals.validateComponents(p.componentStyles);
     let safeSVG=false;
     if(typeof p.logoPath==='string'&&/^data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+$/.test(p.logoPath)){try{const svg=atob(p.logoPath.split(',')[1]);safeSVG=svg.length<100000&&!/(?:\bon\w+\s*=|href\s*=|url\s*\(|<!|<\?)/i.test(svg)&&[...svg.matchAll(/<\/?([\w:-]+)/g)].every(m=>['svg','title','circle','path','g','rect','line','ellipse','polyline','polygon'].includes(m[1]));}catch{}}
     const text=(v,label)=>{if(typeof v!=='string'||!v.trim()||v.length>300)throw Error('Invalid '+label);};
@@ -26,7 +28,7 @@
     if(!['electric-glass','prism','nocturne','carbon','spectrum','frosted-white','white-trim','electric-steel','electric-teal','electric-violet','electric-olive','electric-amber','electric-indigo','electric-cyan','electric-green','electric-slate',...known].includes(p.initial.theme))throw Error('Invalid initial palette');
     if(!Array.isArray(p.allowedModes)||!p.allowedModes.length||p.allowedModes.some(m=>!['single','split','popout'].includes(m))||!p.allowedModes.includes(p.initial.mode))throw Error('Allowed modes must include the initial mode');
     if(!['inherit','square','slight','rounded','pill'].includes(p.buttonGeometry))throw Error('Invalid button geometry');
-    if(partial){const out=clone(input);delete out.schemaVersion;return out;}return p;
+    if(partial){const out=clone(input);if(Object.hasOwn(input,'componentStyles'))out.componentStyles=p.componentStyles;delete out.schemaVersion;return out;}return p;
   }
   const api={defaults,validate};root.ScopeParameters=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -82,7 +82,8 @@ async function editorFixture(offlineAssets=null){
   }
   const get=id=>{if(!els.has(id))els.set(id,new Element(id));return els.get(id);};
   const document={body:new Element('body'),documentElement:new Element(),querySelector:s=>get(s.replace(/^#/,'')),querySelectorAll:()=>[],getElementById:get,createElement:()=>new Element(),addEventListener:(k,fn)=>events[k]=fn};
-  const downloaded=[],context=vm.createContext({document,window:{addEventListener(){}},location:{origin:'http://127.0.0.1',href:'http://127.0.0.1/design-studio/'},crypto:{randomUUID:()=>Math.random().toString()},URL,ScopeDesign:C,ScopeExports:{...E,download:(...args)=>downloaded.push(args)},fetch:async url=>({ok:true,json:async()=>url==='theme-presets.json'?{presets}:url==='design-config.json'?initial:resources.params}),setTimeout:()=>0,clearTimeout(){},console});
+  const windowEvents={};
+  const downloaded=[],context=vm.createContext({document,window:{addEventListener(type,fn){windowEvents[type]=fn;}},location:{origin:'http://127.0.0.1',href:'http://127.0.0.1/design-studio/'},crypto:{randomUUID:()=>Math.random().toString()},URL,ScopeDesign:C,ScopeExports:{...E,download:(...args)=>downloaded.push(args)},fetch:async url=>({ok:true,json:async()=>url==='theme-presets.json'?{presets}:url==='design-config.json'?initial:resources.params}),setTimeout:()=>0,clearTimeout(){},console});
   let networkRequests=0;
   if(offlineAssets){
     context.location={origin:'null',href:'file:///customer/SCOPE-Design-Studio.html'};context.window.origin='null';context.Blob=Blob;
@@ -92,7 +93,7 @@ async function editorFixture(offlineAssets=null){
     vm.runInContext(read('design-studio/offline.js'),context);
   }
   context.ScopeVisuals=require('../../design-studio/visual-system.js');vm.runInContext(read('design-studio/component-editor.js'),context);
-  let source=read('design-studio/studio.js');source=source.replace(/\}\)\(\);\s*$/,'globalThis.fixture={get store(){return store;},get mode(){return mode;},get step(){return step;},get presenting(){return presenting;},get region(){return region;}};})();');await vm.runInContext(source,context);
+  let source=read('design-studio/studio.js');source=source.replace(/\}\)\(\);\s*$/,'globalThis.fixture={get store(){return store;},get mode(){return mode;},get step(){return step;},get presenting(){return presenting;},get region(){return region;},get clients(){return clients;},get componentPicker(){return componentPicker;}};})();');await vm.runInContext(source,context);
   const click=async(dataset={},id='')=>{const b=new Element(id);b.dataset=dataset;await events.click({target:b});};
   const input=(dataset,value,id='',type='range')=>{const el=new Element(id);el.dataset=dataset;el.value=value;el.type=type;el.checked=Boolean(value);events.input({target:el});};
   const f=context.fixture;assert(f);assert.equal(f.store.value.detailsVisible,false);
@@ -106,7 +107,7 @@ async function editorFixture(offlineAssets=null){
   get('import-file').files=[{size:50,text:async()=>'{"schemaVersion":99}'}];await get('import-file').events.change({target:get('import-file')});assert.deepEqual(f.store.value,C.defaults);
   await click({action:'export-css'});assert(downloaded.at(-1)[0].includes('data-scope-design'));await click({action:'export-summary'});assert(downloaded.at(-1)[0].includes('Customer decisions'));
   if(offlineAssets){await click({action:'export-final'});assert.equal(downloaded.at(-1)[1],'SCOPE-Operator-Standalone.html');assert(downloaded.at(-1)[0].includes(offlineAssets.resources.logo));assert.equal(networkRequests,0);assert(get('preview').srcdoc.includes('ScopeEmbeddedTransport'));assert(get('preview').attrs.sandbox.includes('allow-scripts'));assert(!get('preview').attrs.sandbox.includes('allow-same-origin'));}
-  return {context,get,downloaded,click,input};
+  return {context,get,downloaded,click,input,windowEvents};
 }
 async function servedResources(){
   const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(root,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.end(fs.readFileSync(file));}catch{res.writeHead(404).end();}});

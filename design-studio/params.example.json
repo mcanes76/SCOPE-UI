@@ -68,5 +68,26 @@
     "split",
     "popout"
   ],
-  "buttonGeometry": "rounded"
+  "buttonGeometry": "inherit",
+  "componentStyles": {
+    "global": {
+      "buttons": {
+        "radius": 4,
+        "borderStyle": "solid",
+        "height": 44
+      }
+    },
+    "classes": {},
+    "applications": {},
+    "instances": {
+      "application.blos.button.join": {
+        "radius": 0,
+        "borderWidth": 2,
+        "border": "#008C3A"
+      },
+      "application.blos.button.create": {
+        "radius": 50
+      }
+    }
+  }
 }

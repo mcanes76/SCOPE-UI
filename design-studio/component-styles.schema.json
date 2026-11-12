@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCOPE Component Style Overrides (design schema 1 / parameter schema 2)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "global": {
+      "$ref": "#/$defs/groups"
+    },
+    "classes": {
+      "$ref": "#/$defs/groups"
+    },
+    "applications": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "blos": {
+          "$ref": "#/$defs/groups"
+        },
+        "display": {
+          "$ref": "#/$defs/groups"
+        },
+        "calibration": {
+          "$ref": "#/$defs/groups"
+        },
+        "los": {
+          "$ref": "#/$defs/groups"
+        }
+      }
+    },
+    "instances": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(application\\.(blos|display|calibration|los)\\.button\\.|shell\\.(button|navigation\\.button|window\\.button)\\.|(blos|display|calibration|los):)"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/style"
+      }
+    }
+  },
+  "$defs": {
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "text": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "icon": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "border": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "hoverBg": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "hoverText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "focusColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "focusBg": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "focusText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "pressedBg": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "pressedText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "selectedBg": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "selectedText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "disabledBg": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "disabledText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "loadingBg": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "loadingText": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "gradientStart": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "gradientEnd": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "borderWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "radius": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 24
+            },
+            {
+              "enum": [
+                "pill",
+                50
+              ]
+            }
+          ]
+        },
+        "topLeft": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "topRight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "bottomLeft": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "bottomRight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "paddingX": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "paddingY": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "height": {
+          "type": "number",
+          "minimum": 32,
+          "maximum": 72
+        },
+        "minWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 320
+        },
+        "fontSize": {
+          "type": "number",
+          "minimum": 12,
+          "maximum": 24
+        },
+        "fontWeight": {
+          "type": "number",
+          "minimum": 400,
+          "maximum": 800
+        },
+        "letterSpacing": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 4
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0.2,
+          "maximum": 1
+        },
+        "gradientAngle": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360
+        },
+        "borderStyle": {
+          "enum": [
+            "solid",
+            "dashed",
+            "dotted"
+          ]
+        },
+        "fontFamily": {
+          "enum": [
+            "system-ui",
+            "Segoe UI",
+            "Arial",
+            "Aptos",
+            "Calibri",
+            "Tahoma",
+            "Verdana",
+            "Trebuchet MS",
+            "Bahnschrift",
+            "Georgia",
+            "Consolas",
+            "Courier New",
+            "Lucida Console",
+            "Arial Narrow"
+          ]
+        },
+        "textTransform": {
+          "enum": [
+            "none",
+            "uppercase",
+            "lowercase",
+            "capitalize"
+          ]
+        },
+        "elevation": {
+          "enum": [
+            "flat",
+            "raised",
+            "inset"
+          ]
+        },
+        "gradient": {
+          "type": "boolean"
+        }
+      }
+    },
+    "groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "buttons": {
+          "$ref": "#/$defs/style"
+        },
+        "headers": {
+          "$ref": "#/$defs/style"
+        },
+        "panels": {
+          "$ref": "#/$defs/style"
+        },
+        "tabs": {
+          "$ref": "#/$defs/style"
+        },
+        "navigation": {
+          "$ref": "#/$defs/style"
+        },
+        "frames": {
+          "$ref": "#/$defs/style"
+        },
+        "join": {
+          "$ref": "#/$defs/style"
+        },
+        "leave": {
+          "$ref": "#/$defs/style"
+        },
+        "warning": {
+          "$ref": "#/$defs/style"
+        },
+        "configuration": {
+          "$ref": "#/$defs/style"
+        },
+        "info": {
+          "$ref": "#/$defs/style"
+        },
+        "neutral": {
+          "$ref": "#/$defs/style"
+        }
+      }
+    }
+  }
+}

@@ -208,6 +208,10 @@
         "rounded",
         "pill"
       ]
+    },
+    "componentStyles": {
+      "$ref": "component-styles.schema.json",
+      "description": "Inherited component defaults. Explicit design overrides have precedence at the same scope."
     }
   }
 }

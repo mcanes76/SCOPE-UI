@@ -6,6 +6,8 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## SCOPE Design Studio
 
+Advanced → **Component Styles** now uses semantic control IDs, resolved inheritance/provenance, six presets, per-property/component/all resets, button geometry/appearance/type/state controls and contrast/semantic warnings. Guided component controls stay limited to shape, border style and sizing. Settings share history/candidates and all export paths. See the [component editor guide](docs/SCOPE-Component-Styles.html), [style schema](design-studio/component-styles.schema.json) and [parameter example](design-studio/params.example.json). Test with `node docs/assets/validate-component-styles.cjs`; validate temporary output before rebuilding `/dist`.
+
 The corrected offline Studio is synchronized back into its modular source, including all 14 font choices, operator-only export guards/filenames and pop-out toolbar cleanup. A source build reproduces the corrected distribution byte-for-byte. See [source synchronization and validation](docs/SCOPE-Source-Synchronization.html).
 
 To verify a candidate without overwriting `/dist`, run `node scripts/build-standalone.cjs --output .validation/source-sync/candidate.html` and `node docs/assets/validate-source-sync.cjs --reference dist/SCOPE-Design-Studio.html`. Packaging validation also uses temporary output. The normal `node scripts/build-standalone.cjs` command still generates the distribution after review.
