@@ -1120,7 +1120,7 @@
     /* SCOPE_STUDIO_LOADER_START: opt-in adapter; ordinary mockups load no Studio code. */
     if(new URL(window.location.href).searchParams.get('studio')==='1'){
       (async()=>{
-        for(const file of ['visual-system.js','parameters.js','design-core.js','operator-runtime.js','preview-runtime.js','embedded-windows.js','preview-bridge.js']){
+        for(const file of ['theme-tokens.js','visual-system.js','parameters.js','design-core.js','operator-runtime.js','preview-runtime.js','embedded-windows.js','preview-bridge.js']){
           await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='../design-studio/'+file;script.onload=resolve;script.onerror=reject;document.head.append(script);});
         }
       })().catch(()=>console.error('SCOPE Studio adapter could not load. Serve the repository root over HTTP.'));

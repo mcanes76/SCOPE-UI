@@ -40,7 +40,7 @@
   }
   async function importParameters(value){
     const p=P.validate(value);if(!presets.some(x=>x.id===p.initial.theme))throw Error('Unknown palette in parameters');
-    const d=C.clone(current);d.parameters=p;d.theme=p.initial.theme;d.typography=C.clone(presets.find(x=>x.id===d.theme).typography);d.navigation=p.initial.navigation;d.layout.mode=p.initial.mode;d.operator={left:p.initial.left,right:p.initial.right,ratio:50,allowed:p.allowedModes};
+    const d=C.clone(current);d.parameters=p;d.theme=p.initial.theme;d.navigation=p.initial.navigation;d.layout.mode=p.initial.mode;d.operator={left:p.initial.left,right:p.initial.right,ratio:50,allowed:p.allowedModes};
     if(p.buttonGeometry!=='inherit'){d.components??={global:{},classes:{},applications:{},instances:{}};d.components.global.buttons={...(d.components.global.buttons||{}),radius:{square:0,slight:4,rounded:10,pill:50}[p.buttonGeometry]};}
     current=d;window.ScopePreviewRuntime.apply(d,presets,{...options,application:d.operator.left,rightApplication:d.operator.right});window.ScopeOperator.onChange?.(d);say('Parameters applied.');
   }

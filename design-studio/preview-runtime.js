@@ -6,7 +6,7 @@
   base.textContent=`body[data-scope-design="true"]{background:#080e19}body[data-scope-design="true"] .study-header,body[data-scope-design="true"] .study-controls,body[data-scope-design="true"]>.footer,body[data-scope-design="true"] .simulation-banner,body[data-scope-design="true"] .integration-toolbar,body[data-scope-design="true"] .why{display:none!important}body[data-scope-design="true"] #exploration{padding:2px;max-width:none;margin:0}body[data-scope-design="true"] [data-studio-highlight]{outline:2px solid #54e1ff!important;outline-offset:-3px}body[data-scope-design="true"] .studio-resize{position:absolute;top:0;bottom:0;width:10px;padding:0;min-height:40px;border:0;border-radius:0;background:transparent;z-index:10;cursor:col-resize;touch-action:none}body[data-scope-design="true"] .studio-resize:hover,body[data-scope-design="true"] .studio-resize:focus-visible{background:#54e1ff66}body[data-scope-design="true"] .deck-layout{position:relative}@media(max-width:1250px){.studio-resize{display:none!important}}`;
   document.head.append(base);
   const style=document.createElement('style');style.id='scope-design-overrides';document.head.append(style);
-  let design=null,selected='',selectedComponent='',editing=false,dragging=false,callback=()=>{},application='',rightApplication='';
+  let design=null,selected='',selectedComponent='',editing=false,dragging=false,comparisonFrozen=false,callback=()=>{},application='',rightApplication='';
   const visual=window.ScopeVisuals;
   base.textContent+='body[data-scope-design] [data-component-selected]{outline:2px dashed #F5C67A!important;outline-offset:4px}body[data-scope-design][data-component-picking="true"] [data-style-id]{cursor:crosshair}';
   const selector=region=>core.regions[region];
@@ -60,11 +60,13 @@
     if(!state.mosaic.panes.includes(index))state.mosaic.panes=[...state.mosaic.panes.slice(0,2),index];state.mosaic.focus=index;if(state.mosaic.expanded!==null)state.mosaic.expanded=index;return true;
   }
   function apply(input,presets,options={}){
+    if(options.comparisonFrozen&&(state.lab.busy||[...demoViews.values()].some(view=>view.busy)))throw Error('Wait for the simulated loading operation to finish before comparing themes.');
     const next=core.validate(input),preset=presets.find(p=>p.id===next.theme);
     if(next.operator)options={application:next.operator.left,rightApplication:next.operator.right,...options};
     if(!preset||!looks.some(l=>l.id===preset.engineLook))throw Error('Unknown preview theme');
     const navChanged=!design||next.navigation!==design.navigation;
     const modeChanged=!design||next.layout.mode!==design.layout.mode;
+    comparisonFrozen=Boolean(options.comparisonFrozen);document.body.dataset.themeComparison=String(comparisonFrozen);
     if(modeChanged)integrated.expanded=null;
     design=next;editing=Boolean(options.editing);selected=options.region&&Object.hasOwn(core.regions,options.region)?options.region:'';selectedComponent=visual.validId(options.componentSelection)?visual.canonicalId(options.componentSelection):'';
     state.look=preset.engineLook;state.concept=core.navigation.indexOf(next.navigation);if(navChanged)state.view='workspace';integrated.mode=next.layout.mode;
@@ -106,5 +108,6 @@
     event.preventDefault();event.stopImmediatePropagation();selectedComponent=b.dataset.styleId;window.ScopeComponentPicker=false;document.body.dataset.componentPicking='false';const info=visual.describe(selectedComponent);decorate();callback('component',{id:info.id,app:info.app,category:info.category,label:b.textContent.trim().slice(0,80)});
   },true);
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&window.ScopeComponentPicker){window.ScopeComponentPicker=false;document.body.dataset.componentPicking='false';event.preventDefault();callback('component-exit',{});}});
+  for(const type of ['click','pointerdown','wheel','keydown'])window.addEventListener(type,event=>{if(!comparisonFrozen)return;if(type==='keydown'&&event.key==='Escape')callback('theme-compare-exit',{});event.preventDefault();event.stopImmediatePropagation();},{capture:true,passive:false});
   window.ScopePreviewRuntime={apply,snapshot(){return core.clone(design);},onEvent(fn){callback=fn;if(window.ScopeOperator)window.ScopeOperator.onChange=d=>callback('operator',{design:d});},highlight(region){selected=region;decorate();},pick(value){window.ScopeComponentPicker=Boolean(value);}};
 })();

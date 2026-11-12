@@ -26,9 +26,12 @@
     if(!p.applications[p.initial.left].visible||p.initial.mode==='split'&&!p.applications[p.initial.right].visible)throw Error('Initial applications must be visible');
     const known=root.ScopeDesign?.themes||root.ScopeVisuals?.paletteIds||[];
     if(!['electric-glass','prism','nocturne','carbon','spectrum','frosted-white','white-trim','electric-steel','electric-teal','electric-violet','electric-olive','electric-amber','electric-indigo','electric-cyan','electric-green','electric-slate',...known].includes(p.initial.theme))throw Error('Invalid initial palette');
+    const theme=root.ScopeTheme||(typeof require==='function'?require('./theme-tokens.js'):null),derived=theme.familyForPalette(p.initial.theme),requested=input.initial?.family;
+    if(requested!==undefined&&theme.normalizeFamily(requested)!==derived)throw Error('Initial family does not match the selected palette');
+    p.initial.family=derived;
     if(!Array.isArray(p.allowedModes)||!p.allowedModes.length||p.allowedModes.some(m=>!['single','split','popout'].includes(m))||!p.allowedModes.includes(p.initial.mode))throw Error('Allowed modes must include the initial mode');
     if(!['inherit','square','slight','rounded','pill'].includes(p.buttonGeometry))throw Error('Invalid button geometry');
-    if(partial){const out=clone(input);if(Object.hasOwn(input,'componentStyles'))out.componentStyles=p.componentStyles;delete out.schemaVersion;return out;}return p;
+    if(partial){const out=clone(input);if(Object.hasOwn(input,'componentStyles'))out.componentStyles=p.componentStyles;if(out.initial?.family!==undefined)out.initial.family=derived;delete out.schemaVersion;return out;}return p;
   }
   const api={defaults,validate};root.ScopeParameters=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -1,8 +1,9 @@
 /* Canonical visual tokens and constrained component cascade. No application logic. */
 (function(root){
   'use strict';
-  const families={professional:{name:'Professional',radius:8,border:1,blur:0,shadow:'0 5px 16px #0002',font:'Segoe UI'},technical:{name:'Technical',radius:3,border:1,blur:0,shadow:'inset 0 1px #ffffff12',font:'Consolas'},field:{name:'Field Operations',radius:4,border:2,blur:0,shadow:'none',font:'Arial'},glass:{name:'Glass / Experimental',radius:18,border:1,blur:18,shadow:'0 12px 28px #0005,inset 0 1px #ffffff26',font:'Segoe UI'}};
-  const paletteIds=['slate-light','graphite-dark','technical-teal','disco','ide-workbench','industrial-hmi','field-day','field-night','neutral-tactical','slate-indigo','sage-teal','sand-bronze','slate-cyan','civic-blue'];
+  const T=root.ScopeTheme||(typeof require==='function'?require('./theme-tokens.js'):null);
+  const families=T.families;
+  const paletteIds=['slate-light','graphite-dark','technical-teal','disco','ide-workbench','industrial-hmi','field-day','field-night','neutral-tactical','slate-indigo','sage-teal','sand-bronze','slate-cyan','civic-blue','low-luminance-amber'];
   const appIds=['blos','display','calibration','los'];
   const categories=['buttons','headers','panels','tabs','navigation','frames','join','leave','warning','configuration','info','neutral'];
   const componentDefaults={global:{},classes:{},applications:{},instances:{}};
@@ -63,10 +64,9 @@
   }
   function family(preset){return preset.family||'glass';}
   function tokens(design,preset){
-    const c={...preset.colors,...design.colors},light=preset.mode==='light';
-    const base=families[family(preset)],r=preset.roles||{};
-    const f={...base,radius:preset.geometry?.panelRadius??base.radius,controlRadius:preset.geometry?.controlRadius??base.radius,controlHeight:preset.geometry?.controlHeight??(family(preset)==='field'?44:38),shadow:preset.surfaceTreatment==='overlay'?'0 12px 24px #00000059':base.shadow};
-    return {page:c.background,shell:c.header||c.panel,nav:c.navigation,workspace:c.workspace,panel:c.panel,raised:r.raised||(light?'#F3F6F9':'#253247'),inset:r.inset||(light?'#FFFFFF':'#0F1724'),text:c.text,secondary:r.secondary||(light?'#344459':'#BFCCDF'),muted:r.muted||(light?'#425269':'#B5C4D6'),border:c.border,selection:r.selection||(light?'#C4D8F4':'#324B6A'),focus:c.accent,hover:r.hover||(light?'#D4DFEB':'#314561'),pressed:r.pressed||(light?'#B6C9DE':'#1A2B43'),disabled:r.disabled||(light?'#DAE0E7':'#273447'),disabledText:light?'#4B596C':'#B2BDCD',accent:c.accent,light,f};
+    const theme=T.resolve(design,preset),r=theme.roles,light=preset.mode==='light',base=families[family(preset)];
+    const f={...base,radius:design.material?.radius??preset.geometry?.panelRadius??base.radius,border:design.material?.borderWidth??base.border,controlRadius:preset.geometry?.controlRadius??base.radius,controlHeight:preset.geometry?.controlHeight??(family(preset)==='field'?44:38),shadow:preset.surfaceTreatment==='overlay'?'0 12px 24px #00000059':base.shadow};
+    return {page:r.canvas,shell:r['shell.background'],header:r['shell.header'],nav:r['navigation.background'],navSelected:r['navigation.selected'],navText:r['navigation.foreground'],workspace:r['workspace.background'],application:r['application.background'],appHeader:r['application.header'],panel:r['panel.background'],panelHeader:r['panel.header'],raised:r['surface.raised'],inset:r['surface.inset'],control:r['control.background'],controlText:r['control.foreground'],controlBorder:r['control.border'],text:r['text.primary'],secondary:r['text.secondary'],muted:r['text.muted'],border:r['border.default'],strongBorder:r['border.strong'],selection:r['control.selected'],focus:r['focus.ring'],hover:r['control.hover'],pressed:r['control.pressed'],disabled:r['control.disabled'],disabledText:r['control.disabledForeground'],accent:r['focus.ring'],light,f,theme};
   }
   function contrast(a,b){const luminance=c=>{const rgb=c.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
   function mergeComponents(design){
@@ -78,7 +78,7 @@
   function resolveStyle(design,preset,descriptor={},exclude){
     const info={...describe(descriptor.id),...descriptor},t=tokens(design,preset),values={radius:t.f.controlRadius,borderWidth:t.f.border,borderStyle:'solid',height:t.f.controlHeight,minWidth:0,paddingX:12,paddingY:8,fontFamily:design.typography.family,fontSize:design.typography.baseSize,fontWeight:500,letterSpacing:0,textTransform:'none',elevation:family(preset)==='glass'?'raised':'flat',opacity:1,gradient:false,gradientAngle:180};
     const sources=Object.fromEntries(Object.keys(values).map(k=>[k,'Family / typography']));
-    const pair=semantic[info.category];Object.assign(values,{background:pair?.[0]||t.raised,text:pair?.[1]||t.text,border:pair?.[0]||t.border,icon:pair?.[1]||t.text,hoverBg:pair?.[0]||t.hover,hoverText:pair?.[1]||t.text,focusColor:t.focus,focusBg:pair?.[0]||t.raised,focusText:pair?.[1]||t.text,pressedBg:pair?.[0]||t.pressed,pressedText:pair?.[1]||t.text,selectedBg:pair?.[0]||t.selection,selectedText:pair?.[1]||t.text,disabledBg:t.disabled,disabledText:t.disabledText,loadingBg:t.raised,loadingText:t.text,gradientStart:pair?.[0]||t.raised,gradientEnd:t.panel});
+    const pair=semantic[info.category];Object.assign(values,{background:pair?.[0]||t.control,text:pair?.[1]||t.controlText,border:pair?.[0]||t.controlBorder,icon:pair?.[1]||t.controlText,hoverBg:pair?.[0]||t.hover,hoverText:pair?.[1]||t.theme.states.hover.foreground,focusColor:t.focus,focusBg:pair?.[0]||t.control,focusText:pair?.[1]||t.controlText,pressedBg:pair?.[0]||t.pressed,pressedText:pair?.[1]||t.theme.states.pressed.foreground,selectedBg:pair?.[0]||(info.category==='navigation'?t.navSelected:t.selection),selectedText:pair?.[1]||(info.category==='navigation'?t.navText:t.theme.states.selected.foreground),disabledBg:t.disabled,disabledText:t.disabledText,loadingBg:t.control,loadingText:t.controlText,gradientStart:pair?.[0]||t.control,gradientEnd:t.panel});
     for(const k of colors)sources[k]=pair&&['background','text','border','icon','hoverBg','hoverText','pressedBg','pressedText','selectedBg','selectedText','focusBg','focusText'].includes(k)?'Semantic '+info.category:'Palette';
     function apply(style,label,path){const same=exclude&&(JSON.stringify(path)===JSON.stringify(exclude)||path[0]==='instances'&&exclude[0]==='instances'&&canonicalId(path[1])===canonicalId(exclude[1]));if(label.startsWith('Design')&&same)return;if(style&&Object.hasOwn(style,'radius'))for(const key of ['topLeft','topRight','bottomLeft','bottomRight']){delete values[key];delete sources[key];}for(const [key,value] of Object.entries(style||{})){values[key]=value;sources[key]=label;}}
     const param=design.parameters?.componentStyles||componentDefaults,own=design.components||componentDefaults,cats=[...new Set(['buttons',info.category||'buttons'])];
@@ -92,7 +92,7 @@
     for(const key of ['topLeft','topRight','bottomLeft','bottomRight'])if(values[key]===undefined){values[key]=values.radius;sources[key]=sources.radius;}
     if(!sources.icon?.startsWith('Design')&&!sources.icon?.startsWith('Parameters')&&(sources.text?.startsWith('Design')||sources.text?.startsWith('Parameters'))){values.icon=values.text;sources.icon=sources.text;}
     if(!sources.gradientStart?.startsWith('Design')&&!sources.gradientStart?.startsWith('Parameters')&&(sources.background?.startsWith('Design')||sources.background?.startsWith('Parameters'))){values.gradientStart=values.background;sources.gradientStart=sources.background;}
-    const warnings=[];
+    const warnings=[...t.theme.warnings];
     for(const id of new Set([...Object.keys(param.instances||{}),...Object.keys(own.instances||{})]))if(id.includes(':')&&canonicalId(id)===id)warnings.push('Legacy positional override '+id+' is retained but not rebound automatically. Select the semantic control to reapply it safely.');
     const blend=(fg,bg,alpha)=>'#'+[0,1,2].map(i=>Math.round(parseInt(fg.slice(1+i*2,3+i*2),16)*alpha+parseInt(bg.slice(1+i*2,3+i*2),16)*(1-alpha)).toString(16).padStart(2,'0')).join('');
     for(const [state,bg,fg] of [['Default','background','text'],['Hover','hoverBg','hoverText'],['Focus','focusBg','focusText'],['Pressed','pressedBg','pressedText'],['Selected','selectedBg','selectedText'],['Disabled','disabledBg','disabledText'],['Loading','loadingBg','loadingText']]){
@@ -138,17 +138,17 @@
     };
     // Every control starts a new property scope; header/panel properties cannot leak into child buttons.
     rule('button',colors.concat(['opacity','gradient','gradientAngle']).map(k=>'--scope-component-'+k+':initial').join(';'));
-    rule('button',paint(t.raised,t.text)+';border-color:'+variable('border',t.border)+'!important;border-radius:'+t.f.controlRadius+'px;min-height:'+t.f.controlHeight+'px');
-    rule('button:hover:not(:disabled)',paint(t.hover,t.text,'hover'));rule('button:active:not(:disabled)',paint(t.pressed,t.text,'pressed'));
-    rule('button[aria-pressed="true"],button[aria-selected="true"]',paint(t.selection,t.text,'selected'));
+    rule('button',paint(t.control,t.controlText)+';border-color:'+variable('border',t.controlBorder)+'!important;border-radius:'+t.f.controlRadius+'px;min-height:'+t.f.controlHeight+'px');
+    rule('button:hover:not(:disabled)',paint(t.hover,t.theme.states.hover.foreground,'hover'));rule('button:active:not(:disabled)',paint(t.pressed,t.theme.states.pressed.foreground,'pressed'));
+    rule('button[aria-pressed="true"],button[aria-selected="true"]',paint(t.selection,t.theme.states.selected.foreground,'selected'));
     rule('button:disabled,input:disabled',paint(t.disabled,t.disabledText,'disabled'));
     rule(':focus-visible','outline:3px solid '+variable('focusColor',t.focus)+'!important;outline-offset:3px');
-    rule('button:focus-visible:not(:disabled)',paint(t.raised,t.text,'focus'));
+    rule('button:focus-visible:not(:disabled)',paint(t.control,t.controlText,'focus'));
     for(const [category,[bg,fg]] of Object.entries(semantic)){
       rule(selectors[category],paint(bg,fg)+';border-color:'+variable('border',bg)+'!important');
       for(const [pseudo,state] of [[':hover:not(:disabled)','hover'],[':focus-visible:not(:disabled)','focus'],[':active:not(:disabled)','pressed'],['[aria-pressed="true"]:not(:disabled)','selected'],['[aria-selected="true"]:not(:disabled)','selected']])rule(splitSelectors(selectors[category]).map(s=>s+pseudo).join(','),paint(bg,fg,state));
     }
-    rule('button[aria-busy="true"],button[data-loading="true"]',paint(t.raised,t.text,'loading'));
+    rule('button[aria-busy="true"],button[data-loading="true"]',paint(t.control,t.controlText,'loading'));
     const scoped=(category,app)=>selectors[category].split(',').map(s=>app?'[data-owner="'+app+'"] '+s:s).join(',');
     function style(s,v,kind='buttons'){
       const custom=(target,p)=>out.push(splitSelectors(target).map(x=>prefix+'[data-scope-design][data-theme][data-scope-design][data-theme] :where('+x+')').join(',')+'{'+p+'}');
@@ -169,6 +169,35 @@
       rule('button,input,select,textarea','border-radius:'+t.f.controlRadius+'px;font-size:'+design.typography.baseSize+'px!important');
       rule('.surface-identity,[data-demo-host] h2,[data-demo-host] h3,dialog h2','color:'+t.accent+'!important');
     }
+    // Canonical role propagation is the last family layer; old engine-look CSS
+    // supplies baseline structure only and cannot replace selected role colors.
+    const effects=t.theme.effects,glass=family(preset)==='glass',explicitTransparency=design.visual?.effects?.transparency===true;
+    const alpha=!effects.transparency?1:glass||preset.surfaceTreatment==='overlay'||explicitTransparency?Math.max(.6,Math.min(1,design.material?.opacity??preset.surfaceOpacity??preset.material?.opacity??.9)):1;
+    const surface=color=>alpha===1?color:'color-mix(in srgb,'+color+' '+alpha*100+'%,transparent)';
+    const blur=effects.blur?(design.material?.blur??(glass?preset.material?.blur??t.f.blur:0)):0;
+    const shadow=glass&&!effects.reflections?'0 12px 28px #0005':t.f.shadow;
+    rule('.shell','background:'+surface(t.shell)+'!important;box-shadow:'+shadow+'!important;border-color:'+t.border+'!important');
+    rule('.shell-top,.operator-bar','background:'+surface(t.header)+'!important;color:'+t.text+'!important;border-color:'+t.border+'!important');
+    rule('.shell,.operator-bar,dialog,input,select,textarea,button,.room-title h2,.directory-card strong,.surface-identity,[data-demo-host] h2,[data-demo-host] h3','font-family:"'+design.typography.family+'",system-ui,sans-serif!important');
+    rule('.deck-nav,.workspace-tools,.aperture-dock,.application-shelf,.portal-location','background:'+surface(t.nav)+'!important;color:'+t.text+'!important');
+    rule('.deck-nav button[aria-pressed="true"],.shelf-app[aria-pressed="true"],.portal-location button[aria-current]',paint(t.navSelected,t.navText,'selected'));
+    rule('.aperture-stage,.mosaic-board,.portal-directory,.portal-room,.deck-main,.integrated-panes','background:'+t.workspace+'!important');
+    rule('[data-demo-host],.owner-surface,.detached-surface','background:'+t.application+'!important;color:'+t.text+'!important');
+    rule('.pane,.integration-pane,.deck-rail,.shell-context-card,[data-demo-host] section,[data-demo-host] fieldset,[data-demo-host] article,.app-summary,.app-table-wrap,.node-info,.alignment-values article,.alignment-editor,.lab-panel,.viz-card,.laboratory,dialog,.operator-config','background:'+surface(t.panel)+'!important;color:'+t.text+'!important;border-color:'+t.border+'!important;box-shadow:'+shadow+'!important');
+    rule('.surface-top,.pane-header,.integration-pane-header,.app-tabs','background:'+surface(t.appHeader)+'!important;color:'+t.text+'!important;border-color:'+t.strongBorder+'!important');
+    rule('table,tbody,tr,td','background:'+t.panel+'!important;color:'+t.text+'!important;border-color:'+t.border+'!important');
+    rule('thead,thead th','background:'+t.panelHeader+'!important;color:'+t.text+'!important;border-color:'+t.strongBorder+'!important');
+    rule('tr.selected-row td','background:'+t.navSelected+'!important;color:'+t.navText+'!important');
+    rule('input,select,textarea,option','background:'+t.inset+'!important;color:'+t.text+'!important;border-color:'+t.controlBorder+'!important');
+    rule('input:disabled,select:disabled,textarea:disabled',paint(t.disabled,t.disabledText,'disabled'));
+    rule('.app-summary,.viz-card','background:'+surface(t.raised)+'!important');
+    rule('.app-content','padding:'+Math.round(t.f.tablePadding*(design.typography.density==='compact'?.85:design.typography.density==='spacious'?1.2:1))+'px!important');
+    rule('.app-table th,.app-table td','padding:'+t.f.tablePadding+'px '+(t.f.tablePadding+2)+'px!important');
+    rule('.shell,.shell-top,.pane,.owner-surface,.integration-pane,.deck-nav,.deck-rail,.aperture-dock,dialog','backdrop-filter:blur('+blur+'px)!important;-webkit-backdrop-filter:blur('+blur+'px)!important');
+    if(!effects.reflections)rule('.shell::before,.owner-surface::before,.surface-top::before','opacity:0!important');
+    if(!effects.motion)rule('*','animation:none!important;transition:none!important');
+    const regions=root.ScopeDesign?.regions||{};
+    for(const [id,v] of Object.entries(design.regions||{})){if(!regions[id])continue;const fields={background:'background',text:'color',border:'border-color',radius:'border-radius',borderWidth:'border-width',padding:'padding',gap:'gap',height:'min-height'};const declarations=Object.entries(v).filter(([k])=>fields[k]).map(([k,value])=>fields[k]+':'+value+(['radius','borderWidth','padding','gap','height'].includes(k)?'px':'')+'!important');if(declarations.length)out.push(splitSelectors(regions[id]).map(s=>prefix+'[data-theme] '+s).join(',')+'{'+declarations.join(';')+'}');}
     const c=mergeComponents(design);
     const ordered=groups=>Object.entries(groups).sort(([a],[b])=>Number(a!=='buttons')-Number(b!=='buttons'));
     for(const [category,v] of ordered(c.global))style(scoped(category),v,category);
@@ -178,5 +207,5 @@
     out.push('@media(prefers-reduced-motion:reduce){'+prefix+' *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}');
     return out.join('\n');
   }
-  const api={families,paletteIds,appIds,categories,componentDefaults,componentPresets,fontFamilies,colors,limits,semantic,componentId,canonicalId,validId,describe,mergeComponents,resolveStyle,validateComponents,validateStyle,tokens,family,contrast,compile};root.ScopeVisuals=api;if(typeof module!=='undefined')module.exports=api;
+  const api={resolveTheme:T.resolve,validateVisual:T.validateVisual,roleNames:T.roleNames,families,paletteIds,appIds,categories,componentDefaults,componentPresets,fontFamilies,colors,limits,semantic,componentId,canonicalId,validId,describe,mergeComponents,resolveStyle,validateComponents,validateStyle,tokens,family,contrast,compile};root.ScopeVisuals=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

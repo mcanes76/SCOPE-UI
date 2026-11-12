@@ -185,6 +185,18 @@
             "calibration",
             "los"
           ]
+        },
+        "family": {
+          "enum": [
+            "professional",
+            "technical",
+            "field",
+            "glass",
+            "technical-workbench",
+            "field-operations",
+            "glass-experimental"
+          ],
+          "description": "Optional family constraint. Must match initial.theme when supplied; palette remains the canonical identifier."
         }
       }
     },

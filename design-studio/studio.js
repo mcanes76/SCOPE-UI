@@ -10,7 +10,7 @@
   const clients=new Map(),origin=offline?'null':location.origin;
   function notice(message,error=false){$('#notice').textContent=message;$('#notice').dataset.error=String(error);clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('#notice').textContent='',6500);}
   function register(frame,design=null){const channel=crypto.randomUUID();clients.set(channel,{frame,design,ready:false});if(offline)offline.preview(frame,channel);else frame.src='../mockups/scope-integrated-electric-glass.html?studio=1&studioChannel='+encodeURIComponent(channel);return channel;}
-  function send(client,channel){if(!client.ready)return;client.frame.contentWindow.postMessage({namespace:'scope-design-studio',version:1,channel,type:'configure',design:client.design||store.value,presets,options:{editing:!client.design&&mode==='advanced'&&!presenting,region:client.design?'':region,application:client.design?'blos':application,rightApplication:client.design?'display':rightApplication,presentation:!client.design&&presenting,componentPicker:!client.design&&mode==='advanced'&&!presenting&&componentPicker,componentSelection:!client.design&&mode==='advanced'?selectedInstance:''}},offline?'*':origin);}
+  function send(client,channel){if(!client.ready)return;client.frame.contentWindow.postMessage({namespace:'scope-design-studio',version:1,channel,type:'configure',design:client.design||(themeComparison?{...C.clone(themeComparison.base),theme:themeComparison[themeComparison.active]}:store.value),presets,options:{editing:!client.design&&mode==='advanced'&&!presenting&&!themeComparison,region:client.design?'':region,application:client.design?'blos':application,rightApplication:client.design?'display':rightApplication,presentation:!client.design&&presenting,comparisonFrozen:!client.design&&Boolean(themeComparison),componentPicker:!client.design&&mode==='advanced'&&!presenting&&componentPicker,componentSelection:!client.design&&mode==='advanced'?selectedInstance:''}},offline?'*':origin);}
   function sync(){for(const [channel,client] of clients)send(client,channel);}
   window.addEventListener('message',event=>{
     const m=event.data;if(event.origin!==origin||m?.namespace!=='scope-design-studio'||m.version!==1)return;
@@ -18,8 +18,9 @@
     if(!client.design&&m.type==='operator'){try{application=m.design.operator?.left||application;rightApplication=m.design.operator?.right||rightApplication;$('#application').value=application;$('#right-application').value=rightApplication;store.set(m.design,'operator');renderControls();}catch(error){notice(error.message,true);}return;}
     if(!client.design&&m.type==='component'&&ScopeVisuals.validId(m.id)&&['shell',...ScopeVisuals.appIds].includes(m.app)){selectedInstance=ScopeVisuals.canonicalId(m.id);selectedComponentLabel=String(m.label||selectedInstance).slice(0,100);componentApp=m.app;componentCategory=m.category&&ScopeVisuals.categories.includes(m.category)?m.category:'buttons';componentScope='instances';componentPicker=false;renderControls();document.querySelector('.component-editor').open=true;document.querySelector('.component-editor').scrollIntoView?.({block:'nearest'});sync();notice('Selected '+selectedComponentLabel+'. Styling does not change the operation.');return;}
     if(!client.design&&m.type==='component-exit'){componentPicker=false;renderControls();sync();notice('Component selection mode exited.');return;}
+    if(!client.design&&m.type==='theme-compare-exit'){closeThemeComparison();return;}
     if(m.type==='ready'){client.ready=true;send(client,m.channel);if(!client.design)$('#preview-status').textContent='Connected · live';}
-    else if(m.type==='error')notice(m.message,true);
+    else if(m.type==='error'){if(themeComparison)closeThemeComparison();notice(m.message,true);}
     else if(!client.design&&m.type==='application'&&['blos','display','calibration','los'].includes(m.application)){
       application=m.application;$('#application').value=application;
       if(['blos','display','calibration','los'].includes(m.rightApplication)){rightApplication=m.rightApplication;$('#right-application').value=rightApplication;}
@@ -30,6 +31,7 @@
     }
   });
   function navLabel(id){return store.value.parameters?.labels?.shells?.[id]||params.labels?.shells?.[id]||id;}
+  let themeComparison=null;
   function theme(){return presets.find(p=>p.id===store.value.theme);}
   function read(path){return path.split('.').reduce((v,k)=>v?.[k],store.value);}
   function set(path,value){store.update(d=>{const keys=path.split('.');let node=d;for(const k of keys.slice(0,-1))node=node[k]??=( {} );node[keys.at(-1)]=value;},path);}
@@ -48,17 +50,23 @@
     if(region==='header')html+=field('Minimum height',prefix+'height',v.height||d.layout.headerHeight,56,112);
     html+=checkbox('Visible',prefix+'visible',v.visible!==false,['shell','branding','navigation','workspace'].includes(region));
     html+=`<div class="inspector-actions"><button data-action="apply-selected" class="primary">Apply to Selected</button><button data-action="apply-global">Apply Globally</button><button data-action="reset-region">Reset to Theme Default</button></div><p class="hint">Apply Globally promotes color, material and spacing overrides to compatible shell containers. Dimensions and visibility stay local. Semantic controls remain unchanged.</p>`;
-    return html+componentPanel()+brandingPanel();
+    return html+visualPanel()+componentPanel()+brandingPanel();
   }
   function guidedPanel(){const d=store.value,s=steps[step];let html=`<div class="section-kicker">Step ${step+1} / 6 · ${s[2]}</div><h2>${s[3]}</h2><p class="intro">${s[4]}</p>`;
     if(step===0)html+=`<div class="choices">${C.navigation.map(id=>`<button class="choice" data-navigation="${id}" aria-pressed="${d.navigation===id}"><span class="thumbnail ${id}" aria-hidden="true"></span><span><strong>${escape(navLabel(id))}</strong><small>${navDescriptions[id]}</small></span></button>`).join('')}</div>`;
-    if(step===1)html+='<div class="field"><label>Visual family<select data-family>'+Object.entries(ScopeVisuals.families).map(([id,f])=>'<option value="'+id+'" '+((theme().family||'glass')===id?'selected':'')+'>'+f.name+'</option>').join('')+'</select></label></div>';
+    if(step===1)html+=familyGallery();
     if(step===1)html+=`<div class="choices">${presets.filter(p=>(p.family||'glass')===(theme().family||'glass')).map(p=>`<button class="choice theme-choice" data-theme="${p.id}" aria-pressed="${d.theme===p.id}"><span class="theme-chip" style="--swatch:linear-gradient(130deg,${p.colors.background},${p.colors.panel} 55%,${p.colors.accent})" aria-hidden="true"></span><span><strong>${escape(p.name)}</strong><small>${escape(p.description)}</small></span></button>`).join('')}</div>`;
     if(step===2)html+=colorsPanel();if(step===3)html+=typographyPanel()+guidedComponents();if(step===4)html+=layoutPanel();
     if(step===5)html+=`<dl class="review-list"><div><dt>Navigation</dt><dd>${escape(navLabel(d.navigation))}</dd></div><div><dt>Material</dt><dd>${escape(theme().name)}</dd></div><div><dt>Typography</dt><dd>${escape(d.typography.family)} · ${d.typography.baseSize}px · ${d.typography.density}</dd></div><div><dt>Workspace</dt><dd>${d.layout.mode==='split'?'Side-by-side':'Shell-native'} · ${d.layout.workspacePadding}px padding</dd></div></dl><button data-action="present" class="primary">Present Final Design ↗</button><p class="hint">All details become visible. Applications remain interactive. Use Return to Studio to keep editing.</p><div class="inspector-actions"><button data-action="export-json">Save design JSON</button><button data-action="export-final">Export standalone mockup</button><button data-action="export-summary">Export decision summary</button></div>`;
     if(step===5)html+=brandingPanel();
     return html;
   }
+  function familyGallery(){return '<div class="family-gallery" role="group" aria-label="Visual family">'+Object.entries(ScopeVisuals.families).map(([id,f])=>'<button class="family-card family-'+id+'" data-family-choice="'+id+'" aria-pressed="'+((theme().family||'glass')===id)+'"><span class="family-mini" aria-hidden="true"><i></i><i></i><i></i></span><strong>'+escape(f.name)+'</strong><small>'+escape(f.description)+'</small></button>').join('')+'</div><p class="hint">Family changes preserve chosen fonts and explicit component styles. Recommended font: '+escape(theme().typography.family)+'.</p><button data-action="compare-themes">Compare two themes on this arrangement</button>';}
+  function visualPanel(){const d=store.value,resolved=ScopeVisuals.resolveTheme(d,theme());return '<details class="visual-token-editor"><summary>Visual roles &amp; family defaults</summary><p class="hint">'+escape(ScopeVisuals.families[theme().family||'glass'].name)+' / '+escape(theme().name)+' ? Role schema 1</p>'+ScopeVisuals.roleNames.map(role=>'<div class="theme-token"><label>'+escape(role)+'<input type="color" data-theme-role="'+role+'" value="'+resolved.roles[role]+'"></label><small>'+escape(resolved.sources[role])+'</small><button data-reset-role="'+role+'" '+(d.visual?.tokens?.[role]?'':'disabled')+'>Reset role</button></div>').join('')+'<div class="theme-role-warnings" role="status">'+resolved.warnings.map(w=>'<p>'+escape(w)+'</p>').join('')+'</div>'+Object.entries(resolved.effects).map(([key,value])=>'<label class="check"><input type="checkbox" data-theme-effect="'+key+'" '+(value?'checked':'')+'>'+key+'</label>').join('')+field('Structural radius','material.radius',d.material.radius??theme().material.radius,0,28)+field('Structural border','material.borderWidth',d.material.borderWidth??theme().material.borderWidth,0,3,.5)+field('Glass opacity','material.opacity',d.material.opacity??theme().material.opacity,.6,.98,.01)+field('Optional blur','material.blur',d.material.blur??theme().material.blur,0,28)+'<button data-action="recommended-typography">Use recommended typography</button><button data-action="reset-family-style">Reset appearance to family defaults</button><p class="hint">Reset clears decorative tokens, component and region overrides and restores recommended typography. Branding, navigation and arrangement remain. Field modes are exploratory; no NVIS or MIL-SPEC qualification is claimed.</p></details>';}
+  function refreshRoleWarnings(){const out=document.querySelector('.theme-role-warnings');if(out)out.innerHTML=ScopeVisuals.resolveTheme(store.value,theme()).warnings.map(w=>'<p>'+escape(w)+'</p>').join('');}
+  function startThemeComparison(){themeComparison={base:C.clone(store.value),left:store.value.theme,right:presets.find(p=>p.id!==store.value.theme&&p.family!==(theme().family||'glass'))?.id||presets[0].id,active:'left'};for(const side of ['left','right']){const select=document.getElementById('theme-compare-'+side);select.innerHTML=presets.map(p=>'<option value="'+p.id+'">'+escape(p.name)+'</option>').join('');select.value=themeComparison[side];}$('#theme-comparison').showModal();sync();updateThemeComparison();}
+  function updateThemeComparison(){if(!themeComparison)return;$('#theme-compare-status').textContent='Showing '+themeComparison.active.toUpperCase()+': '+presets.find(p=>p.id===themeComparison[themeComparison.active]).name+' / same live application state and layout';document.querySelectorAll('[data-show-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.showTheme===themeComparison.active)));}
+  function closeThemeComparison(keep=false){if(!themeComparison)return;const selected=themeComparison[themeComparison.active];themeComparison=null;if($('#theme-comparison').open)$('#theme-comparison').close();if(keep)store.update(d=>{d.theme=selected;});renderControls();sync();}
   function componentPath(){if(componentScope==='instances'){if(!selectedInstance)throw Error('Pick an eligible control first');return ['instances',ScopeVisuals.canonicalId(selectedInstance)];}if(componentScope==='applications'){if(!ScopeVisuals.appIds.includes(componentApp))throw Error('Choose an application for this scope; shell controls use global or individual scope');return ['applications',componentApp,componentCategory];}return [componentScope,componentCategory];}
   function componentValue(){try{const path=componentPath();if(path[0]==='instances'){const values={};for(const [id,value] of Object.entries(store.value.components?.instances||{}).sort(([a],[b])=>Number(a===ScopeVisuals.canonicalId(a))-Number(b===ScopeVisuals.canonicalId(b))))if(ScopeVisuals.canonicalId(id)===path[1])Object.assign(values,value);return values;}return path.reduce((v,k)=>v?.[k],store.value.components)||{};}catch{return {};}}
   function componentContext(){const V=ScopeVisuals,id=componentScope==='instances'?selectedInstance:componentApp==='shell'?'shell.button.generic':V.componentId(componentApp,({join:'group-join',leave:'group-leave',configuration:'group-create',info:'sensor-read',warning:'warning'})[componentCategory]||'generic');const descriptor={...V.describe(id),...(componentScope==='instances'?{}:{app:componentApp,category:componentCategory})};let path;try{path=componentPath();}catch{}return {scope:componentScope,app:componentApp,category:componentCategory,instance:componentScope==='instances'?selectedInstance:'',style:componentValue(),escape,resolved:V.resolveStyle(store.value,theme(),descriptor),inherited:V.resolveStyle(store.value,theme(),descriptor,path),picking:componentPicker,label:componentScope==='instances'?selectedComponentLabel:componentCategory+' styles',appName:store.value.parameters?.applications?.[componentApp]?.name||params.applications?.[componentApp]?.name||componentApp};}
@@ -94,6 +102,14 @@
   document.addEventListener('click',async event=>{
     const b=event.target.closest('button');if(!b||b.disabled||!store)return;
     try{
+      if(b.dataset.familyChoice){chooseTheme(presets.find(p=>(p.family||'glass')===b.dataset.familyChoice).id);renderControls();return;}
+      if(b.dataset.showTheme&&themeComparison){themeComparison.active=b.dataset.showTheme;sync();updateThemeComparison();return;}
+      if(b.dataset.resetRole){store.update(d=>{if(d.visual)delete d.visual.tokens[b.dataset.resetRole];});renderControls();return;}
+      if(b.dataset.action==='compare-themes'){startThemeComparison();return;}
+      if(b.dataset.action==='close-theme-comparison'){closeThemeComparison();return;}
+      if(b.dataset.action==='keep-comparison-theme'){closeThemeComparison(true);return;}
+      if(b.dataset.action==='recommended-typography'){store.update(d=>{d.typography=C.clone(theme().typography);});renderControls();return;}
+      if(b.dataset.action==='reset-family-style'){store.update(d=>{d.colors={};d.material={};d.regions={};delete d.visual;delete d.components;if(d.parameters)delete d.parameters.componentStyles;d.typography=C.clone(theme().typography);});renderControls();return;}
       if(b.dataset.action==='pick-component'){componentPicker=!componentPicker;if(componentPicker)store.update(d=>{d.detailsVisible=true;});renderControls();document.querySelector('.component-editor').open=true;sync();notice(componentPicker?'Select an eligible control; Escape exits. The selection click will not execute its action.':'Selection mode exited.');return;}
       if(b.dataset.componentReset){resetComponent(b.dataset.componentReset);return;}
       if(b.dataset.componentPreset){const preset=ScopeVisuals.componentPresets[b.dataset.componentPreset];if(preset){editComponent({topLeft:'',topRight:'',bottomLeft:'',bottomRight:'',...preset.style},'preset-'+b.dataset.componentPreset);renderControls();document.querySelector('.component-editor').open=true;}return;}
@@ -125,10 +141,13 @@
       if(action==='reset-global'){store.update(d=>{d.colors={};d.material={};});renderControls();}
     }catch(error){notice(error.message,true);}
   });
-  function chooseTheme(id){const preset=presets.find(p=>p.id===id);store.update(d=>{d.theme=id;d.typography=C.clone(preset.typography);});}
+  function chooseTheme(id){store.update(d=>{d.theme=id;});}
   document.addEventListener('input',event=>{
     const el=event.target;if(!store)return;
     try{
+      if(el.dataset.themeRole){store.update(d=>{d.visual??={schemaVersion:1,tokens:{},effects:{}};d.visual.tokens[el.dataset.themeRole]=el.value;},'role-'+el.dataset.themeRole);refreshRoleWarnings();return;}
+      if(el.dataset.themeEffect){store.update(d=>{d.visual??={schemaVersion:1,tokens:{},effects:{}};d.visual.effects[el.dataset.themeEffect]=el.checked;});return;}
+      if(el.id.startsWith('theme-compare-')&&themeComparison){const side=el.id.endsWith('left')?'left':'right';themeComparison[side]=el.value;sync();updateThemeComparison();return;}
       if(el.hasAttribute?.('data-family')){chooseTheme(presets.find(p=>(p.family||'glass')===el.value).id);renderControls();return;}
       if(el.dataset.componentControl){if(el.dataset.componentControl==='scope')componentScope=el.value;if(el.dataset.componentControl==='app')componentApp=el.value;if(el.dataset.componentControl==='category')componentCategory=el.value;renderControls();return;}
       if(el.dataset.componentProperty){changeComponent(el.dataset.componentProperty,el.type==='range'?Number(el.value):el.type==='checkbox'?el.checked:el.value);return;}
@@ -143,12 +162,22 @@
     }catch(error){notice(error.message,true);}
   });
   document.addEventListener('keydown',event=>{if(componentPicker&&event.key==='Escape'){componentPicker=false;renderControls();sync();notice('Component selection mode exited.');return;}if(presenting&&event.key==='Escape'){returnStudio();return;}if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'&&!event.target.matches('input,textarea,select')){event.preventDefault();if(event.shiftKey)store.redo();else store.undo();renderControls();}});
+  $('#theme-comparison').addEventListener('close',()=>closeThemeComparison());
   $('#comparison').addEventListener('close',clearComparison);for(const id of ['compare-left','compare-right'])$('#'+id).addEventListener('change',renderComparison);
   $('#import-file').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>100000)throw Error('Configuration exceeds 100 KB');store.set(JSON.parse(await file.text()));renderControls();notice('Design imported. Application simulation state was retained.');}catch(error){notice('Import failed: '+error.message,true);}finally{event.target.value='';}});
   try{
     if(origin==='null'&&!offline)throw Error('Open the development Studio over HTTP, or double-click dist/SCOPE-Design-Studio.html.');
     const results=offline?offline.configuration():await Promise.all(['theme-presets.json','design-config.json','../mockups/params.json'].map(async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Cannot load '+url);return r.json();}));
-    [presets,,params]=[results[0].presets,results[1],results[2]];store=new C.DesignStore(results[1]);
+    [presets,,params]=[results[0].presets,results[1],results[2]];
+    const initial=C.clone(results[1]);
+    if(params.initial){
+      const configured=ScopeParameters.validate(params),settings=params.initial;
+      if(settings.theme!==undefined)initial.theme=configured.initial.theme;
+      if(settings.navigation!==undefined)initial.navigation=configured.initial.navigation;
+      if(settings.mode!==undefined)initial.layout.mode=configured.initial.mode;
+      if(settings.left!==undefined||settings.right!==undefined||params.allowedModes!==undefined)initial.operator={left:configured.initial.left,right:configured.initial.right,ratio:50,allowed:configured.allowedModes};
+    }
+    store=new C.DesignStore(initial);
     // Keep preset input under the same trusted schema as imported design tokens.
     for(const p of presets)C.validate({...C.defaults,theme:p.id,colors:p.colors,material:p.material,typography:p.typography});
     store.subscribe(()=>{sync();updateStatus();});

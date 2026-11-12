@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCOPE Palette Catalog v2",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "presets"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "presets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "family",
+          "tokenSchemaVersion",
+          "tokens",
+          "variant"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "professional",
+              "technical",
+              "field",
+              "glass"
+            ]
+          },
+          "tokenSchemaVersion": {
+            "const": 1
+          },
+          "tokens": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "canvas": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "shell.background": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "shell.header": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "navigation.background": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "navigation.selected": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "navigation.foreground": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "workspace.background": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "application.background": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "application.header": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "panel.background": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "panel.header": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "surface.raised": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "surface.inset": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.background": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.foreground": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.border": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.hover": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.pressed": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.selected": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.disabled": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "control.disabledForeground": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "text.primary": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "text.secondary": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "text.muted": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "border.default": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "border.strong": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "focus.ring": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              }
+            },
+            "required": [
+              "canvas",
+              "shell.background",
+              "shell.header",
+              "navigation.background",
+              "navigation.selected",
+              "navigation.foreground",
+              "workspace.background",
+              "application.background",
+              "application.header",
+              "panel.background",
+              "panel.header",
+              "surface.raised",
+              "surface.inset",
+              "control.background",
+              "control.foreground",
+              "control.border",
+              "control.hover",
+              "control.pressed",
+              "control.selected",
+              "control.disabled",
+              "control.disabledForeground",
+              "text.primary",
+              "text.secondary",
+              "text.muted",
+              "border.default",
+              "border.strong",
+              "focus.ring"
+            ]
+          },
+          "variant": {
+            "type": "object",
+            "required": [
+              "id",
+              "mode",
+              "recommendedFont",
+              "provenance"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "mode": {
+                "enum": [
+                  "light",
+                  "dark"
+                ]
+              },
+              "recommendedFont": {
+                "type": "string"
+              },
+              "provenance": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
