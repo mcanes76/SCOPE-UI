@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "Customer design",
+  "navigation": "deck",
+  "theme": "civic-blue",
+  "colors": {},
+  "material": {
+    "radius": 1
+  },
+  "typography": {
+    "family": "Trebuchet MS",
+    "baseSize": 16,
+    "headingSize": 27,
+    "weight": 500,
+    "density": "comfortable",
+    "spacing": 16
+  },
+  "layout": {
+    "mode": "single",
+    "navWidth": 190,
+    "contextWidth": 250,
+    "contextVisible": true,
+    "headerVisible": true,
+    "footerVisible": true,
+    "workspacePadding": 22,
+    "panelGap": 16,
+    "headerHeight": 76
+  },
+  "regions": {},
+  "detailsVisible": true,
+  "notes": {
+    "navigation": "",
+    "theme": "",
+    "colors": "",
+    "typography": "",
+    "layout": "",
+    "review": ""
+  },
+  "components": {
+    "global": {
+      "buttons": {
+        "radius": 10
+      }
+    },
+    "classes": {},
+    "applications": {},
+    "instances": {}
+  },
+  "operator": {
+    "ratio": 50,
+    "allowed": [
+      "single",
+      "split",
+      "popout"
+    ],
+    "left": "blos",
+    "right": "display"
+  }
+}
