@@ -32,6 +32,8 @@ function build(options={}){
   if(![1,2].includes(themes.schemaVersion))throw Error('Unsupported palette catalog version');
   const ids=new Set();
   for(const p of themes.presets){
+    if(p.visualFamily&&globalThis.ScopeTheme.visualFamilyForPalette(p.id)!==p.visualFamily)throw Error('Visual family does not match palette: '+p.id);
+    if(p.shellComponents)globalThis.ScopeVisuals.validateShellComponents(p.shellComponents);
     if(ids.has(p.id))throw Error('Duplicate palette ID: '+p.id);ids.add(p.id);
     if(!Object.hasOwn(globalThis.ScopeTheme.families,p.family))throw Error('Unknown palette family: '+p.family);
     if(themes.schemaVersion===2&&(p.tokenSchemaVersion!==1||globalThis.ScopeTheme.roleNames.some(key=>!Object.hasOwn(p.tokens||{},key))))throw Error('Incomplete version 2 palette roles: '+p.id);

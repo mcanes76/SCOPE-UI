@@ -210,6 +210,36 @@
                 "type": "string"
               }
             }
+          },
+          "visualFamily": {
+            "enum": [
+              "command-dark",
+              "electric-glass",
+              "frosted-white-glass",
+              "prism-glass",
+              "professional-light"
+            ]
+          },
+          "shellComponents": {
+            "$ref": "shell-components.schema.json"
+          },
+          "effects": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "transparency": {
+                "type": "boolean"
+              },
+              "blur": {
+                "type": "boolean"
+              },
+              "reflections": {
+                "type": "boolean"
+              },
+              "motion": {
+                "type": "boolean"
+              }
+            }
           }
         }
       }

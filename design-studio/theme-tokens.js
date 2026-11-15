@@ -2,11 +2,20 @@
 (function(root){
   'use strict';
   const families={professional:{name:'Professional',description:'Calm layered engineering workstations',radius:8,border:1,blur:0,shadow:'0 5px 16px #0002',font:'Segoe UI',tablePadding:12},technical:{name:'Technical Workbench',description:'Compact instruments and separated working planes',radius:3,border:1,blur:0,shadow:'inset 0 1px #ffffff12',font:'Consolas',tablePadding:8},field:{name:'Field Operations',description:'Matte day / low-glare exploratory field palettes',radius:4,border:2,blur:0,shadow:'none',font:'Arial',tablePadding:14},glass:{name:'Glass and Experimental',description:'Layered/frosted surfaces with optional illumination',radius:18,border:1,blur:18,shadow:'0 12px 28px #0005,inset 0 1px #ffffff26',font:'Segoe UI',tablePadding:12}};
+  // Curated visual families are independent of the four legacy material groups.
+  const visualFamilies={
+    'command-dark':{name:'Command Dark',description:'High contrast operational surfaces with minimal decoration.',primary:'command-dark',presets:['command-dark','graphite-dark']},
+    'electric-glass':{name:'Electric Glass',description:'Luminous edges and translucent dark panels.',primary:'electric-glass',presets:['electric-glass','electric-teal']},
+    'frosted-white-glass':{name:'Frosted White Glass',description:'Soft white translucent surfaces with restrained shadows.',primary:'frosted-white-glass',presets:['frosted-white-glass']},
+    'prism-glass':{name:'Prism Glass',description:'Cool glass with restrained pastel accents.',primary:'prism',presets:['prism']},
+    'professional-light':{name:'Professional Light',description:'Clear, conventional enterprise surfaces.',primary:'slate-light',presets:['slate-light','civic-blue']}
+  };
+  const visualFamilyForPalette=id=>Object.keys(visualFamilies).find(key=>visualFamilies[key].presets.includes(id))||'';
   const roleNames=['canvas','shell.background','shell.header','navigation.background','navigation.selected','navigation.foreground','workspace.background','application.background','application.header','panel.background','panel.header','surface.raised','surface.inset','control.background','control.foreground','control.border','control.hover','control.pressed','control.selected','control.disabled','control.disabledForeground','text.primary','text.secondary','text.muted','border.default','border.strong','focus.ring'];
   const effectDefaults={transparency:true,blur:true,reflections:true,motion:false};
   const familyAliases={'technical-workbench':'technical','field-operations':'field','glass-experimental':'glass'};
   const normalizeFamily=id=>familyAliases[id]||id;
-  function familyForPalette(id){if(['disco','ide-workbench','industrial-hmi','slate-cyan'].includes(id))return 'technical';if(['field-day','field-night','neutral-tactical','low-luminance-amber'].includes(id))return 'field';if(['slate-light','graphite-dark','technical-teal','sage-teal','sand-bronze','slate-indigo','civic-blue'].includes(id))return 'professional';return 'glass';}
+  function familyForPalette(id){if(['disco','ide-workbench','industrial-hmi','slate-cyan'].includes(id))return 'technical';if(['field-day','field-night','neutral-tactical','low-luminance-amber'].includes(id))return 'field';if(['command-dark','slate-light','graphite-dark','technical-teal','sage-teal','sand-bronze','slate-indigo','civic-blue'].includes(id))return 'professional';return 'glass';}
   function hex(v){if(typeof v!=='string'||!/^#[\da-f]{6}$/i.test(v))throw Error('Theme role colors must be six-digit HEX');return v.toUpperCase();}
   function mix(a,b,amount){return '#'+[0,1,2].map(i=>Math.round(parseInt(a.slice(1+i*2,3+i*2),16)*(1-amount)+parseInt(b.slice(1+i*2,3+i*2),16)*amount).toString(16).padStart(2,'0')).join('').toUpperCase();}
   function contrast(a,b){const l=c=>{const v=c.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return v[0]*.2126+v[1]*.7152+v[2]*.0722;};const x=l(a),y=l(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
@@ -36,7 +45,7 @@
     const states={hover:{background:roles['control.hover'],foreground:readable(roles['control.foreground'],roles['control.hover'])},pressed:{background:roles['control.pressed'],foreground:readable(roles['control.foreground'],roles['control.pressed'])},selected:{background:roles['control.selected'],foreground:readable(roles['control.foreground'],roles['control.selected'])},disabled:{background:roles['control.disabled'],foreground:roles['control.disabledForeground']}};
     const warnings=[];
     for(const [fg,bg] of [['text.primary','application.background'],['text.primary','panel.background'],['text.primary','shell.header'],['text.secondary','panel.background'],['text.muted','application.background'],['control.foreground','control.background'],['navigation.foreground','navigation.selected']]){const ratio=contrast(roles[fg],roles[bg]);if(ratio<4.5)warnings.push(fg+' on '+bg+': '+ratio.toFixed(2)+':1 (below 4.5:1).');}
-    return {schemaVersion:1,theme:preset.id,family:preset.family||'glass',roles,sources,states,effects:{...effectDefaults,...visual.effects},warnings};
+    return {schemaVersion:1,theme:preset.id,family:preset.family||'glass',roles,sources,states,effects:{...effectDefaults,...preset.effects,...visual.effects},warnings};
   }
-  const api={schemaVersion:1,families,roleNames,effectDefaults,normalizeFamily,familyForPalette,legacyTokens,validateVisual,resolve,mix,contrast};root.ScopeTheme=api;if(typeof module!=='undefined')module.exports=api;
+  const api={schemaVersion:1,visualFamilies,visualFamilyForPalette,families,roleNames,effectDefaults,normalizeFamily,familyForPalette,legacyTokens,validateVisual,resolve,mix,contrast};root.ScopeTheme=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

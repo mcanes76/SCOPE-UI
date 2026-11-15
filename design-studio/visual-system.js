@@ -3,7 +3,7 @@
   'use strict';
   const T=root.ScopeTheme||(typeof require==='function'?require('./theme-tokens.js'):null);
   const families=T.families;
-  const paletteIds=['slate-light','graphite-dark','technical-teal','disco','ide-workbench','industrial-hmi','field-day','field-night','neutral-tactical','slate-indigo','sage-teal','sand-bronze','slate-cyan','civic-blue','low-luminance-amber'];
+  const paletteIds=['command-dark','frosted-white-glass','slate-light','graphite-dark','technical-teal','disco','ide-workbench','industrial-hmi','field-day','field-night','neutral-tactical','slate-indigo','sage-teal','sand-bronze','slate-cyan','civic-blue','low-luminance-amber'];
   const appIds=['blos','display','calibration','los'];
   const categories=['buttons','headers','panels','tabs','navigation','frames','join','leave','warning','configuration','info','neutral'];
   const componentDefaults={global:{},classes:{},applications:{},instances:{}};
@@ -104,14 +104,16 @@
   }
   // Phase 1 shell editor: a separate namespace preserves legacy application styling.
   const shellFields={
-    buttons:['background','text','border','borderWidth','radius','hoverBg','hoverText','pressedBg','pressedText','disabledBg','disabledText'],
+    buttons:['background','text','border','borderWidth','radius','hoverBg','hoverText','pressedBg','pressedText','disabledBg','disabledText','selectedBg','selectedText','focusColor'],
     tabs:['background','text','selectedBg','selectedText','hoverBg','hoverText','spacing','paddingX','paddingY'],
-    panels:['background','opacity','border','borderWidth','elevation','radius','paddingX','paddingY'],
+    panels:['background','opacity','border','borderWidth','elevation','radius','paddingX','paddingY','blur'],
     typography:['fontFamily','fontSize','headingSize','fontWeight','text'],
     inputs:['background','text','border','borderWidth','radius','focusColor','focusBg','focusText'],
+    chrome:['background','text','border','borderWidth','radius','opacity','elevation','blur'],
+    dialogs:['background','text','opacity','border','borderWidth','elevation','radius','paddingX','paddingY','blur'],
     success:['background','text'],warning:['background','text'],error:['background','text'],neutral:['background','text']
   };
-  const shellLimits={...limits,opacity:[0,1],spacing:[0,32],headingSize:[18,48]};
+  const shellLimits={...limits,blur:[0,28],opacity:[0,1],spacing:[0,32],headingSize:[18,48]};
   function validateShellComponents(input={}){
     if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Shell components must be an object');
     const out={};
@@ -120,35 +122,48 @@
       out[category]={};
       for(const [key,value] of Object.entries(style)){
         if(!shellFields[category].includes(key))throw Error('Unsupported shell component property: '+key);
-        if(['spacing','headingSize','opacity'].includes(key)){
+        if(['spacing','headingSize','opacity','blur'].includes(key)){
           if(typeof value!=='number'||!Number.isFinite(value))throw Error('Invalid shell component dimension');
           out[category][key]=Math.max(shellLimits[key][0],Math.min(shellLimits[key][1],value));
-        }else Object.assign(out[category],validateStyle({[key]:value}));
+        }else if(key==='elevation'&&['luminous','soft'].includes(value))out[category][key]=value;
+        else Object.assign(out[category],validateStyle({[key]:value}));
       }
     }return out;
   }
   function resolveShellStyle(design,preset,category,themeOnly=false){
     if(!Object.hasOwn(shellFields,category))throw Error('Invalid shell component');
     const t=tokens(design,preset),type=design.typography;
-    const base={background:t.control,text:t.controlText,border:t.controlBorder,borderWidth:t.f.border,radius:t.f.controlRadius,hoverBg:t.hover,hoverText:t.theme.states.hover.foreground,pressedBg:t.pressed,pressedText:t.theme.states.pressed.foreground,disabledBg:t.disabled,disabledText:t.disabledText,selectedBg:t.navSelected,selectedText:t.navText,spacing:type.spacing,paddingX:12,paddingY:8,opacity:1,elevation:family(preset)==='glass'?'raised':'flat',fontFamily:type.family,fontSize:type.baseSize,headingSize:type.headingSize,fontWeight:type.weight,focusColor:t.focus,focusBg:t.inset,focusText:t.text};
+    const base={background:t.control,text:t.controlText,border:t.controlBorder,borderWidth:t.f.border,radius:t.f.controlRadius,hoverBg:t.hover,hoverText:t.theme.states.hover.foreground,pressedBg:t.pressed,pressedText:t.theme.states.pressed.foreground,disabledBg:t.disabled,disabledText:t.disabledText,selectedBg:t.navSelected,selectedText:t.navText,spacing:type.spacing,paddingX:12,paddingY:8,opacity:1,elevation:family(preset)==='glass'?'raised':'flat',fontFamily:type.family,fontSize:type.baseSize,headingSize:type.headingSize,fontWeight:type.weight,focusColor:t.focus,focusBg:t.inset,focusText:t.text,blur:0};
     if(category==='tabs')Object.assign(base,{background:t.nav,text:t.text});
-    if(category==='panels')Object.assign(base,{background:t.panel,text:t.text,border:t.border,radius:t.f.radius,paddingX:type.spacing,paddingY:type.spacing});
+    if(category==='chrome')Object.assign(base,{background:t.header,text:t.text,border:t.border,radius:t.f.radius});
+    if(['panels','dialogs'].includes(category))Object.assign(base,{background:t.panel,text:t.text,border:t.border,radius:t.f.radius,paddingX:type.spacing,paddingY:type.spacing});
     if(category==='typography')base.text=t.text;
     if(category==='inputs')Object.assign(base,{background:t.inset,text:t.text});
     const status={success:semantic.join,warning:semantic.warning,error:semantic.leave,neutral:[t.raised,t.text]}[category];
     if(status)Object.assign(base,{background:status[0],text:status[1]});
     const values=Object.fromEntries(shellFields[category].map(k=>[k,base[k]])),sources=Object.fromEntries(shellFields[category].map(k=>[k,'Theme']));
+    const familyDefaults=validateShellComponents(preset.shellComponents||{});
+    for(const [key,value] of Object.entries(familyDefaults[category]||{})){values[key]=value;sources[key]='Family default: '+(T.visualFamilies[preset.visualFamily]?.name||preset.name);}
+    if(preset.visualFamily)for(const key of ['radius','borderWidth','opacity','blur'])if(Object.hasOwn(values,key)&&design.material?.[key]!==undefined){values[key]=design.material[key];sources[key]='Global material override';}
+    if(category==='typography'&&preset.visualFamily){
+      const mapping={fontFamily:'family',fontSize:'baseSize',headingSize:'headingSize',fontWeight:'weight'},defaults=root.ScopeDesign?.defaults.typography||{family:'system-ui',baseSize:15,headingSize:24,weight:500};
+      for(const [key,path] of Object.entries(mapping))if(type[path]!==defaults[path]){values[key]=type[path];sources[key]='Global typography override';}
+    }
+    if(!themeOnly&&preset.visualFamily){
+      const legacy=mergeComponents(design),cats={buttons:['buttons'],tabs:['buttons','tabs','navigation'],panels:['frames']}[category]||[];
+      for(const scope of ['global','classes'])for(const cat of cats)for(const [key,value] of Object.entries(legacy[scope][cat]||{}))if(shellFields[category].includes(key)){values[key]=value;sources[key]='Legacy component override';}
+    }
     if(!themeOnly)for(const [layer,label] of [[design.parameters?.shellComponents,'Parameters'],[design.shellComponents,'Component override']])for(const [key,value] of Object.entries(layer?.[category]||{})){values[key]=value;sources[key]=label;}
     return {values,sources};
   }
-  const shellSelectors={buttons:'button',tabs:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room],.app-tabs button',panels:'.shell-context-card,.deck-rail>section,.pane,.integration-pane,.operator-config',typography:'h1,h2,h3,h4,p,span,label,button,input,select,textarea,a,small,strong',inputs:'input,select,textarea',success:'.status-pill,.good,[data-shell-status="success"]',warning:'.warning-outline,[data-shell-status="warning"]',error:'.bad,.error-outline,[data-shell-status="error"]',neutral:'.offline,.synthetic-tag,[data-shell-status="neutral"]'};
+  const shellSelectors={chrome:'.shell,.shell-top,.operator-bar,.deck-nav,.aperture-dock,.application-shelf,.portal-location,.workspace-tools',dialogs:'dialog:not(#demo-action-dialog)',buttons:'button',tabs:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room],.app-tabs button',panels:'.shell-context-card,.deck-rail>section,.pane,.integration-pane,.operator-config',typography:'h1,h2,h3,h4,p,span,label,button,input,select,textarea,a,small,strong',inputs:'input,select,textarea',success:'.status-pill,.good,[data-shell-status="success"]',warning:'.warning-outline,[data-shell-status="warning"]',error:'.bad,.error-outline,[data-shell-status="error"]',neutral:'.offline,.synthetic-tag,[data-shell-status="neutral"]'};
   function compileShellComponents(design,preset){
     const out=[],prefix='body[data-scope-design="true"][data-theme="'+design.theme+'"][data-scope-design][data-theme][data-scope-design][data-theme] ';
     const boundary=':not(:where([data-demo-host],[data-demo-host] *,#demo-action-dialog,#demo-action-dialog *))';
     const rule=(selectors,css,suffix='')=>out.push(splitSelectors(selectors).map(s=>prefix+s+boundary+suffix).join(',')+'{'+css+'}');
     const v=k=>'var(--scope-shell-'+k+')';
     const paint=(bg='background',fg='text')=>'background:'+v(bg)+'!important;color:'+v(fg)+'!important';
-    const categories=['typography',...Object.keys(shellFields).filter(k=>k!=='typography')].filter(k=>Object.keys(design.shellComponents?.[k]||{}).length||Object.keys(design.parameters?.shellComponents?.[k]||{}).length);
+    const categories=['chrome','typography',...Object.keys(shellFields).filter(k=>!['chrome','typography'].includes(k))].filter(k=>Object.hasOwn(preset.shellComponents||{},k)||Object.keys(design.shellComponents?.[k]||{}).length||Object.keys(design.parameters?.shellComponents?.[k]||{}).length);
     // Typography first, then buttons and navigation; component colors take precedence. Each category declares all its
     // own properties, so parent panels cannot leak custom properties into controls.
     for(const category of categories){
@@ -166,19 +181,42 @@
         rule(sel,paint('hoverBg','hoverText'),':hover:not(:disabled)');
         if(category==='buttons'){
           rule(sel,paint('pressedBg','pressedText'),':active:not(:disabled)');
-          rule(sel,paint('disabledBg','disabledText'),':disabled');
+          for(const state of ['[aria-selected="true"]','[aria-pressed="true"]'])rule(sel,paint('selectedBg','selectedText'),state+':not(:disabled)');
+          rule(sel,paint('disabledBg','disabledText')+';opacity:1!important;border-style:dashed!important',':disabled');
+          rule(sel,'outline:3px solid '+v('focusColor')+'!important;outline-offset:3px',':focus-visible');
         }else{
           for(const state of ['[aria-selected="true"]','[aria-pressed="true"]','[aria-current]:not([aria-current="false"])'])rule(sel,paint('selectedBg','selectedText'),state+':not(:disabled)');
-          rule(sel,paint('disabledBg','disabledText'),':disabled');
+          rule(sel,paint('disabledBg','disabledText')+';opacity:1!important;border-style:dashed!important',':disabled');
           rule(sel,'margin-inline-end:'+v('spacing')+'!important;padding-inline:'+v('paddingX')+'!important;padding-block:'+v('paddingY')+'!important');
         }
       }
-      if(category==='panels')rule(sel,'--scope-shell-shadow:'+({flat:'none',raised:tokens(design,preset).f.shadow,inset:'inset 0 2px 5px #0006'}[values.elevation])+';background:color-mix(in srgb,'+v('background')+' calc('+v('opacity')+' * 100%),transparent)!important;box-shadow:var(--scope-shell-shadow)!important;padding-inline:'+v('paddingX')+'!important;padding-block:'+v('paddingY')+'!important');
+      if(['chrome','panels','dialogs'].includes(category)){
+        const t=tokens(design,preset),effects=t.theme.effects;
+        const shadows={flat:'none',raised:t.f.shadow,inset:'inset 0 2px 5px #0006',soft:'0 4px 14px #17253618',luminous:'0 0 0 1px '+t.accent+'66,0 8px 28px #0005'};
+        const opacity=effects.transparency?values.opacity:1,blur=effects.blur?values.blur:0;
+        rule(sel,'--scope-shell-shadow:'+shadows[values.elevation]+';--scope-shell-opacity:'+opacity+';--scope-shell-blur:'+blur+'px;background:color-mix(in srgb,'+v('background')+' calc('+v('opacity')+' * 100%),transparent)!important;box-shadow:var(--scope-shell-shadow)!important;backdrop-filter:blur('+v('blur')+')!important;-webkit-backdrop-filter:blur('+v('blur')+')!important'+(category==='chrome'?'':';padding-inline:'+v('paddingX')+'!important;padding-block:'+v('paddingY')+'!important'));
+      }
+      if(category==='chrome'){
+        const t=tokens(design,preset),custom=design.shellComponents?.chrome?.background??design.parameters?.shellComponents?.chrome?.background;
+        rule('.shell','--scope-shell-background:'+(custom||t.shell));
+        rule('.deck-nav,.aperture-dock,.application-shelf,.portal-location,.workspace-tools','--scope-shell-background:'+(custom||t.nav));
+      }
       if(category==='inputs'){
         rule(sel,paint('focusBg','focusText')+';outline:3px solid '+v('focusColor')+'!important;outline-offset:2px',':focus');
-        const t=tokens(design,preset);rule(sel,'background:'+t.disabled+'!important;color:'+t.disabledText+'!important',':disabled');
+        const t=tokens(design,preset);rule(sel,'background:'+t.disabled+'!important;color:'+t.disabledText+'!important;opacity:1!important;border-style:dashed!important',':disabled');
       }
-    }return out.join('\n');
+    }
+    // Explicit region edits continue to win over family defaults. A Phase 1
+    // component override retains precedence for the same presentation property.
+    const regionProps={background:'background',text:'color',border:'border-color',radius:'border-radius',borderWidth:'border-width',padding:'padding',gap:'gap',height:'min-height'};
+    for(const [id,settings] of Object.entries(design.regions||{})){
+      const selector=root.ScopeDesign?.regions[id];if(!selector)continue;
+      const category=['shell','header','branding','navigation'].includes(id)?'chrome':id==='context'?'panels':'';
+      const own={...design.parameters?.shellComponents?.[category],...design.shellComponents?.[category]};
+      const declarations=Object.entries(settings).filter(([k])=>regionProps[k]&&!Object.hasOwn(own,k)).map(([k,x])=>regionProps[k]+':'+x+(['radius','borderWidth','padding','gap','height'].includes(k)?'px':'')+'!important');
+      if(declarations.length)out.push(splitSelectors(selector).map(s=>prefix.replace(' ', '[data-scope-design] ')+s+boundary).join(',')+'{'+declarations.join(';')+'}');
+    }
+    return out.join('\n');
   }
   function splitSelectors(value){let depth=0,quote='',start=0;const out=[];for(let i=0;i<value.length;i++){const ch=value[i];if(quote){if(ch===quote&&value[i-1]!=='\\')quote='';}else if(ch==='"'||ch==="'")quote=ch;else if(ch==='('||ch==='[')depth++;else if(ch===')'||ch===']')depth--;else if(ch===','&&!depth){out.push(value.slice(start,i).trim());start=i+1;}}out.push(value.slice(start).trim());return out;}
   const selectors={buttons:'button,.operator-bar select,.integration-pane-header select',headers:'.surface-top,.pane-header,.integration-pane-header',panels:'[data-demo-host] section,[data-demo-host] fieldset,[data-demo-host] .demo-card',tabs:'.app-tabs button',navigation:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room]',frames:'.owner-surface,.integration-pane,.pane,.operator-divider',join:'.btn-join,.btn-enable',leave:'.btn-leave,.btn-disable',warning:'.btn-warning',configuration:'.btn-update',info:'.btn-read',neutral:'.btn-neutral'};
@@ -230,10 +268,10 @@
     rule('button[aria-busy="true"],button[data-loading="true"]',paint(t.control,t.controlText,'loading'));
     const scoped=(category,app)=>selectors[category].split(',').map(s=>app?'[data-owner="'+app+'"] '+s:s).join(',');
     function style(s,v,kind='buttons'){
-      const custom=(target,p)=>out.push(splitSelectors(target).map(x=>prefix+'[data-scope-design][data-theme][data-scope-design][data-theme] :where('+x+')').join(',')+'{'+p+'}');
+      const custom=(target,p)=>out.push(splitSelectors(target).map(x=>prefix+'[data-scope-design][data-theme][data-scope-design][data-theme]'+(kind==='shell-instance'?'[data-scope-design]':'')+' :where('+x+')').join(',')+'{'+p+'}');
       const props={borderStyle:'border-style',borderWidth:'border-width',radius:'border-radius',topLeft:'border-top-left-radius',topRight:'border-top-right-radius',bottomLeft:'border-bottom-left-radius',bottomRight:'border-bottom-right-radius',paddingX:'padding-inline',paddingY:'padding-block',height:'min-height',minWidth:'min-width',fontSize:'font-size',fontWeight:'font-weight',fontFamily:'font-family',letterSpacing:'letter-spacing',textTransform:'text-transform'};
       const declarations=Object.entries(v).filter(([k])=>props[k]).sort(([a],[b])=>(a==='radius'?-1:b==='radius'?1:0)).map(([k,x])=>props[k]+':'+(x==='pill'?'999':x)+(Object.hasOwn(limits,k)&&!['fontWeight','opacity','gradientAngle'].includes(k)?'px':'')+'!important');
-      for(const key of colors)if(v[key])declarations.push('--scope-component-'+key+':'+v[key]+'!important');
+      for(const key of colors)if(v[key]){declarations.push('--scope-component-'+key+':'+v[key]+'!important');if(kind==='shell-instance')declarations.push('--scope-shell-'+key+':'+v[key]+'!important');}
       if(v.opacity!==undefined)declarations.push('--scope-component-opacity:'+v.opacity+'!important');
       if(v.gradient!==undefined)declarations.push('--scope-component-gradient:'+(v.gradient?'linear-gradient('+variable('gradientAngle','180deg')+','+variable('gradientStart',variable('background',t.raised))+','+variable('gradientEnd',t.panel)+')':'none')+'!important');
       if(v.gradientAngle!==undefined)declarations.push('--scope-component-gradientAngle:'+v.gradientAngle+'deg!important');
@@ -282,10 +320,10 @@
     for(const [category,v] of ordered(c.global))style(scoped(category),v,category);
     for(const [category,v] of ordered(c.classes))style(scoped(category),v,category);
     for(const [app,categories] of Object.entries(c.applications))for(const [category,v] of ordered(categories))style(scoped(category,app),v,category);
-    for(const [id,v] of Object.entries(c.instances).sort(([a],[b])=>Number(a===canonicalId(a))-Number(b===canonicalId(b))))style('[data-style-id="'+canonicalId(id)+'"][data-style-id][data-style-id]',v);
+    for(const [id,v] of Object.entries(c.instances).sort(([a],[b])=>Number(a===canonicalId(a))-Number(b===canonicalId(b))))style('[data-style-id="'+canonicalId(id)+'"][data-style-id][data-style-id]',v,preset.visualFamily&&id.startsWith('shell.')?'shell-instance':'buttons');
     out.push('@media(prefers-reduced-motion:reduce){'+prefix+' *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}');
     out.push(compileShellComponents(design,preset));
     return out.join('\n');
   }
-  const api={shellFields,shellLimits,shellSelectors,validateShellComponents,resolveShellStyle,compileShellComponents,resolveTheme:T.resolve,validateVisual:T.validateVisual,roleNames:T.roleNames,families,paletteIds,appIds,categories,componentDefaults,componentPresets,fontFamilies,colors,limits,semantic,componentId,canonicalId,validId,describe,mergeComponents,resolveStyle,validateComponents,validateStyle,tokens,family,contrast,compile};root.ScopeVisuals=api;if(typeof module!=='undefined')module.exports=api;
+  const api={visualFamilies:T.visualFamilies,visualFamilyForPalette:T.visualFamilyForPalette,shellFields,shellLimits,shellSelectors,validateShellComponents,resolveShellStyle,compileShellComponents,resolveTheme:T.resolve,validateVisual:T.validateVisual,roleNames:T.roleNames,families,paletteIds,appIds,categories,componentDefaults,componentPresets,fontFamilies,colors,limits,semantic,componentId,canonicalId,validId,describe,mergeComponents,resolveStyle,validateComponents,validateStyle,tokens,family,contrast,compile};root.ScopeVisuals=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -27,14 +27,14 @@
     return h;
   }
   function shellPanel(design,preset,e){
-    const labels={buttons:'Buttons',tabs:'Tabs / navigation',panels:'Panels / cards',typography:'Typography',inputs:'Inputs / selects',success:'Status: success',warning:'Status: warning',error:'Status: error',neutral:'Status: neutral'};
+    const labels={chrome:'Shell chrome',dialogs:'Shell dialogs',buttons:'Buttons',tabs:'Tabs / navigation',panels:'Panels / cards',typography:'Typography',inputs:'Inputs / selects',success:'Status: success',warning:'Status: warning',error:'Status: error',neutral:'Status: neutral'};
     let html='<details class="shell-component-editor"><summary>Shell Component Editor (Phase 1)</summary><p class="hint">Theme ? parameter defaults ? component override. These controls style the SCOPE shell only. Application forms, dialogs and stores retain their ownership.</p>';
     for(const [category,keys] of Object.entries(V.shellFields)){
       const {values,sources}=V.resolveShellStyle(design,preset,category),own=design.shellComponents?.[category]||{};
       html+='<details class="shell-component-group"><summary>'+labels[category]+'</summary>';
       for(const key of keys){
         const id='shell-style-'+category+'-'+key,data='data-shell-category="'+category+'" data-shell-property="'+key+'"',value=values[key];let input;
-        const choices=key==='fontFamily'?V.fontFamilies:key==='elevation'?['flat','raised','inset']:null;
+        const choices=key==='fontFamily'?V.fontFamilies:key==='elevation'?['flat','soft','raised','inset','luminous']:null;
         if(choices)input='<select id="'+id+'" '+data+'>'+choices.map(x=>'<option value="'+x+'" '+(x===value?'selected':'')+'>'+e(x)+'</option>').join('')+'</select>';
         else if(V.colors.includes(key))input='<input id="'+id+'" type="color" '+data+' value="'+value+'">';
         else {const [min,max]=V.shellLimits[key],step=key==='opacity'?.05:key==='fontWeight'?100:1;input='<input id="'+id+'" type="range" '+data+' min="'+min+'" max="'+max+'" step="'+step+'" value="'+(value==='pill'?24:value)+'">';}

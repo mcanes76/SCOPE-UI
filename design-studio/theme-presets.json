@@ -66,6 +66,69 @@
         "mode": "dark",
         "recommendedFont": "system-ui",
         "provenance": "Original SCOPE coordinated palette"
+      },
+      "visualFamily": "electric-glass",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 0.86,
+          "blur": 16,
+          "radius": 16,
+          "elevation": "luminous"
+        },
+        "buttons": {
+          "radius": 8,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 16,
+          "opacity": 0.86,
+          "blur": 16,
+          "elevation": "luminous",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 8,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 16,
+          "opacity": 0.98,
+          "blur": 16,
+          "elevation": "raised",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": true,
+        "blur": true,
+        "reflections": true,
+        "motion": false
       }
     },
     {
@@ -133,6 +196,75 @@
         "mode": "dark",
         "recommendedFont": "system-ui",
         "provenance": "Original SCOPE coordinated palette"
+      },
+      "visualFamily": "prism-glass",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 0.86,
+          "blur": 16,
+          "radius": 16,
+          "elevation": "raised"
+        },
+        "buttons": {
+          "radius": 8,
+          "borderWidth": 1,
+          "focusColor": "#C6B7FF"
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8,
+          "selectedBg": "#494260",
+          "selectedText": "#F4F0FF",
+          "hoverBg": "#414B63",
+          "hoverText": "#F4F0FF"
+        },
+        "panels": {
+          "radius": 16,
+          "opacity": 0.86,
+          "blur": 16,
+          "elevation": "raised",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 8,
+          "borderWidth": 1,
+          "focusColor": "#C6B7FF"
+        },
+        "dialogs": {
+          "radius": 16,
+          "opacity": 0.98,
+          "blur": 16,
+          "elevation": "raised",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": true,
+        "blur": true,
+        "reflections": false,
+        "motion": false
       }
     },
     {
@@ -405,7 +537,7 @@
     },
     {
       "id": "white-trim",
-      "name": "Electric Glass – White Trim",
+      "name": "Electric Glass \u00e2\u20ac\u201c White Trim",
       "engineLook": "white-trim",
       "description": "The existing Electric Glass silver-edge treatment, preserved.",
       "colors": {
@@ -602,6 +734,69 @@
         "mode": "dark",
         "recommendedFont": "system-ui",
         "provenance": "Original SCOPE coordinated palette"
+      },
+      "visualFamily": "electric-glass",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 0.86,
+          "blur": 16,
+          "radius": 16,
+          "elevation": "luminous"
+        },
+        "buttons": {
+          "radius": 8,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 16,
+          "opacity": 0.86,
+          "blur": 16,
+          "elevation": "luminous",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 8,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 16,
+          "opacity": 0.98,
+          "blur": 16,
+          "elevation": "raised",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": true,
+        "blur": true,
+        "reflections": true,
+        "motion": false
       }
     },
     {
@@ -1145,6 +1340,69 @@
         "mode": "light",
         "recommendedFont": "Segoe UI",
         "provenance": "Original SCOPE coordinated palette"
+      },
+      "visualFamily": "professional-light",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 0.94,
+          "blur": 0,
+          "radius": 4,
+          "elevation": "flat"
+        },
+        "buttons": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 4,
+          "opacity": 0.94,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 4,
+          "opacity": 1,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": false,
+        "blur": false,
+        "reflections": false,
+        "motion": false
       }
     },
     {
@@ -1219,6 +1477,69 @@
         "mode": "dark",
         "recommendedFont": "Segoe UI",
         "provenance": "Original SCOPE coordinated palette"
+      },
+      "visualFamily": "command-dark",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 1,
+          "blur": 0,
+          "radius": 4,
+          "elevation": "flat"
+        },
+        "buttons": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 4,
+          "opacity": 1,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 4,
+          "opacity": 1,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": false,
+        "blur": false,
+        "reflections": false,
+        "motion": false
       }
     },
     {
@@ -1535,7 +1856,7 @@
     },
     {
       "id": "field-day",
-      "name": "Field Ops — Day",
+      "name": "Field Ops \u00e2\u20ac\u201d Day",
       "family": "field",
       "mode": "light",
       "engineLook": "carbon",
@@ -1609,7 +1930,7 @@
     },
     {
       "id": "field-night",
-      "name": "Field Ops — Night",
+      "name": "Field Ops \u00e2\u20ac\u201d Night",
       "family": "field",
       "mode": "dark",
       "engineLook": "carbon",
@@ -2123,6 +2444,69 @@
         "mode": "light",
         "recommendedFont": "Segoe UI",
         "provenance": "Original SCOPE coordinated palette"
+      },
+      "visualFamily": "professional-light",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 0.94,
+          "blur": 0,
+          "radius": 4,
+          "elevation": "flat"
+        },
+        "buttons": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 4,
+          "opacity": 0.94,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 4,
+          "opacity": 1,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": false,
+        "blur": false,
+        "reflections": false,
+        "motion": false
       }
     },
     {
@@ -2197,6 +2581,282 @@
         "mode": "dark",
         "recommendedFont": "Arial",
         "provenance": "Original SCOPE coordinated palette"
+      }
+    },
+    {
+      "id": "command-dark",
+      "name": "Command Dark",
+      "family": "professional",
+      "mode": "dark",
+      "engineLook": "carbon",
+      "description": "High contrast operational shell; flat surfaces and clear focus.",
+      "colors": {
+        "background": "#151B23",
+        "header": "#202A36",
+        "navigation": "#202A36",
+        "workspace": "#18222E",
+        "panel": "#2B3746",
+        "accent": "#8CB7F5",
+        "text": "#E9F1FA",
+        "border": "#788DA5"
+      },
+      "roles": {
+        "inset": "#101A25",
+        "raised": "#2B3746",
+        "secondary": "#CBD6E5",
+        "muted": "#B9C8DB"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 4,
+        "opacity": 0.98,
+        "blur": 0
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      },
+      "tokenSchemaVersion": 1,
+      "tokens": {
+        "canvas": "#151B23",
+        "shell.background": "#151B23",
+        "shell.header": "#202A36",
+        "navigation.background": "#202A36",
+        "navigation.selected": "#36465C",
+        "navigation.foreground": "#E9F1FA",
+        "workspace.background": "#18222E",
+        "application.background": "#18222E",
+        "application.header": "#202A36",
+        "panel.background": "#2B3746",
+        "panel.header": "#2B3746",
+        "surface.raised": "#2B3746",
+        "surface.inset": "#101A25",
+        "control.background": "#2B3746",
+        "control.foreground": "#E9F1FA",
+        "control.border": "#788DA5",
+        "control.hover": "#3A4654",
+        "control.pressed": "#3C4E66",
+        "control.selected": "#36465C",
+        "control.disabled": "#24303E",
+        "control.disabledForeground": "#B9C8DB",
+        "text.primary": "#E9F1FA",
+        "text.secondary": "#CBD6E5",
+        "text.muted": "#B9C8DB",
+        "border.default": "#788DA5",
+        "border.strong": "#A5B5C7",
+        "focus.ring": "#8CB7F5"
+      },
+      "variant": {
+        "id": "command-dark",
+        "mode": "dark",
+        "recommendedFont": "Segoe UI",
+        "provenance": "Phase 2 curated family, derived from Graphite Dark"
+      },
+      "visualFamily": "command-dark",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 1,
+          "blur": 0,
+          "radius": 4,
+          "elevation": "flat"
+        },
+        "buttons": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 4,
+          "opacity": 1,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 4,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 4,
+          "opacity": 1,
+          "blur": 0,
+          "elevation": "flat",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": false,
+        "blur": false,
+        "reflections": false,
+        "motion": false
+      }
+    },
+    {
+      "id": "frosted-white-glass",
+      "name": "Frosted White Glass",
+      "family": "glass",
+      "mode": "light",
+      "engineLook": "prism",
+      "description": "White translucent panels, clear dark type and restrained blue accents.",
+      "colors": {
+        "background": "#E3EAF3",
+        "header": "#F5F8FC",
+        "navigation": "#EAF0F7",
+        "workspace": "#DFE7F1",
+        "panel": "#FFFFFF",
+        "accent": "#1D4ED8",
+        "text": "#172536",
+        "border": "#7B8EA5"
+      },
+      "roles": {
+        "inset": "#FFFFFF",
+        "raised": "#F4F7FA",
+        "secondary": "#344454",
+        "muted": "#405164"
+      },
+      "material": {
+        "borderWidth": 1,
+        "radius": 16,
+        "opacity": 0.94,
+        "blur": 16
+      },
+      "typography": {
+        "family": "Segoe UI",
+        "baseSize": 15,
+        "headingSize": 24,
+        "weight": 500,
+        "density": "comfortable",
+        "spacing": 16
+      },
+      "tokenSchemaVersion": 1,
+      "tokens": {
+        "canvas": "#E3EAF3",
+        "shell.background": "#E3EAF3",
+        "shell.header": "#F5F8FC",
+        "navigation.background": "#EAF0F7",
+        "navigation.selected": "#C0CDE1",
+        "navigation.foreground": "#17283A",
+        "workspace.background": "#DFE7F1",
+        "application.background": "#DFE7F1",
+        "application.header": "#EAF0F7",
+        "panel.background": "#FFFFFF",
+        "panel.header": "#F4F7FA",
+        "surface.raised": "#FFFFFF",
+        "surface.inset": "#FFFFFF",
+        "control.background": "#F4F7FA",
+        "control.foreground": "#17283A",
+        "control.border": "#526781",
+        "control.hover": "#E2E6EB",
+        "control.pressed": "#CED9E8",
+        "control.selected": "#C0CDE1",
+        "control.disabled": "#E7EDF3",
+        "control.disabledForeground": "#405164",
+        "text.primary": "#172536",
+        "text.secondary": "#344454",
+        "text.muted": "#405164",
+        "border.default": "#526781",
+        "border.strong": "#3A4E65",
+        "focus.ring": "#1D4ED8"
+      },
+      "variant": {
+        "id": "frosted-white-glass",
+        "mode": "light",
+        "recommendedFont": "Segoe UI",
+        "provenance": "Phase 2 light glass successor; frosted-white legacy ID is retained"
+      },
+      "surfaceTreatment": "overlay",
+      "surfaceOpacity": 0.94,
+      "visualFamily": "frosted-white-glass",
+      "shellComponents": {
+        "chrome": {
+          "opacity": 0.94,
+          "blur": 16,
+          "radius": 16,
+          "elevation": "soft"
+        },
+        "buttons": {
+          "radius": 8,
+          "borderWidth": 1
+        },
+        "tabs": {
+          "spacing": 4,
+          "paddingX": 12,
+          "paddingY": 8
+        },
+        "panels": {
+          "radius": 16,
+          "opacity": 0.94,
+          "blur": 16,
+          "elevation": "soft",
+          "paddingX": 16,
+          "paddingY": 16
+        },
+        "typography": {
+          "fontFamily": "system-ui",
+          "fontSize": 15,
+          "headingSize": 24,
+          "fontWeight": 500
+        },
+        "inputs": {
+          "radius": 8,
+          "borderWidth": 1
+        },
+        "dialogs": {
+          "radius": 16,
+          "opacity": 0.98,
+          "blur": 16,
+          "elevation": "soft",
+          "paddingX": 24,
+          "paddingY": 24
+        },
+        "success": {
+          "background": "#007A45",
+          "text": "#FFFFFF"
+        },
+        "warning": {
+          "background": "#FFD000",
+          "text": "#292000"
+        },
+        "error": {
+          "background": "#B91C35",
+          "text": "#FFFFFF"
+        },
+        "neutral": {}
+      },
+      "effects": {
+        "transparency": true,
+        "blur": true,
+        "reflections": false,
+        "motion": false
       }
     }
   ]
