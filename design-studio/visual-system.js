@@ -102,6 +102,84 @@
     if(pair){for(const key of ['background','hoverBg','focusBg','pressedBg','selectedBg','loadingBg'])if((sources[key]?.startsWith('Design')||sources[key]?.startsWith('Parameters'))&&values[key]!==pair[0]){warnings.push('Explicit '+info.category+' fill override: check that its semantic color remains recognizable.');break;}}
     return {descriptor:info,values,sources,warnings};
   }
+  // Phase 1 shell editor: a separate namespace preserves legacy application styling.
+  const shellFields={
+    buttons:['background','text','border','borderWidth','radius','hoverBg','hoverText','pressedBg','pressedText','disabledBg','disabledText'],
+    tabs:['background','text','selectedBg','selectedText','hoverBg','hoverText','spacing','paddingX','paddingY'],
+    panels:['background','opacity','border','borderWidth','elevation','radius','paddingX','paddingY'],
+    typography:['fontFamily','fontSize','headingSize','fontWeight','text'],
+    inputs:['background','text','border','borderWidth','radius','focusColor','focusBg','focusText'],
+    success:['background','text'],warning:['background','text'],error:['background','text'],neutral:['background','text']
+  };
+  const shellLimits={...limits,opacity:[0,1],spacing:[0,32],headingSize:[18,48]};
+  function validateShellComponents(input={}){
+    if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Shell components must be an object');
+    const out={};
+    for(const [category,style] of Object.entries(input)){
+      if(!Object.hasOwn(shellFields,category)||!style||typeof style!=='object'||Array.isArray(style))throw Error('Invalid shell component');
+      out[category]={};
+      for(const [key,value] of Object.entries(style)){
+        if(!shellFields[category].includes(key))throw Error('Unsupported shell component property: '+key);
+        if(['spacing','headingSize','opacity'].includes(key)){
+          if(typeof value!=='number'||!Number.isFinite(value))throw Error('Invalid shell component dimension');
+          out[category][key]=Math.max(shellLimits[key][0],Math.min(shellLimits[key][1],value));
+        }else Object.assign(out[category],validateStyle({[key]:value}));
+      }
+    }return out;
+  }
+  function resolveShellStyle(design,preset,category,themeOnly=false){
+    if(!Object.hasOwn(shellFields,category))throw Error('Invalid shell component');
+    const t=tokens(design,preset),type=design.typography;
+    const base={background:t.control,text:t.controlText,border:t.controlBorder,borderWidth:t.f.border,radius:t.f.controlRadius,hoverBg:t.hover,hoverText:t.theme.states.hover.foreground,pressedBg:t.pressed,pressedText:t.theme.states.pressed.foreground,disabledBg:t.disabled,disabledText:t.disabledText,selectedBg:t.navSelected,selectedText:t.navText,spacing:type.spacing,paddingX:12,paddingY:8,opacity:1,elevation:family(preset)==='glass'?'raised':'flat',fontFamily:type.family,fontSize:type.baseSize,headingSize:type.headingSize,fontWeight:type.weight,focusColor:t.focus,focusBg:t.inset,focusText:t.text};
+    if(category==='tabs')Object.assign(base,{background:t.nav,text:t.text});
+    if(category==='panels')Object.assign(base,{background:t.panel,text:t.text,border:t.border,radius:t.f.radius,paddingX:type.spacing,paddingY:type.spacing});
+    if(category==='typography')base.text=t.text;
+    if(category==='inputs')Object.assign(base,{background:t.inset,text:t.text});
+    const status={success:semantic.join,warning:semantic.warning,error:semantic.leave,neutral:[t.raised,t.text]}[category];
+    if(status)Object.assign(base,{background:status[0],text:status[1]});
+    const values=Object.fromEntries(shellFields[category].map(k=>[k,base[k]])),sources=Object.fromEntries(shellFields[category].map(k=>[k,'Theme']));
+    if(!themeOnly)for(const [layer,label] of [[design.parameters?.shellComponents,'Parameters'],[design.shellComponents,'Component override']])for(const [key,value] of Object.entries(layer?.[category]||{})){values[key]=value;sources[key]=label;}
+    return {values,sources};
+  }
+  const shellSelectors={buttons:'button',tabs:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room],.app-tabs button',panels:'.shell-context-card,.deck-rail>section,.pane,.integration-pane,.operator-config',typography:'h1,h2,h3,h4,p,span,label,button,input,select,textarea,a,small,strong',inputs:'input,select,textarea',success:'.status-pill,.good,[data-shell-status="success"]',warning:'.warning-outline,[data-shell-status="warning"]',error:'.bad,.error-outline,[data-shell-status="error"]',neutral:'.offline,.synthetic-tag,[data-shell-status="neutral"]'};
+  function compileShellComponents(design,preset){
+    const out=[],prefix='body[data-scope-design="true"][data-theme="'+design.theme+'"][data-scope-design][data-theme][data-scope-design][data-theme] ';
+    const boundary=':not(:where([data-demo-host],[data-demo-host] *,#demo-action-dialog,#demo-action-dialog *))';
+    const rule=(selectors,css,suffix='')=>out.push(splitSelectors(selectors).map(s=>prefix+s+boundary+suffix).join(',')+'{'+css+'}');
+    const v=k=>'var(--scope-shell-'+k+')';
+    const paint=(bg='background',fg='text')=>'background:'+v(bg)+'!important;color:'+v(fg)+'!important';
+    const categories=['typography',...Object.keys(shellFields).filter(k=>k!=='typography')].filter(k=>Object.keys(design.shellComponents?.[k]||{}).length||Object.keys(design.parameters?.shellComponents?.[k]||{}).length);
+    // Typography first, then buttons and navigation; component colors take precedence. Each category declares all its
+    // own properties, so parent panels cannot leak custom properties into controls.
+    for(const category of categories){
+      const {values}=resolveShellStyle(design,preset,category);
+      const sel=category==='typography'?splitSelectors(shellSelectors[category]).map(s=>s+':not(:where(button *))').join(','):shellSelectors[category];
+      if(category==='tabs'){const b=resolveShellStyle(design,preset,'buttons').values;values.disabledBg=b.disabledBg;values.disabledText=b.disabledText;}
+      const vars=Object.entries(values).map(([k,x])=>'--scope-shell-'+k+':'+(typeof x==='number'&&!['fontWeight','opacity'].includes(k)?x===50&&k==='radius'?'999px':x+'px':x==='pill'?'999px':k==='fontFamily'?'"'+x+'",system-ui,sans-serif':x)).join(';');
+      rule(sel,vars);
+      if(category==='typography'){
+        rule(sel,'font-family:'+v('fontFamily')+'!important;font-size:'+v('fontSize')+'!important;font-weight:'+v('fontWeight')+'!important;color:'+v('text')+'!important');
+        rule('h1,h2,h3','font-size:'+v('headingSize')+'!important');continue;
+      }
+      rule(sel,paint()+(values.border!==undefined?';border:'+v('borderWidth')+' solid '+v('border')+'!important;border-radius:'+v('radius')+'!important':''));
+      if(category==='buttons'||category==='tabs'){
+        rule(sel,paint('hoverBg','hoverText'),':hover:not(:disabled)');
+        if(category==='buttons'){
+          rule(sel,paint('pressedBg','pressedText'),':active:not(:disabled)');
+          rule(sel,paint('disabledBg','disabledText'),':disabled');
+        }else{
+          for(const state of ['[aria-selected="true"]','[aria-pressed="true"]','[aria-current]:not([aria-current="false"])'])rule(sel,paint('selectedBg','selectedText'),state+':not(:disabled)');
+          rule(sel,paint('disabledBg','disabledText'),':disabled');
+          rule(sel,'margin-inline-end:'+v('spacing')+'!important;padding-inline:'+v('paddingX')+'!important;padding-block:'+v('paddingY')+'!important');
+        }
+      }
+      if(category==='panels')rule(sel,'--scope-shell-shadow:'+({flat:'none',raised:tokens(design,preset).f.shadow,inset:'inset 0 2px 5px #0006'}[values.elevation])+';background:color-mix(in srgb,'+v('background')+' calc('+v('opacity')+' * 100%),transparent)!important;box-shadow:var(--scope-shell-shadow)!important;padding-inline:'+v('paddingX')+'!important;padding-block:'+v('paddingY')+'!important');
+      if(category==='inputs'){
+        rule(sel,paint('focusBg','focusText')+';outline:3px solid '+v('focusColor')+'!important;outline-offset:2px',':focus');
+        const t=tokens(design,preset);rule(sel,'background:'+t.disabled+'!important;color:'+t.disabledText+'!important',':disabled');
+      }
+    }return out.join('\n');
+  }
   function splitSelectors(value){let depth=0,quote='',start=0;const out=[];for(let i=0;i<value.length;i++){const ch=value[i];if(quote){if(ch===quote&&value[i-1]!=='\\')quote='';}else if(ch==='"'||ch==="'")quote=ch;else if(ch==='('||ch==='[')depth++;else if(ch===')'||ch===']')depth--;else if(ch===','&&!depth){out.push(value.slice(start,i).trim());start=i+1;}}out.push(value.slice(start).trim());return out;}
   const selectors={buttons:'button,.operator-bar select,.integration-pane-header select',headers:'.surface-top,.pane-header,.integration-pane-header',panels:'[data-demo-host] section,[data-demo-host] fieldset,[data-demo-host] .demo-card',tabs:'.app-tabs button',navigation:'.deck-nav button,.aperture-dock button,.shelf-app,.portal-location button,button[data-switch-app],button[data-enter-room]',frames:'.owner-surface,.integration-pane,.pane,.operator-divider',join:'.btn-join,.btn-enable',leave:'.btn-leave,.btn-disable',warning:'.btn-warning',configuration:'.btn-update',info:'.btn-read',neutral:'.btn-neutral'};
   function compile(design,preset){
@@ -206,7 +284,8 @@
     for(const [app,categories] of Object.entries(c.applications))for(const [category,v] of ordered(categories))style(scoped(category,app),v,category);
     for(const [id,v] of Object.entries(c.instances).sort(([a],[b])=>Number(a===canonicalId(a))-Number(b===canonicalId(b))))style('[data-style-id="'+canonicalId(id)+'"][data-style-id][data-style-id]',v);
     out.push('@media(prefers-reduced-motion:reduce){'+prefix+' *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}');
+    out.push(compileShellComponents(design,preset));
     return out.join('\n');
   }
-  const api={resolveTheme:T.resolve,validateVisual:T.validateVisual,roleNames:T.roleNames,families,paletteIds,appIds,categories,componentDefaults,componentPresets,fontFamilies,colors,limits,semantic,componentId,canonicalId,validId,describe,mergeComponents,resolveStyle,validateComponents,validateStyle,tokens,family,contrast,compile};root.ScopeVisuals=api;if(typeof module!=='undefined')module.exports=api;
+  const api={shellFields,shellLimits,shellSelectors,validateShellComponents,resolveShellStyle,compileShellComponents,resolveTheme:T.resolve,validateVisual:T.validateVisual,roleNames:T.roleNames,families,paletteIds,appIds,categories,componentDefaults,componentPresets,fontFamilies,colors,limits,semantic,componentId,canonicalId,validId,describe,mergeComponents,resolveStyle,validateComponents,validateStyle,tokens,family,contrast,compile};root.ScopeVisuals=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

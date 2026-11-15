@@ -230,6 +230,10 @@
     "workspace": {
       "$ref": "workspace.schema.json",
       "description": "Version 1 workspace defaults take precedence over legacy initial mode/apps and allowedModes. Runtime window identities are never exported."
+    },
+    "shellComponents": {
+      "$ref": "shell-components.schema.json",
+      "default": {}
     }
   }
 }

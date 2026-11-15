@@ -51,7 +51,7 @@
     if(region==='header')html+=field('Minimum height',prefix+'height',v.height||d.layout.headerHeight,56,112);
     html+=checkbox('Visible',prefix+'visible',v.visible!==false,['shell','branding','navigation','workspace'].includes(region));
     html+=`<div class="inspector-actions"><button data-action="apply-selected" class="primary">Apply to Selected</button><button data-action="apply-global">Apply Globally</button><button data-action="reset-region">Reset to Theme Default</button></div><p class="hint">Apply Globally promotes color, material and spacing overrides to compatible shell containers. Dimensions and visibility stay local. Semantic controls remain unchanged.</p>`;
-    return html+visualPanel()+componentPanel()+brandingPanel();
+    return html+ScopeComponentEditor.shellPanel(store.value,theme(),escape)+visualPanel()+componentPanel()+brandingPanel();
   }
   function guidedPanel(){const d=store.value,s=steps[step];let html=`<div class="section-kicker">Step ${step+1} / 6 · ${s[2]}</div><h2>${s[3]}</h2><p class="intro">${s[4]}</p>`;
     if(step===0)html+=`<div class="choices">${C.navigation.map(id=>`<button class="choice" data-navigation="${id}" aria-pressed="${d.navigation===id}"><span class="thumbnail ${id}" aria-hidden="true"></span><span><strong>${escape(navLabel(id))}</strong><small>${navDescriptions[id]}</small></span></button>`).join('')}</div>`;
@@ -79,6 +79,7 @@
   function guidedComponents(){const v=ScopeVisuals.mergeComponents(store.value).global.buttons||{},radius=v.radius??'',shape=radius===50||radius==='pill'?'pill':radius===0?'square':radius===4?'slight':radius===10||radius===12?'rounded':'';const choices=(items,current)=>'<option value="">Inherited from family</option>'+items.map(([id,name])=>'<option value="'+id+'" '+(id===current?'selected':'')+'>'+name+'</option>').join('');return '<fieldset class="guided-components"><legend>Shared button geometry</legend><label>Global button shape<select data-guided-component="shape">'+choices([['square','Square'],['slight','Slightly rounded'],['rounded','Soft rounded'],['pill','Capsule / pill']],shape)+'</select></label><label>Global border style<select data-guided-component="borderStyle">'+choices([['solid','Solid'],['dashed','Dashed'],['dotted','Dotted']],v.borderStyle)+'</select></label><label>Control sizing<select data-guided-component="size">'+choices([['compact','Compact'],['comfortable','Comfortable'],['spacious','Spacious']],v.height===36?'compact':v.height===44?'comfortable':v.height===52?'spacious':'')+'</select></label></fieldset>';}
   function brandingPanel(){const d=store.value.parameters||{};return '<details><summary>Branding & application names</summary>'+[['branding.name','SCOPE branding',d.branding?.name||params.branding.name],...Object.keys(params.applications).map(id=>['applications.'+id+'.name',id+' name',d.applications?.[id]?.name||params.applications[id].name]),...C.navigation.map(id=>['labels.shells.'+id,id+' navigation label',d.labels?.shells?.[id]||params.labels.shells[id]])].map(([path,label,value])=>'<label>'+label+'<input type="text" maxlength="300" data-path="parameters.'+path+'" value="'+escape(value)+'"></label>').join('')+'<button data-action="import-studio-logo">Import PNG / JPEG logo</button><p class="hint">Names use stable internal IDs. Imported logo bytes are embedded in exports.</p></details>';}
   function renderControls(){
+    const shellWasOpen=document.querySelector('.shell-component-editor')?.open;const shellGroups=[...document.querySelectorAll('.shell-component-group[open]')].map(el=>el.querySelector('summary')?.textContent);
     const componentWasOpen=document.querySelector('.component-editor')?.open;const openGroups=[...document.querySelectorAll('.component-group[open]')].map(el=>el.querySelector('summary')?.textContent);
     const advanced=mode==='advanced';document.body.classList.toggle('advanced',advanced);$('#structure').hidden=!advanced;$('#steps').hidden=advanced;$('#workshop-note').hidden=advanced;$('#step-actions').hidden=advanced;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
@@ -86,6 +87,8 @@
     if(advanced)$('#structure').innerHTML=`<h3>Shell structure</h3><div class="compact-selects">${select('Navigation','navigation',C.navigation.map(id=>[id,navLabel(id)]),store.value.navigation)}${select('Theme','theme',presets.map(p=>[p.id,p.name]),store.value.theme)}</div><hr style="border:0;border-top:1px solid #29374c;margin:18px 0">${Object.keys(C.regions).map(id=>`<button class="tree-item" data-region="${id}" aria-pressed="${region===id}">${regionNames[id]}</button>`).join('')}<div class="locked"><strong>APPLICATION BEHAVIOR / PROTECTED</strong><p>Use applications in the preview. Appearance is editable through the component inspector; operations and structure remain protected.</p>${Object.entries(params.applications||{}).map(([id,app])=>`<span>▣ ${escape(store.value.parameters?.applications?.[id]?.name||app.name)}</span>`).join('')}</div><details style="margin:20px 8px 0"><summary>Global typography & layout</summary>${typographyPanel()}${layoutPanel()}</details>`;
     if(!advanced)$('#structure').replaceChildren();
     $('#controls').innerHTML=advanced?inspectorPanel():guidedPanel();$('#decision-note').value=store.value.notes[steps[step][0]];$('#back').disabled=step===0;$('#next').textContent=step===5?'Present design ↗':'Next →';
+    if(shellWasOpen&&document.querySelector('.shell-component-editor'))document.querySelector('.shell-component-editor').open=true;
+    document.querySelectorAll('.shell-component-group').forEach(el=>el.open=shellGroups.includes(el.querySelector('summary')?.textContent));
     if(componentWasOpen&&document.querySelector('.component-editor'))document.querySelector('.component-editor').open=true;
     document.querySelectorAll('.component-group').forEach(el=>el.open=openGroups.includes(el.querySelector('summary')?.textContent));
     updateStatus();
@@ -110,8 +113,15 @@
       if(b.dataset.action==='close-theme-comparison'){closeThemeComparison();return;}
       if(b.dataset.action==='keep-comparison-theme'){closeThemeComparison(true);return;}
       if(b.dataset.action==='recommended-typography'){store.update(d=>{d.typography=C.clone(theme().typography);});renderControls();return;}
-      if(b.dataset.action==='reset-family-style'){store.update(d=>{d.colors={};d.material={};d.regions={};delete d.visual;delete d.components;if(d.parameters)delete d.parameters.componentStyles;d.typography=C.clone(theme().typography);});renderControls();return;}
+      if(b.dataset.action==='reset-family-style'){store.update(d=>{d.colors={};d.material={};d.regions={};delete d.visual;delete d.components;delete d.shellComponents;if(d.parameters)delete d.parameters.shellComponents;if(d.parameters)delete d.parameters.componentStyles;d.typography=C.clone(theme().typography);});renderControls();return;}
       if(b.dataset.action==='pick-component'){componentPicker=!componentPicker;if(componentPicker)store.update(d=>{d.detailsVisible=true;});renderControls();document.querySelector('.component-editor').open=true;sync();notice(componentPicker?'Select an eligible control; Escape exits. The selection click will not execute its action.':'Selection mode exited.');return;}
+      if(b.dataset.shellReset){
+        const category=b.dataset.shellReset,key=b.dataset.shellKey;
+        store.update(d=>{
+          const clear=groups=>{if(!groups)return;if(category==='all'){for(const k of Object.keys(groups))delete groups[k];}else if(key){if(groups[category])delete groups[category][key];}else delete groups[category];};
+          clear(d.shellComponents);clear(d.parameters?.shellComponents);
+        });renderControls();return;
+      }
       if(b.dataset.componentReset){resetComponent(b.dataset.componentReset);return;}
       if(b.dataset.componentPreset){const preset=ScopeVisuals.componentPresets[b.dataset.componentPreset];if(preset){editComponent({topLeft:'',topRight:'',bottomLeft:'',bottomRight:'',...preset.style},'preset-'+b.dataset.componentPreset);renderControls();document.querySelector('.component-editor').open=true;}return;}
       if(b.dataset.action==='reset-component'){resetComponent();return;}
@@ -152,6 +162,14 @@
       if(el.id.startsWith('theme-compare-')&&themeComparison){const side=el.id.endsWith('left')?'left':'right';themeComparison[side]=el.value;sync();updateThemeComparison();return;}
       if(el.hasAttribute?.('data-family')){chooseTheme(presets.find(p=>(p.family||'glass')===el.value).id);renderControls();return;}
       if(el.dataset.componentControl){if(el.dataset.componentControl==='scope')componentScope=el.value;if(el.dataset.componentControl==='app')componentApp=el.value;if(el.dataset.componentControl==='category')componentCategory=el.value;renderControls();return;}
+      if(el.dataset.shellProperty){
+        const category=el.dataset.shellCategory,key=el.dataset.shellProperty,value=el.type==='range'?Number(el.value):el.value;
+        store.update(d=>{d.shellComponents??={};d.shellComponents[category]??={};d.shellComponents[category][key]=value;},'shell-'+category+'-'+key);
+        const id='shell-style-'+category+'-'+key,output=document.getElementById(id+'-value'),source=document.getElementById(id+'-source');
+        if(output)output.textContent=String(value);if(source)source.textContent='Component override';
+        const reset=document.querySelector('[data-shell-reset="'+category+'"][data-shell-key="'+key+'"]');if(reset)reset.disabled=false;
+        return;
+      }
       if(el.dataset.componentProperty){changeComponent(el.dataset.componentProperty,el.type==='range'?Number(el.value):el.type==='checkbox'?el.checked:el.value);return;}
       if(el.dataset.guidedComponent){const oldScope=componentScope,oldCategory=componentCategory;componentScope='global';componentCategory='buttons';try{const value=el.value;if(el.dataset.guidedComponent==='shape')editComponent({radius:value?{square:0,slight:4,rounded:12,pill:50}[value]:''});if(el.dataset.guidedComponent==='borderStyle')editComponent({borderStyle:value});if(el.dataset.guidedComponent==='size'){const size={compact:[36,10,6],comfortable:[44,14,10],spacious:[52,20,14]}[value];editComponent({height:size?.[0]??'',paddingX:size?.[1]??'',paddingY:size?.[2]??''});}}finally{componentScope=oldScope;componentCategory=oldCategory;}return;}
       if(el.hasAttribute?.('data-component-geometry')||el.hasAttribute?.('data-global-geometry')){if(el.hasAttribute('data-global-geometry')){componentScope='global';componentCategory='buttons';}if(el.value)changeComponent('radius',{square:0,slight:4,rounded:10,pill:50}[el.value]);return;}
@@ -180,6 +198,7 @@
       if(settings.mode!==undefined)initial.layout.mode=configured.initial.mode;
       if(settings.left!==undefined||settings.right!==undefined||params.allowedModes!==undefined)initial.operator={left:configured.initial.left,right:configured.initial.right,ratio:50,allowed:configured.allowedModes};
     }
+    if(params.shellComponents){initial.parameters??={};initial.parameters.shellComponents=params.shellComponents;}
     store=new C.DesignStore(initial);if(initial.workspace){application=initial.workspace.left;rightApplication=initial.workspace.right;}else if(initial.operator){application=initial.operator.left;rightApplication=initial.operator.right;}
     // Keep preset input under the same trusted schema as imported design tokens.
     for(const p of presets)C.validate({...C.defaults,theme:p.id,colors:p.colors,material:p.material,typography:p.typography});

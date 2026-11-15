@@ -35,10 +35,11 @@
   function validate(input){
     assert(object(input)&&input.schemaVersion===1,'Unsupported design schema. Expected version 1.');
     const d=clone(defaults);
+    if(input.shellComponents!==undefined)d.shellComponents=V.validateShellComponents(input.shellComponents);
     if(input.components!==undefined)d.components=V.validateComponents(input.components);
     if(input.parameters!==undefined)d.parameters=P.validate(input.parameters,true);
     if(input.visual!==undefined)d.visual=V.validateVisual(input.visual);
-    const known=new Set([...Object.keys(d),'components','parameters','operator','visual','workspace']);for(const k of Object.keys(input))assert(known.has(k),'Unknown design field: '+k);
+    const known=new Set([...Object.keys(d),'components','parameters','operator','visual','workspace','shellComponents']);for(const k of Object.keys(input))assert(known.has(k),'Unknown design field: '+k);
     for(const key of ['navigation','theme']){if(input[key]!==undefined){assert((key==='navigation'?navigation:themes).includes(input[key]),'Unknown '+key);d[key]=input[key];}}
     if(input.name!==undefined){assert(typeof input.name==='string'&&input.name.trim().length>0&&input.name.length<=100,'Design name must contain 1–100 characters');d.name=input.name.trim();}
     if(input.detailsVisible!==undefined){assert(typeof input.detailsVisible==='boolean','Details must be boolean');d.detailsVisible=input.detailsVisible;}

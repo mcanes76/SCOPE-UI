@@ -2,7 +2,7 @@
 (function(root){
   'use strict';
   const apps=['blos','display','calibration','los'],nav=['aperture','mosaic','portal','deck'];
-  const defaults={schemaVersion:2,branding:{name:'SCOPE'},logoPath:'assets/logo.png',applications:{blos:{name:'BLOS',visible:true,tabs:{}},display:{name:'Display',visible:true,tabs:{}},calibration:{name:'Sensor Calibration',visible:true,tabs:{}},los:{name:'Native LOS',visible:true,tabs:{}}},labels:{shells:{aperture:'Aperture',mosaic:'Mosaic',portal:'Portal',deck:'Command Deck'}},initial:{theme:'electric-glass',navigation:'aperture',mode:'single',left:'blos',right:'display'},allowedModes:['single','split','stacked','popout'],buttonGeometry:'inherit',workspace:{},componentStyles:{global:{},classes:{},applications:{},instances:{}}};
+  const defaults={schemaVersion:2,branding:{name:'SCOPE'},logoPath:'assets/logo.png',applications:{blos:{name:'BLOS',visible:true,tabs:{}},display:{name:'Display',visible:true,tabs:{}},calibration:{name:'Sensor Calibration',visible:true,tabs:{}},los:{name:'Native LOS',visible:true,tabs:{}}},labels:{shells:{aperture:'Aperture',mosaic:'Mosaic',portal:'Portal',deck:'Command Deck'}},initial:{theme:'electric-glass',navigation:'aperture',mode:'single',left:'blos',right:'display'},allowedModes:['single','split','stacked','popout'],buttonGeometry:'inherit',shellComponents:{},workspace:{},componentStyles:{global:{},classes:{},applications:{},instances:{}}};
   const clone=x=>JSON.parse(JSON.stringify(x));
   const obj=x=>x&&typeof x==='object'&&!Array.isArray(x);
   function validate(input,partial=false){
@@ -13,6 +13,7 @@
     const p=merge(defaults,input);p.schemaVersion=2;
     if(input.workspace!==undefined){const W=root.ScopeWorkspace||(typeof require==='function'?require('./workspace.js'):null);p.workspace=W.validate(input.workspace,{...W.defaults,layout:p.initial.mode,left:p.initial.left,right:p.initial.right,allowedLayouts:input.allowedModes?p.allowedModes.filter(m=>m!=='popout'):W.defaults.allowedLayouts,popout:p.allowedModes.includes('popout')});p.initial.mode=p.workspace.layout;p.initial.left=p.workspace.left;p.initial.right=p.workspace.right;p.allowedModes=[...p.workspace.allowedLayouts,...(p.workspace.popout?['popout']:[])];}
     const visuals=root.ScopeVisuals||(typeof require==='function'?require('./visual-system.js'):null);
+    p.shellComponents=visuals.validateShellComponents(p.shellComponents);
     p.componentStyles=visuals.validateComponents(p.componentStyles);
     let safeSVG=false;
     if(typeof p.logoPath==='string'&&/^data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+$/.test(p.logoPath)){try{const svg=atob(p.logoPath.split(',')[1]);safeSVG=svg.length<100000&&!/(?:\bon\w+\s*=|href\s*=|url\s*\(|<!|<\?)/i.test(svg)&&[...svg.matchAll(/<\/?([\w:-]+)/g)].every(m=>['svg','title','circle','path','g','rect','line','ellipse','polyline','polygon'].includes(m[1]));}catch{}}
@@ -32,7 +33,7 @@
     p.initial.family=derived;
     if(!Array.isArray(p.allowedModes)||!p.allowedModes.length||p.allowedModes.some(m=>!['single','split','stacked','popout'].includes(m))||!p.allowedModes.includes(p.initial.mode))throw Error('Allowed modes must include the initial mode');
     if(!['inherit','square','slight','rounded','pill'].includes(p.buttonGeometry))throw Error('Invalid button geometry');
-    if(partial){const out=clone(input);if(Object.hasOwn(input,'componentStyles'))out.componentStyles=p.componentStyles;if(out.initial?.family!==undefined)out.initial.family=derived;delete out.schemaVersion;return out;}return p;
+    if(partial){const out=clone(input);if(Object.hasOwn(input,'shellComponents'))out.shellComponents=p.shellComponents;if(Object.hasOwn(input,'componentStyles'))out.componentStyles=p.componentStyles;if(out.initial?.family!==undefined)out.initial.family=derived;delete out.schemaVersion;return out;}return p;
   }
   const api={defaults,validate};root.ScopeParameters=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

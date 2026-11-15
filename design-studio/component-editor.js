@@ -26,5 +26,23 @@
     h+=`<div class="component-reset-controls"><button data-action="reset-component">Reset to Inherited</button><button data-action="reset-semantic-component">Reset Component</button><button data-action="reset-all-components">Reset All Overrides</button></div><div class="component-warnings" role="status">${resolved.warnings.map(w=>`<p>△ ${e(w)}</p>`).join('')}</div><p class="hint">Geometry presets do not change semantic colors. Intentional color overrides may reduce contrast or obscure Join / Leave / Warning / Configuration meaning. Labels and symbols are retained.</p></details>`;
     return h;
   }
-  root.ScopeComponentEditor={panel};
+  function shellPanel(design,preset,e){
+    const labels={buttons:'Buttons',tabs:'Tabs / navigation',panels:'Panels / cards',typography:'Typography',inputs:'Inputs / selects',success:'Status: success',warning:'Status: warning',error:'Status: error',neutral:'Status: neutral'};
+    let html='<details class="shell-component-editor"><summary>Shell Component Editor (Phase 1)</summary><p class="hint">Theme ? parameter defaults ? component override. These controls style the SCOPE shell only. Application forms, dialogs and stores retain their ownership.</p>';
+    for(const [category,keys] of Object.entries(V.shellFields)){
+      const {values,sources}=V.resolveShellStyle(design,preset,category),own=design.shellComponents?.[category]||{};
+      html+='<details class="shell-component-group"><summary>'+labels[category]+'</summary>';
+      for(const key of keys){
+        const id='shell-style-'+category+'-'+key,data='data-shell-category="'+category+'" data-shell-property="'+key+'"',value=values[key];let input;
+        const choices=key==='fontFamily'?V.fontFamilies:key==='elevation'?['flat','raised','inset']:null;
+        if(choices)input='<select id="'+id+'" '+data+'>'+choices.map(x=>'<option value="'+x+'" '+(x===value?'selected':'')+'>'+e(x)+'</option>').join('')+'</select>';
+        else if(V.colors.includes(key))input='<input id="'+id+'" type="color" '+data+' value="'+value+'">';
+        else {const [min,max]=V.shellLimits[key],step=key==='opacity'?.05:key==='fontWeight'?100:1;input='<input id="'+id+'" type="range" '+data+' min="'+min+'" max="'+max+'" step="'+step+'" value="'+(value==='pill'?24:value)+'">';}
+        html+='<div class="component-property"><label for="'+id+'">'+e(names[key]||({spacing:'Navigation spacing',headingSize:'Heading size'})[key]||key)+' <output id="'+id+'-value">'+e(String(value))+'</output></label>'+input+'<small id="'+id+'-source">'+e(sources[key])+'</small><button type="button" data-shell-reset="'+category+'" data-shell-key="'+key+'" '+(Object.hasOwn(own,key)||Object.hasOwn(design.parameters?.shellComponents?.[category]||{},key)?'':'disabled')+'>Reset to theme</button></div>';
+      }
+      html+='<button type="button" data-shell-reset="'+category+'">Reset '+labels[category]+' to theme</button></details>';
+    }
+    return html+'<button type="button" data-shell-reset="all">Reset all shell components to theme</button></details>';
+  }
+  root.ScopeComponentEditor={panel,shellPanel};
 })(typeof globalThis!=='undefined'?globalThis:this);

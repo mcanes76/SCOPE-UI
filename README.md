@@ -6,6 +6,8 @@ The mockups use **simulated local data** and have no connection to operational s
 
 ## SCOPE Design Studio
 
+Phase 1 adds **Advanced ? Shell Component Editor** for buttons, tabs/navigation, panels/cards, typography, inputs/selects and semantic status indicators. Optional `shellComponents` inherit theme tokens and support property/category/all resets to theme. Shell overrides exclude application hosts and application action dialogs. Existing application Component Styles remain available. See the [Phase 1 guide](docs/SCOPE-Phase-1-Component-Editor.md) and run `node docs/assets/validate-phase1-component-editor.cjs`.
+
 Advanced → **Component Styles** now uses semantic control IDs, resolved inheritance/provenance, six presets, per-property/component/all resets, button geometry/appearance/type/state controls and contrast/semantic warnings. Guided component controls stay limited to shape, border style and sizing. Settings share history/candidates and all export paths. See the [component editor guide](docs/SCOPE-Component-Styles.html), [style schema](design-studio/component-styles.schema.json) and [parameter example](design-studio/params.example.json). Test with `node docs/assets/validate-component-styles.cjs`; validate temporary output before rebuilding `/dist`.
 
 The corrected offline Studio is synchronized back into its modular source, including all 14 font choices, operator-only export guards/filenames and pop-out toolbar cleanup. A source build reproduces the corrected distribution byte-for-byte. See [source synchronization and validation](docs/SCOPE-Source-Synchronization.html).

@@ -46,6 +46,7 @@
     const base=root.ScopeOfflineAssets?.resources.params||JSON.parse(await fetchText('../mockups/params.json'));
     const W=root.ScopeWorkspace||(typeof require==='function'?require('./workspace.js'):null),workspace=W.fromDesign(design);
     const params=P.validate({...base,...design.parameters,workspace,initial:{theme:design.theme,navigation:design.navigation,mode:design.layout.mode,left:design.operator?.left||'blos',right:design.operator?.right||'display'},allowedModes:W.operator(workspace).allowed});
+    for(const [category,style] of Object.entries(design.shellComponents||{}))params.shellComponents[category]={...params.shellComponents[category],...style};
     const asset=design.parameters?.logoPath?.startsWith('data:image/')?design.parameters.logoPath:root.ScopeOfflineAssets?.resources.logo||await dataURL('../mockups/assets/logo.png');
     const extension=asset.startsWith('data:image/svg+xml')?'svg':asset.startsWith('data:image/jpeg')?'jpg':asset.startsWith('data:image/webp')?'webp':asset.startsWith('data:image/gif')?'gif':'png';const logoFile='assets/logo.'+extension;params.logoPath=logoFile;
     let html=await finalHTML(design,presets);
