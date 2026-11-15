@@ -14,12 +14,12 @@ for(const p of presets){
   const d=C.validate({...C.defaults,theme:p.id});
   assert.equal(resolve(d,'buttons').background,V.tokens(d,p).control);
   assert.equal(resolve(d,'panels').background,V.tokens(d,p).panel);
-  assert.equal(resolve(d,'inputs').focusColor,p.shellComponents?.inputs?.focusColor||V.tokens(d,p).focus);
+  assert.equal(resolve(d,'inputs').focusColor,V.tokens(d,p).focus);
   for(const c of Object.keys(V.shellFields))for(const value of Object.values(resolve(d,c)))assert.notEqual(value,undefined);
 }
 const layered=C.validate({...C.defaults,parameters:{shellComponents:{buttons:{radius:6,text:'#112233'}}},shellComponents:{buttons:{radius:12}}});
 assert.equal(resolve(layered,'buttons').radius,12);assert.equal(resolve(layered,'buttons').text,'#112233');assert.equal(V.resolveShellStyle(layered,preset(layered),'buttons').sources.radius,'Component override');
-assert.equal(V.resolveShellStyle(layered,preset(layered),'buttons',true).values.radius,preset(layered).shellComponents?.buttons?.radius??V.tokens(layered,preset(layered)).f.controlRadius);
+assert.equal(V.resolveShellStyle(layered,preset(layered),'buttons',true).values.radius,V.tokens(layered,preset(layered)).f.controlRadius);
 const design=C.validate({...layered,shellComponents:Object.fromEntries(Object.keys(V.shellFields).map(c=>[c,{}]))});
 Object.assign(design.shellComponents,{buttons:{background:'#123456',text:'#FFFFFF',hoverBg:'#234567',pressedBg:'#345678',disabledBg:'#456789',radius:7},tabs:{selectedBg:'#56789A',background:'#112244',spacing:9},panels:{background:'#223344',opacity:.4,paddingX:21,elevation:'flat'},typography:{fontFamily:'Segoe UI',headingSize:30,fontSize:16,fontWeight:600,text:'#CCDDEE'},inputs:{focusColor:'#00AAFF',background:'#111122'},success:{background:'#008844'},warning:{background:'#CCAA00'},error:{background:'#AA1122'},neutral:{background:'#445566'}});
 const css=V.compileShellComponents(design,preset(design));
@@ -55,10 +55,10 @@ assert(!css.includes('opacity:0.4!important'),'Panel opacity changes the fill, n
   globalThis.ScopeOfflineAssets=payload;const zip=await E.folder(store.value,presets);delete globalThis.ScopeOfflineAssets;const archive=Buffer.from(zip).toString('utf8');assert(archive.includes('"shellComponents"'));assert(archive.includes('"opacity": 0.4'));
   // Reset-to-theme clears both parameter and explicit layers, remains undoable.
   store.set({...store.value,parameters:{shellComponents:{buttons:{radius:15}}}});
-  await editor.click({shellReset:'buttons',shellKey:'radius'});assert.equal(resolve(store.value,'buttons').radius,V.resolveShellStyle(store.value,preset(store.value),'buttons',true).values.radius);assert.equal(store.value.shellComponents.buttons.background,'#123456');
+  await editor.click({shellReset:'buttons',shellKey:'radius'});assert.equal(resolve(store.value,'buttons').radius,V.tokens(store.value,preset(store.value)).f.controlRadius);assert.equal(store.value.shellComponents.buttons.background,'#123456');
   await editor.click({},'undo');assert.equal(resolve(store.value,'buttons').radius,7);
   await editor.click({shellReset:'buttons'});assert.equal(store.value.shellComponents.buttons,undefined);assert.equal(store.value.shellComponents.panels.opacity,.4);
-  await editor.click({shellReset:'all'});assert.deepEqual(JSON.parse(JSON.stringify(store.value.shellComponents)),{});assert.equal(resolve(store.value,'buttons').radius,V.resolveShellStyle(store.value,preset(store.value),'buttons',true).values.radius);
+  await editor.click({shellReset:'all'});assert.deepEqual(JSON.parse(JSON.stringify(store.value.shellComponents)),{});assert.equal(resolve(store.value,'buttons').radius,V.tokens(store.value,preset(store.value)).f.controlRadius);
   await editor.click({mode:'guided'});assert(!editor.get('controls').innerHTML.includes('Shell Component Editor'));
   console.log(JSON.stringify({phase1:'pass',themeInheritance:presets.length+' palettes',ownership:'all emitted selectors exclude application hosts and dialogs',persistence:'JSON / parameters / history / Candidates A/B/C',exports:'CSS / standalone runtime / folder ZIP',applicationRetention:'no rerender; draft and model retained',resets:'property / category / all, including parameter defaults',browserRendering:'not covered by controlled DOM fixtures'},null,2));
 })().catch(error=>{console.error(error);process.exitCode=1;});

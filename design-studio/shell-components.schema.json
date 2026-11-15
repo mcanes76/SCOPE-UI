@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SCOPE Shell Component Overrides (Phases 1?2)",
+  "title": "SCOPE Phase 1 Shell Component Overrides",
   "description": "Optional in design schema 1 and parameters schema 2. Omission inherits the global theme. Shell only; excludes application hosts and application dialogs.",
   "type": "object",
   "default": {},
@@ -63,18 +63,6 @@
           "pattern": "^#[0-9A-Fa-f]{6}$"
         },
         "disabledText": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "selectedBg": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "selectedText": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "focusColor": {
           "type": "string",
           "pattern": "^#[0-9A-Fa-f]{6}$"
         }
@@ -151,9 +139,7 @@
           "enum": [
             "flat",
             "raised",
-            "inset",
-            "luminous",
-            "soft"
+            "inset"
           ]
         },
         "radius": {
@@ -180,11 +166,6 @@
           "type": "number",
           "minimum": 0,
           "maximum": 24
-        },
-        "blur": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 28
         }
       }
     },
@@ -334,130 +315,6 @@
         "text": {
           "type": "string",
           "pattern": "^#[0-9A-Fa-f]{6}$"
-        }
-      }
-    },
-    "chrome": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "background": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "border": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "borderWidth": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 4
-        },
-        "elevation": {
-          "enum": [
-            "flat",
-            "raised",
-            "inset",
-            "luminous",
-            "soft"
-          ]
-        },
-        "radius": {
-          "anyOf": [
-            {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 24
-            },
-            {
-              "enum": [
-                "pill",
-                50
-              ]
-            }
-          ]
-        },
-        "text": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "blur": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 28
-        }
-      }
-    },
-    "dialogs": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "background": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "border": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "borderWidth": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 4
-        },
-        "elevation": {
-          "enum": [
-            "flat",
-            "raised",
-            "inset",
-            "luminous",
-            "soft"
-          ]
-        },
-        "radius": {
-          "anyOf": [
-            {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 24
-            },
-            {
-              "enum": [
-                "pill",
-                50
-              ]
-            }
-          ]
-        },
-        "paddingX": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 32
-        },
-        "paddingY": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 24
-        },
-        "text": {
-          "type": "string",
-          "pattern": "^#[0-9A-Fa-f]{6}$"
-        },
-        "blur": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 28
         }
       }
     }
