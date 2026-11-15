@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SCOPE Integration Reference Lab</title><link rel="stylesheet" href="reference.css"></head>
+<body><header><h1>SCOPE Integration Reference Lab</h1><p>Implemented reference contracts only. The existing Design Studio and its four applications are unchanged. No backend, authentication or production integration is connected.</p></header>
+<nav aria-label="Reference lifecycle controls"><button id="launch">Launch reference</button><button id="save">Save optional view state</button><button id="context">Send approved context</button><button id="command">Send increment command</button><button id="fail">Simulate recoverable error</button></nav>
+<p id="status" role="status" aria-live="polite">Registered; not launched.</p>
+<main id="workspace" aria-label="Reference managed workspace"><section id="window" aria-label="Reference application window" hidden><header><button id="move" aria-label="Move reference window with pointer or arrow keys">Reference integration window</button><button id="minimize">Minimize</button><button id="maximize">Maximize</button><button id="restore">Restore</button><button id="close">Close / dispose</button></header><div id="mount"></div><button id="resize" aria-label="Resize reference window with pointer or arrow keys">Resize</button></section></main>
+<nav aria-label="Minimized reference"><button id="reopen" hidden>Restore reference window</button></nav>
+<h2>Shell event and diagnostic log</h2><ol id="log" aria-live="polite"></ol>
+<script src="../../design-studio/workspace.js"></script><script src="../../src/integration/contracts.js"></script><script src="../../src/integration/adapter-host.js"></script><script src="../../src/integration/reference-application.js"></script><script src="reference-lab.js"></script></body></html>

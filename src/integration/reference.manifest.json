@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "reference.status",
+  "name": "Reference integration sample",
+  "version": "0.1.0",
+  "contractVersion": 1,
+  "integration": "module",
+  "singleton": true,
+  "capabilities": ["state", "commands", "context"],
+  "publishes": ["reference.status.changed"],
+  "commands": ["reference.status.increment", "reference.status.fail"],
+  "contexts": ["shell.selection"]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:scope:integration:application-manifest:1",
+  "title": "Implemented trusted-module reference manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "name", "version", "contractVersion", "integration", "singleton", "capabilities", "publishes", "commands", "contexts"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "id": {"$ref": "#/$defs/topic"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 100},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "contractVersion": {"const": 1},
+    "integration": {"const": "module"},
+    "singleton": {"const": true},
+    "capabilities": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"enum": ["state", "commands", "context"]}},
+    "publishes": {"$ref": "#/$defs/topics"},
+    "commands": {"$ref": "#/$defs/topics"},
+    "contexts": {"$ref": "#/$defs/topics"}
+  },
+  "$defs": {
+    "topic": {"type": "string", "maxLength": 100, "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"},
+    "topics": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"$ref": "#/$defs/topic"}}
+  },
+  "$comment": "Runtime validation additionally enforces app-owned topic prefixes, capability declarations and host-granted schema/capability policy. This schema does not enable iframe, service or native adapters."
+}
