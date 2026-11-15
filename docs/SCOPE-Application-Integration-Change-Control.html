@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="SCOPE Markdown to HTML (Pandoc)"><title>Design Studio Protection and Change-Control Record</title><style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#172536;background:#edf1f6}
+*{box-sizing:border-box}body{max-width:1200px;margin:24px auto;padding:0 24px 40px;font-size:16px;line-height:1.65}
+main{background:#fff;border:1px solid #ccd5e0;border-radius:10px;padding:32px 40px}h1{font-size:30px;line-height:1.25;margin-top:0}h2{font-size:23px;margin-top:36px;line-height:1.35}h3{font-size:19px}a{color:#174e96;text-underline-offset:3px}a:focus-visible,button:focus-visible{outline:3px solid #1551b0;outline-offset:3px}
+.document-tools,.document-links{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.document-links a{padding:5px 9px;background:#fff;border:1px solid #ccd5e0;border-radius:5px;font-size:13px}.document-links [aria-current]{font-weight:700;border-color:#174e96}.document-tools button{font:inherit;padding:8px 13px;border:1px solid #61748b;border-radius:5px;background:#fff;cursor:pointer}.source-note,footer{font-size:13px;color:#405164}.toc{border:1px solid #ccd5e0;background:#f5f8fc;padding:14px 20px;margin:24px 0}.toc ul{margin:8px 0;padding-left:22px}
+p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;background:#edf2f7;border-radius:4px;padding:2px 5px}pre{background:#edf2f7;border:1px solid #ccd5e0;border-radius:7px;padding:16px;overflow:auto;line-height:1.5}pre code{background:none;padding:0;font-size:13px;white-space:pre}blockquote{border-left:4px solid #61748b;margin:20px 0;padding:4px 20px;background:#f5f8fc}.table-scroll{overflow-x:auto;margin:20px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #ccd5e0;padding:10px 12px;text-align:left;vertical-align:top;min-width:130px}th{background:#e8eef6}tbody tr:nth-child(even){background:#f8fafc}ul,ol{padding-left:26px}.task-list-item{list-style:none;margin-left:-20px}.task-list-item input{margin-right:8px;accent-color:#174e96}
+.diagram{margin:24px 0;border:1px solid #ccd5e0;border-radius:7px;padding:16px;background:#f8fafc}.diagram svg{display:block;width:100%;height:auto;min-width:0}.diagram figcaption{font-weight:600;margin:10px 0}.diagram details{margin-top:12px}.transition-list{font-size:13px;columns:2;column-gap:28px}.transition-list li{break-inside:avoid;margin-bottom:7px}footer{margin-top:20px}
+@media(max-width:700px){body{margin:8px auto;padding:0 10px 24px}main{padding:20px 16px}h1{font-size:25px}.transition-list{columns:1}}
+@media print{@page{margin:16mm}body{max-width:none;margin:0;padding:0;background:#fff;color:#172536;font-size:10pt}main{border:0;padding:0}.document-tools,.document-links,footer,.diagram details{display:none}.toc{background:white}h1,h2,h3{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere}pre code{white-space:pre-wrap;font-size:8pt}.table-scroll{overflow:visible}table{font-size:8pt}th,td{min-width:0;padding:6px}thead{display:table-header-group}tr,.diagram{break-inside:avoid}a{color:#172536}}
+</style></head><body>
+<nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html" aria-current="page">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a></nav>
+<div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Application-Integration-Change-Control.md">Markdown source</a></div>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#protected-baseline">Protected baseline</a></li><li><a href="#modifications-to-existing-design-studio-files">Modifications to existing Design Studio files</a></li><li><a href="#additive-implementation-inventory">Additive implementation inventory</a></li><li><a href="#verification-and-review-limits">Verification and review limits</a></li><li><a href="#rule-for-later-modifications">Rule for later modifications</a></li></ul></nav><h1 id="design-studio-protection-and-change-control-record">Design Studio Protection and Change-Control Record</h1>
+<p>This record applies Task 11 to the accompanying architecture/reference scope. Initial branch verification returned <strong><code>feature/scope-app-integration</code></strong> with a clean worktree at <strong><code>30bf8d6f0c0ca38a38273fe99114fa0062c57f1b</code></strong>, the committed Phase 3 Window Manager checkpoint. The original <code>feature/scope-design-studio-portable</code> branch remains at that checkpoint. No reset, merge, push or unrelated automatic commit is part of this work.</p>
+<h2 id="protected-baseline">Protected baseline</h2>
+<ul>
+<li>Phase 1 Component Editor checkpoint: <code>791e4bfe96332e4580491db6e519927f4aa12960</code>.</li>
+<li>Phase 2 revert: <code>2730fdfdbc298006f2c385b67a03109a2644a8ab</code>; its Git tree equals the Phase 1 tree.</li>
+<li>Committed Phase 3 baseline: <code>30bf8d6f0c0ca38a38273fe99114fa0062c57f1b</code>.</li>
+<li>Preserve every existing tracked file, including current theme presets, mockups, Studio source, validators, build scripts and standalone HTML.</li>
+<li>The rejected Phase 2 Visual Families architecture, curated presets and controls remain absent. Existing earlier material/theme groups and their regression test remain intact.</li>
+</ul>
+<h2 id="modifications-to-existing-design-studio-files">Modifications to existing Design Studio files</h2>
+<p><strong>None.</strong> No existing tracked file is modified in this checkpoint. There is therefore no operator-facing appearance, control, mounting, navigation, application behavior, store, schema, export or build-pipeline change to the current Studio. The standalone distribution is preserved, not rebuilt. Existing application-specific prototype code is assessed and documented, not migrated.</p>
+<p>The new demo reads the existing <code>design-studio/workspace.js</code> as a local script and uses only its pure geometry model. Purpose: demonstrate a reference adapter inside a bounded managed window without restructuring the Studio. Impact on existing files: read-only reuse; no imports into the Studio and no application registry/global-store access. The <code>blos</code> geometry key is a sizing profile in this isolated demo, not a BLOS registration or adapter.</p>
+<h2 id="additive-implementation-inventory">Additive implementation inventory</h2>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>New location</th>
+<th>Purpose and current implementation status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/integration/contracts.js</code></td>
+<td>Implemented v1 validators and pure future-frame envelope guard</td>
+</tr>
+<tr>
+<td><code>src/integration/adapter-host.js</code></td>
+<td>Implemented trusted-module reference lifecycle/policy host</td>
+</tr>
+<tr>
+<td><code>src/integration/reference-application.js</code></td>
+<td>Implemented synthetic counter/context application fixture</td>
+</tr>
+<tr>
+<td><code>src/integration/reference.manifest.json</code>, <code>application-manifest.schema.json</code></td>
+<td>Implemented versioned reference manifest and schema</td>
+</tr>
+<tr>
+<td><code>src/integration/README.md</code></td>
+<td>Local usage, boundaries and test entry points</td>
+</tr>
+<tr>
+<td><code>src/integration/tests/validate-integration.cjs</code></td>
+<td>Contract/lifecycle/policy/state/cleanup/reference DOM tests</td>
+</tr>
+<tr>
+<td><code>src/integration/tests/validate-studio-protection.cjs</code></td>
+<td>Read-only baseline change gate</td>
+</tr>
+<tr>
+<td><code>examples/app-integration/index.html</code>, <code>reference.css</code>, <code>reference-lab.js</code></td>
+<td>Separate offline engineering demonstration; not part of the Studio</td>
+</tr>
+<tr>
+<td>Four requested architecture/contract/plan/checklist documents</td>
+<td>Evidence, provisional production architecture and staged onboarding criteria</td>
+</tr>
+<tr>
+<td>This change-control record</td>
+<td>Scope, modification inventory, impact and verification limitations</td>
+</tr>
+</tbody>
+</table></div>
+<p>These files add no runtime dependency, server requirement, dynamic executable loading, real application adapter, authentication service, backend client, iframe transport, native host or durable state service. The message guard is validation logic, not a production channel. Proposed production responsibilities are explicitly labeled in the architecture and plan.</p>
+<h2 id="verification-and-review-limits">Verification and review limits</h2>
+<p>The protection test compares <strong>every pre-existing tracked path</strong> to the Phase 3 commit using Git's working-tree comparison (including normal text EOL handling). It also rejects new files under <code>design-studio/</code>, <code>dist/</code>, <code>mockups/</code> and <code>scripts/</code>. New files are restricted to isolated integration modules/tests, the separate example and new documentation. The check never resets, rewrites, stages or commits protected files. It is a current-change gate, not a permanent prohibition on approved future reusable interfaces.</p>
+<p>The contract test covers manifest/version/grant/schema rules, payload limits, serialized singleton launch, activate/deactivate/resize, snapshot identity/version, event isolation, commands/context, recoverable errors, initialization failure/retry, timeout/cleanup quarantine, late callback rejection, future-frame source/origin/session/schema/sequence validation, reference application DOM and offline local-resource/script checks. Existing regression validators retain their original files and behavior. Source/distribution parity and zero automatic offline network requests remain required. Validation builds use ignored <code>.validation/</code> output.</p>
+<p>Native browser rendering is not established by controlled DOM tests. The prior Phase 3 native inspection was stopped by Computer Use because it could not reliably determine Chrome's URL; that limitation is not represented as a rendering pass here. The standalone artifact and existing runtime source remain unchanged, and automated regression evidence must be read with its existing browser limitations. The separate reference lab still needs target-browser keyboard, pointer, focus, layout and cleanup review before any production use.</p>
+<p>Validation results for this change: all 12 existing validators passed, including Phase 1, Phase 3, legacy navigation/themes/workspace, exports, offline packaging and exact source/distribution parity. Both new integration/protection validators passed; the integration validator includes 11 focused groups. All 69 existing tracked files compare unchanged against the Phase 3 baseline, with zero new files under protected runtime roots. <code>git diff --check</code> passed. No native browser rendering pass is claimed.</p>
+<h2 id="rule-for-later-modifications">Rule for later modifications</h2>
+<p>Before modifying an existing Studio file, verify the branch again, record the file/function, demonstrate the need for a reusable interface, consider an isolated module first, document UI/state/export/offline effects, preserve unrelated work and obtain any required scope approval. Keep the change narrow, add focused conformance coverage, run all regression checks and record rollback. A narrow reviewed exception may then be added to the protection policy; do not silently update the baseline or regenerate the Studio to hide drift. No new operator-facing control is justified solely by developer convenience.</p>
+<p>The requested checkpoint is <code>SCOPE - Application Integration Architecture</code> after validation. Stop at the architecture and reference implementation. Original Studio branches, main/trunk and remotes are not changed.</p>
+</main><footer>Generated from SCOPE-Application-Integration-Change-Control.md. All styling and diagrams are embedded; no server or external runtime is required.</footer>
+</body></html>

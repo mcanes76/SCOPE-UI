@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="SCOPE Markdown to HTML (Pandoc)"><title>Application Team Integration Checklist</title><style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#172536;background:#edf1f6}
+*{box-sizing:border-box}body{max-width:1200px;margin:24px auto;padding:0 24px 40px;font-size:16px;line-height:1.65}
+main{background:#fff;border:1px solid #ccd5e0;border-radius:10px;padding:32px 40px}h1{font-size:30px;line-height:1.25;margin-top:0}h2{font-size:23px;margin-top:36px;line-height:1.35}h3{font-size:19px}a{color:#174e96;text-underline-offset:3px}a:focus-visible,button:focus-visible{outline:3px solid #1551b0;outline-offset:3px}
+.document-tools,.document-links{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.document-links a{padding:5px 9px;background:#fff;border:1px solid #ccd5e0;border-radius:5px;font-size:13px}.document-links [aria-current]{font-weight:700;border-color:#174e96}.document-tools button{font:inherit;padding:8px 13px;border:1px solid #61748b;border-radius:5px;background:#fff;cursor:pointer}.source-note,footer{font-size:13px;color:#405164}.toc{border:1px solid #ccd5e0;background:#f5f8fc;padding:14px 20px;margin:24px 0}.toc ul{margin:8px 0;padding-left:22px}
+p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;background:#edf2f7;border-radius:4px;padding:2px 5px}pre{background:#edf2f7;border:1px solid #ccd5e0;border-radius:7px;padding:16px;overflow:auto;line-height:1.5}pre code{background:none;padding:0;font-size:13px;white-space:pre}blockquote{border-left:4px solid #61748b;margin:20px 0;padding:4px 20px;background:#f5f8fc}.table-scroll{overflow-x:auto;margin:20px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #ccd5e0;padding:10px 12px;text-align:left;vertical-align:top;min-width:130px}th{background:#e8eef6}tbody tr:nth-child(even){background:#f8fafc}ul,ol{padding-left:26px}.task-list-item{list-style:none;margin-left:-20px}.task-list-item input{margin-right:8px;accent-color:#174e96}
+.diagram{margin:24px 0;border:1px solid #ccd5e0;border-radius:7px;padding:16px;background:#f8fafc}.diagram svg{display:block;width:100%;height:auto;min-width:0}.diagram figcaption{font-weight:600;margin:10px 0}.diagram details{margin-top:12px}.transition-list{font-size:13px;columns:2;column-gap:28px}.transition-list li{break-inside:avoid;margin-bottom:7px}footer{margin-top:20px}
+@media(max-width:700px){body{margin:8px auto;padding:0 10px 24px}main{padding:20px 16px}h1{font-size:25px}.transition-list{columns:1}}
+@media print{@page{margin:16mm}body{max-width:none;margin:0;padding:0;background:#fff;color:#172536;font-size:10pt}main{border:0;padding:0}.document-tools,.document-links,footer,.diagram details{display:none}.toc{background:white}h1,h2,h3{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere}pre code{white-space:pre-wrap;font-size:8pt}.table-scroll{overflow:visible}table{font-size:8pt}th,td{min-width:0;padding:6px}thead{display:table-header-group}tr,.diagram{break-inside:avoid}a{color:#172536}}
+</style></head><body>
+<nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html" aria-current="page">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a></nav>
+<div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Application-Onboarding-Checklist.md">Markdown source</a></div>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#ownership-and-runtime">Ownership and runtime</a></li><li><a href="#manifest-and-lifecycle">Manifest and lifecycle</a></li><li><a href="#state-and-communication">State and communication</a></li><li><a href="#security-reliability-and-release">Security, reliability and release</a></li><li><a href="#studio-protection-review">Studio protection review</a></li></ul></nav><h1 id="application-team-integration-checklist">Application Team Integration Checklist</h1>
+<p>Use this separately for BLOS, Display, Sensor Calibration and Native LOS. The repository contains mock implementations, not evidence of real application readiness. No real application is onboarded by this checkpoint.</p>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Application</th>
+<th>Real UI/runtime/mount contract confirmed</th>
+<th>Auth/backend ownership confirmed</th>
+<th>Adapter and conformance review</th>
+<th>Current evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BLOS</td>
+<td>Pending application team</td>
+<td>Pending application/security teams</td>
+<td>Not started</td>
+<td>Existing simulated mock and stable Studio ID only</td>
+</tr>
+<tr>
+<td>Display</td>
+<td>Pending application team</td>
+<td>Pending application/security teams</td>
+<td>Not started</td>
+<td>Existing simulated mock and stable Studio ID only</td>
+</tr>
+<tr>
+<td>Sensor Calibration</td>
+<td>Pending application team</td>
+<td>Pending application/security teams</td>
+<td>Not started</td>
+<td>Existing simulated mock and stable Studio ID only</td>
+</tr>
+<tr>
+<td>Native LOS</td>
+<td>Pending application team; name does not establish deployment technology</td>
+<td>Pending application/security teams</td>
+<td>Not started</td>
+<td>Existing simulated mock and stable Studio ID only</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="ownership-and-runtime">Ownership and runtime</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Name an application owner, adapter maintainer, backend/API owner, security contact and release owner.</label></li>
+<li><label><input type="checkbox" />Supply the real framework/runtime, supported OS/host, deployment/update model and startup entry point.</label></li>
+<li><label><input type="checkbox" />Confirm whether module mounting, a web component, iframe embedding, service/API integration or native IPC is supported. Identify restrictions and unsupported options.</label></li>
+<li><label><input type="checkbox" />Confirm independent UI ownership: shell code must not modify application controls, forms, store internals, validation or business logic.</label></li>
+<li><label><input type="checkbox" />Define stable application/instance identifiers, multi-instance support and singleton limitations.</label></li>
+<li><label><input type="checkbox" />Record entry criteria and open decisions from the <a href="SCOPE-Application-Integration-Architecture.html">architecture</a>.</label></li>
+</ul>
+<h2 id="manifest-and-lifecycle">Manifest and lifecycle</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Agree contract/application versions and the compatibility/rollback policy.</label></li>
+<li><label><input type="checkbox" />Provide an approved manifest and capabilities; do not provide arbitrary executable URLs for host loading.</label></li>
+<li><label><input type="checkbox" />Implement initialize/mount/activate/deactivate/resize/dispose against the approved transport.</label></li>
+<li><label><input type="checkbox" />Define hidden, minimized, closed, unloaded and detached semantics without silently changing Phase 3 caching behavior.</label></li>
+<li><label><input type="checkbox" />Document minimum/initial dimensions, high-DPI/responsive behavior, keyboard focus, modal/popup ownership and accessibility requirements.</label></li>
+<li><label><input type="checkbox" />Demonstrate one permitted mount per instance, no duplicate listeners, cooperative cancellation and cleanup after partial startup.</label></li>
+<li><label><input type="checkbox" />Define recovery for failure, deadline, reload and unresponsive process/frame. Identify resources requiring host termination.</label></li>
+</ul>
+<h2 id="state-and-communication">State and communication</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Identify the authoritative owner of domain data, view state, authentication state and workspace metadata.</label></li>
+<li><label><input type="checkbox" />If snapshots are supported, define their versioned schema, validation, sensitive-data exclusions, migration and retention rules.</label></li>
+<li><label><input type="checkbox" />Enumerate required contexts, incoming commands and outgoing events, with bounded request/response schemas and explicit permissions.</label></li>
+<li><label><input type="checkbox" />Confirm that context is advisory and does not grant access; the receiving application/backend authorizes commands.</label></li>
+<li><label><input type="checkbox" />Specify correlation, acknowledgements, error handling, deduplication, ordering and limits needed for real workflows.</label></li>
+<li><label><input type="checkbox" />Define whether pop-outs share an application session or use independent data. Do not assume the mock's independent simulations synchronize.</label></li>
+</ul>
+<h2 id="security-reliability-and-release">Security, reliability and release</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Document authentication/authorization boundaries and avoid passing credentials via generic context or events.</label></li>
+<li><label><input type="checkbox" />If using web frames, review exact origins, framing restrictions, sandbox/CSP, permissions, navigation and validated message identity/session/sequence rules.</label></li>
+<li><label><input type="checkbox" />If using a native/service boundary, review the actual IPC/API authentication, authorization and process privileges.</label></li>
+<li><label><input type="checkbox" />Define health/status meanings, liveness checks, timeouts, diagnostics, redaction, retention and support ownership.</label></li>
+<li><label><input type="checkbox" />Agree measurable latency, resource, availability, accessibility and operator acceptance requirements on actual hardware.</label></li>
+<li><label><input type="checkbox" />Test version skew, partial failures, stale snapshots, cleanup failures, independent app releases and rollback.</label></li>
+<li><label><input type="checkbox" />Obtain application/platform/security review and pass the <a href="SCOPE-Application-Integration-Plan.html">conformance matrix</a>.</label></li>
+</ul>
+<h2 id="studio-protection-review">Studio protection review</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Confirm the active integration branch and preserve unrelated work.</label></li>
+<li><label><input type="checkbox" />Record every proposed change to an existing Studio file and why a reusable interface cannot be added in an isolated module instead.</label></li>
+<li><label><input type="checkbox" />Preserve Guided/Advanced/Final, all navigation modes, Component Editor, all 31 restored themes, Candidates A/B/C, history, mock applications, window behavior and exports.</label></li>
+<li><label><input type="checkbox" />Keep standalone HTML operational without a server. Keep development-only controls out of the operator Studio.</label></li>
+<li><label><input type="checkbox" />Do not restore Phase 2 Visual Families or silently redefine existing application IDs/preset IDs.</label></li>
+<li><label><input type="checkbox" />Run protection, contract and full regression validation; review native browser behavior where available.</label></li>
+<li><label><input type="checkbox" />Distinguish reference evidence from real integration readiness in the review record. Do not merge or push without separate authorization.</label></li>
+</ul>
+</main><footer>Generated from SCOPE-Application-Onboarding-Checklist.md. All styling and diagrams are embedded; no server or external runtime is required.</footer>
+</body></html>
