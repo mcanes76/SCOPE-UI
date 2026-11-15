@@ -66,12 +66,13 @@
     if(!preset||!looks.some(l=>l.id===preset.engineLook))throw Error('Unknown preview theme');
     const expansionChanged=!design||(next.workspace?.expanded??null)!==(design.workspace?.expanded??null);
     const navChanged=!design||next.navigation!==design.navigation;
+    const windowModeChanged=!design||window.ScopeWorkspace.fromDesign(next).windowed!==window.ScopeWorkspace.fromDesign(design).windowed;
     const modeChanged=!design||(next.layout.mode==='single')!==(design.layout.mode==='single');
     comparisonFrozen=Boolean(options.comparisonFrozen);document.body.dataset.themeComparison=String(comparisonFrozen);
     if(modeChanged)integrated.expanded=null;
     design=next;editing=Boolean(options.editing);selected=options.region&&Object.hasOwn(core.regions,options.region)?options.region:'';selectedComponent=visual.validId(options.componentSelection)?visual.canonicalId(options.componentSelection):'';
     state.look=preset.engineLook;state.concept=core.navigation.indexOf(next.navigation);if(navChanged)state.view='workspace';integrated.mode=next.layout.mode==='stacked'?'split':next.layout.mode;
-    let redraw=navChanged||modeChanged||expansionChanged;
+    let redraw=navChanged||modeChanged||expansionChanged||windowModeChanged;
     if(options.application&&options.application!==application){application=options.application;redraw=selectApp(application)||redraw;}
     if(options.rightApplication&&options.rightApplication!==rightApplication){rightApplication=options.rightApplication;if(integrated.mode==='split')redraw=selectApp(rightApplication,true)||redraw;}
     // Navigation changes retain the engine's per-slot draft/view maps and application stores.

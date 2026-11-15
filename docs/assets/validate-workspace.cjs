@@ -20,7 +20,7 @@ function instrumentDivider(engine){const pane=engine.elements.get('.integrated-p
 (async()=>{
   let workflows=0,childChecks=0;
   for(const theme of ['slate-light','graphite-dark','disco','field-night','electric-glass'])for(const navigation of C.navigation){
-    const design={...C.defaults,theme,navigation,detailsVisible:true,workspace:W.validate(),components:{instances:{'application.blos.button.join':{radius:0},'shell.window.button.divider':{border:'#AA5522'}}},parameters:{branding:{name:'SCOPE Review'},applications:{blos:{name:'Link Manager'}}}};
+    const design={...C.defaults,theme,navigation,detailsVisible:true,workspace:W.validate({windowed:false}),components:{instances:{'application.blos.button.join':{radius:0},'shell.window.button.divider':{border:'#AA5522'}}},parameters:{branding:{name:'SCOPE Review'},applications:{blos:{name:'Link Manager'}}}};
     const html=E.composeFinal(resources,design,presets),engine=F.engineFixture(true,html),run=engine.run,op=engine.window.ScopeOperator,getDivider=instrumentDivider(engine);
     assert.equal(op.snapshot().mode,'single');assert.equal(run('state.concept'),C.navigation.indexOf(navigation));
     run("demoView(state.concept===1?'mosaic-0':'single',0).tab='discovery';DemoMulticastGroupStore.create('Retained data',['N07']);");const data=run('JSON.stringify(DemoMulticastGroupStore.list())');

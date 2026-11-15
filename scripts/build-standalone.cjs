@@ -24,7 +24,7 @@ function resources(){
       logo='data:'+mime+';base64,'+fs.readFileSync(file).toString('base64');
     }
   }
-  const runtime=read('design-studio/operator-runtime.js')+'\n'+read('design-studio/preview-runtime.js')+'\nwindow.ScopePortablePresets='+encodeJSON(presets.presets)+';\n'+read('design-studio/embedded-windows.js');
+  const runtime=read('design-studio/operator-runtime.js')+'\n'+read('design-studio/workspace-windows-runtime.js')+'\n'+read('design-studio/preview-runtime.js')+'\nwindow.ScopePortablePresets='+encodeJSON(presets.presets)+';\n'+read('design-studio/embedded-windows.js');
   return {html:read('mockups/scope-integrated-electric-glass.html'),css:read('mockups/styles.css'),core:['workspace.js','theme-tokens.js','visual-system.js','parameters.js','design-core.js'].map(f=>read('design-studio/'+f)).join('\n'),runtime,params,logo,fallback};
 }
 function build(options={}){

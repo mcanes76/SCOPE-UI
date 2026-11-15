@@ -82,6 +82,145 @@
     },
     "preserveViews": {
       "type": "boolean"
+    },
+    "windowed": {
+      "type": "boolean",
+      "default": true,
+      "description": "Managed windows by default; false retains legacy single/split/stacked layouts."
+    },
+    "windows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initialized",
+        "active",
+        "items"
+      ],
+      "properties": {
+        "initialized": {
+          "type": "boolean"
+        },
+        "active": {
+          "enum": [
+            null,
+            "blos",
+            "display",
+            "calibration",
+            "los"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "app",
+              "rect",
+              "restore",
+              "state",
+              "beforeMinimize",
+              "dock"
+            ],
+            "properties": {
+              "app": {
+                "enum": [
+                  "blos",
+                  "display",
+                  "calibration",
+                  "los"
+                ]
+              },
+              "rect": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "minimum": -100000,
+                    "maximum": 100000
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": -100000,
+                    "maximum": 100000
+                  },
+                  "width": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "height": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100000
+                  }
+                }
+              },
+              "restore": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y",
+                  "width",
+                  "height"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "minimum": -100000,
+                    "maximum": 100000
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": -100000,
+                    "maximum": 100000
+                  },
+                  "width": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "height": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100000
+                  }
+                }
+              },
+              "state": {
+                "enum": [
+                  "normal",
+                  "maximized",
+                  "minimized",
+                  "closed"
+                ]
+              },
+              "beforeMinimize": {
+                "enum": [
+                  "normal",
+                  "maximized"
+                ]
+              },
+              "dock": {
+                "enum": [
+                  "none",
+                  "left",
+                  "right"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
