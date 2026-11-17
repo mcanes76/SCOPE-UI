@@ -29,6 +29,7 @@
   window.addEventListener('message',event=>{
     const m=event.data,launch=window.ScopePortableWindow;
     if(!launch||event.source!==presentationParent||event.origin!==new URL(window.location.href).origin||m?.type!=='scope-window-design'||m.version!==1||m.token!==launch.token)return;
+    if(m.designSwitch){window.ScopeOperator.importDesign(m.design).catch(error=>window.ScopeOperator.say('Workspace design update was not applied: '+error.message));return;}
     try{const d=ScopeDesign.clone(m.design),w=ScopeWorkspace.fromDesign(d);d.workspace={...w,layout:'single',left:ApplicationIds[launch.app],expanded:null,allowedLayouts:[...new Set(['single',...w.allowedLayouts])]};d.layout.mode='single';d.operator=ScopeWorkspace.operator(d.workspace);window.ScopePreviewRuntime.apply(d,m.presets,{editing:false});}catch{}
   });
 })();

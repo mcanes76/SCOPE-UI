@@ -26,7 +26,7 @@
     html=html.replace("const shell=Number(params.get('shell'));","const shell=Number(window.ScopePortableWindow?.shell??params.get('shell'));");
     html=html.replaceAll('src="assets/logo.png"','src="'+resources.logo+'"').replaceAll("'assets/scope-logo.svg'",JSON.stringify(resources.fallback));
     const safeScript=s=>s.replace(/<\/script/gi,'<\\/script');
-    const bootstrap='window.ScopePreviewRuntime.apply('+json(d)+','+json(presets)+',{presentation:'+(!options.preview)+',editing:false});';
+    const bootstrap=(options.preview?'':'window.ScopeStandaloneMockup=true;window.ScopeOriginalDesign='+json(d)+';')+'window.ScopePreviewRuntime.apply('+json(d)+','+json(presets)+',{presentation:'+(!options.preview)+',editing:false});';
     html=html.replace('</body>',()=>'<script>'+safeScript(resources.core)+'</script><script>'+safeScript(resources.runtime)+'</script><script>'+bootstrap+'</script></body>');
     if(!html.includes(bootstrap)||/src="\.\.\/design-studio\//.test(html)||html.includes('class="studio-header"')||html.includes('id="studio-layout"'))throw Error('Standalone export assembly failed: Studio UI found in operator artifact');
     return html;

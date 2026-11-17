@@ -2,18 +2,19 @@
 (function(){
   'use strict';
   const C=window.ScopeDesign,P=window.ScopeParameters,W=window.ScopeWorkspace;
-  let current=null,presets=[],options={},toolbar=null,lastInput='',paramsInput='',picker=null,feedback='',dragging=false;
+  let current=null,presets=[],options={},toolbar=null,lastInput='',paramsInput='',picker=null,feedback='',dragging=false,originalDesign=null,switchingDesign=false;
   let workspace=W.validate(),op=W.operator(workspace);
   const workspaceId=window.ScopePortableWindow?.workspaceId||crypto.randomUUID(),detached=new Map(),origin=new URL(window.location.href).origin;
   function parameters(){const base={...appConfig,applications:Object.fromEntries(ApplicationIds.map(id=>[id,{...appConfig.applications[id],visible:true}]))},incoming=current?.parameters||{};return P.validate({...base,...incoming,branding:{...base.branding,...incoming.branding},applications:Object.fromEntries(ApplicationIds.map(id=>[id,{...base.applications[id],...incoming.applications?.[id]}])),labels:{...base.labels,...incoming.labels,shells:{...base.labels.shells,...incoming.labels?.shells}}});}
   function configure(d,ps,opts){
+    if(!originalDesign)originalDesign=C.clone(window.ScopeOriginalDesign||d);
     current=d;presets=ps;options=opts;window.ScopeOperatorPresets=ps;
     const key=JSON.stringify([d.workspace,d.operator,d.layout.mode]);if(key!==lastInput){workspace=W.fromDesign(d);op=W.operator(workspace);lastInput=key;}
     integrated.focus=workspace.focused;integrated.expanded=workspace.expanded;updateIntegrationFocus();
     window.ScopeManagedWindows?.configure(d);
     const pk=JSON.stringify(d.parameters||{});if(pk!==paramsInput){paramsInput=pk;const p=parameters();if(window.ScopePortablePresets&&!window.ScopeFolderPackage&&!p.logoPath.startsWith('data:'))p.logoPath=DefaultPresentationConfig.logoPath;applyPresentationConfig(p);if(/^data:image\//.test(p.logoPath))appConfig.logoPath=p.logoPath;render();}
     decorate();
-    appWindows.forEach((handle,index)=>{try{if(!handle.closed&&window.ScopeDetachedTokens?.has(index))handle.postMessage({type:'scope-window-design',version:1,token:window.ScopeDetachedTokens.get(index),design:d,presets:ps},origin==='null'?'*':origin);}catch{}});
+    appWindows.forEach((handle,index)=>{try{if(!handle.closed&&window.ScopeDetachedTokens?.has(index))handle.postMessage({type:'scope-window-design',version:1,token:window.ScopeDetachedTokens.get(index),design:d,presets:ps,designSwitch:switchingDesign},origin==='null'?'*':origin);}catch{}});
   }
   function slotFor(index){return detachedContext?'popup':integrated.mode==='split'?(integrated.right===index?'right':'left'):state.concept===1?'mosaic-'+index:'single';}
   function applicationView(index,value){
@@ -55,7 +56,7 @@
     if(!detachedContext&&workspace.layout==='single')op.left=ApplicationIds[state.concept===3?state.deck.active:state.concept===2?state.portal.active:state.concept===1?state.mosaic.focus:state.aperture.active];
     if(workspace.layout==='single'&&!detachedContext)workspace.left=op.left;
     op.right=workspace.right;const single=workspace.layout==='single';
-    toolbar.innerHTML=`${detachedContext?`<strong>${escapeHTML(p.applications[ApplicationIds[detachedContext.app]].name)}</strong><button data-operator="return">Return to Workspace</button><button data-operator="close-window">Close Window</button>`:`<div class="operator-layouts">${workspace.allowedLayouts.map(m=>`<button data-operator="mode" data-mode="${m}" aria-pressed="${workspace.layout===m}">${{single:'Single Application',split:'Two Applications',stacked:'Stacked'}[m]}</button>`).join('')}</div><label>${single?'Application':workspace.layout==='stacked'?'Top':'Left'} <select data-operator-select="left">${choices(op.left)}</select></label>${single?'':`<label>${workspace.layout==='stacked'?'Bottom':'Right'} <select data-operator-select="right">${choices(op.right)}</select></label><button data-operator="swap">Swap</button><button data-operator="reset-ratio">Reset to 50/50</button>`}${workspace.expanded?'<button data-operator="restore">Restore Split</button>':''}${workspace.popout?`<button data-operator="popout" data-app="${single?op.left:op.right}">Pop Out ${escapeHTML(p.applications[single?op.left:op.right].name)}</button>`:''}<button data-operator="return">Return to Main Workspace</button>`}<button data-operator="managed" aria-pressed="${Boolean(workspace.windowed)}">Managed Windows</button><button data-operator="workspace">Workspace</button><button data-operator="laboratory">Component Laboratory</button><details><summary>Configuration</summary><div class="operator-config"><button data-operator="import-params">Import Parameters JSON</button><button data-operator="import-logo">Import Logo Image</button><button data-operator="save-params">Save Parameters JSON</button><button data-operator="save-html">Save Updated Mockup</button><span>Detached simulations are independent. View settings can return; simulation data is not synchronized.</span></div></details><output id="operator-feedback" role="status" aria-live="polite">${escapeHTML(feedback)}</output><div class="workspace-windows">${[...detached.values()].map(r=>`<span>${escapeHTML(p.applications[ApplicationIds[r.app]].name)}: ${r.state}</span><button data-operator="return-app" data-app="${ApplicationIds[r.app]}">Return ${escapeHTML(p.applications[ApplicationIds[r.app]].name)}</button>`).join('')}</div>${detachedContext?'<small>Return restores view settings only. Simulation data stays local.</small>':''}`;
+    toolbar.innerHTML=`${detachedContext?`<strong>${escapeHTML(p.applications[ApplicationIds[detachedContext.app]].name)}</strong><button data-operator="return">Return to Workspace</button><button data-operator="close-window">Close Window</button>`:`<div class="operator-layouts">${workspace.allowedLayouts.map(m=>`<button data-operator="mode" data-mode="${m}" aria-pressed="${workspace.layout===m}">${{single:'Single Application',split:'Two Applications',stacked:'Stacked'}[m]}</button>`).join('')}</div><label>${single?'Application':workspace.layout==='stacked'?'Top':'Left'} <select data-operator-select="left">${choices(op.left)}</select></label>${single?'':`<label>${workspace.layout==='stacked'?'Bottom':'Right'} <select data-operator-select="right">${choices(op.right)}</select></label><button data-operator="swap">Swap</button><button data-operator="reset-ratio">Reset to 50/50</button>`}${workspace.expanded?'<button data-operator="restore">Restore Split</button>':''}${workspace.popout?`<button data-operator="popout" data-app="${single?op.left:op.right}">Pop Out ${escapeHTML(p.applications[single?op.left:op.right].name)}</button>`:''}<button data-operator="return">Return to Main Workspace</button>`}<button data-operator="managed" aria-pressed="${Boolean(workspace.windowed)}">Managed Windows</button><button data-operator="workspace">Workspace</button><button data-operator="laboratory">Component Laboratory</button><details><summary>Configuration</summary><div class="operator-config"><button data-operator="import-params">Import Parameters JSON</button>${window.ScopeStandaloneMockup?'<button data-operator="import-design">Import SCOPE Design JSON</button><button data-operator="export-design">Export Current SCOPE Design</button><button data-operator="reset-design">Reset to Original Design</button>':''}<button data-operator="import-logo">Import Logo Image</button><button data-operator="save-params">Save Parameters JSON</button><button data-operator="save-html">Save Updated Mockup</button><span>Detached simulations are independent. View settings can return; simulation data is not synchronized.</span></div></details><output id="operator-feedback" role="status" aria-live="polite">${escapeHTML(feedback)}</output><div class="workspace-windows">${[...detached.values()].map(r=>`<span>${escapeHTML(p.applications[ApplicationIds[r.app]].name)}: ${r.state}</span><button data-operator="return-app" data-app="${ApplicationIds[r.app]}">Return ${escapeHTML(p.applications[ApplicationIds[r.app]].name)}</button>`).join('')}</div>${detachedContext?'<small>Return restores view settings only. Simulation data stays local.</small>':''}`;
     for(const id of ApplicationIds){const index=ApplicationIds.indexOf(id);document.querySelectorAll(`[data-deck-app="${index}"],[data-membership="${index}"],[data-enter-room="${index}"],[data-switch-app="${index}"]`).forEach(el=>{el.hidden=!p.applications[id].visible;});}
     document.querySelectorAll('.integration-pane').forEach((pane,i)=>{const slot=pane.querySelector('[data-integration-choice]')?.dataset.integrationChoice||(workspace.expanded||['left','right'][i]),index=ApplicationIds.indexOf(workspace[slot]);pane.dataset.workspacePane=slot;pane.classList.toggle('has-focus',workspace.focused===slot);const header=pane.querySelector('.integration-pane-header');if(header){let actions=header.querySelector('[data-workspace-pane-actions]');const key=[index,workspace.popout,detached.has(index)].join(':');if(actions?.dataset.workspaceActionKey===key)return;if(!actions){actions=document.createElement('span');actions.dataset.workspacePaneActions='';header.append(actions);}actions.dataset.workspaceActionKey=key;actions.innerHTML=(workspace.popout?`<button data-operator="popout" data-app="${ApplicationIds[index]}" data-slot="${slot}">Pop Out</button>`:'')+(detached.has(index)?'<small>Detached window open</small>':'');}});
     toolbar.dataset.managedActive=String(Boolean(window.ScopeManagedWindows?.active()));
@@ -75,10 +76,104 @@
   window.addEventListener('focus',()=>{for(const r of detached.values())if(r.handle?.closed){detached.delete(r.app);appWindows.delete(r.app);say('Detached window disconnected or closed; original view remains available.');}decorate();});
   window.addEventListener('resize',()=>{if(!dragging)decorate();});
   window.addEventListener('beforeunload',()=>{if(detachedContext)sendParent('scope-workspace-closed');});
-  async function importParameters(value){const p=P.validate(value);if(!presets.some(x=>x.id===p.initial.theme))throw Error('Unknown palette in parameters');const d=C.clone(current);d.parameters=p;if(value.shellComponents!==undefined)delete d.shellComponents;d.theme=p.initial.theme;d.navigation=p.initial.navigation;d.layout.mode=p.initial.mode;d.workspace=W.validate(p.workspace,{...W.defaults,layout:p.initial.mode,left:p.initial.left,right:p.initial.right,allowedLayouts:p.allowedModes.filter(m=>m!=='popout'),popout:p.allowedModes.includes('popout')});d.operator=W.operator(d.workspace);if(p.buttonGeometry!=='inherit'){d.components??={global:{},classes:{},applications:{},instances:{}};d.components.global.buttons={...(d.components.global.buttons||{}),radius:{square:0,slight:4,rounded:10,pill:50}[p.buttonGeometry]};}window.ScopePreviewRuntime.apply(d,presets,{...options,application:d.operator.left,rightApplication:d.operator.right});window.ScopeOperator.onChange?.(d);say('Parameters applied.');}
+  const object=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
+  const looksDesign=value=>object(value)&&['name','navigation','theme','typography','colors','regions','components','notes'].some(key=>Object.hasOwn(value,key));
+  const looksParameters=value=>object(value)&&['branding','applications','labels','initial','allowedModes','buttonGeometry','componentStyles','logoPath'].some(key=>Object.hasOwn(value,key));
+  function parameterGeometry(d,p,inheritOnly=false){
+    if(!p.buttonGeometry||p.buttonGeometry==='inherit')return;
+    d.components??={global:{},classes:{},applications:{},instances:{}};d.components.global??={};d.components.global.buttons??={};
+    if(!inheritOnly||d.components.global.buttons.radius===undefined)d.components.global.buttons.radius={square:0,slight:4,rounded:10,pill:50}[p.buttonGeometry];
+  }
+  function currentDesign(){
+    if(!current)throw Error('No active design is available');
+    const d=C.clone(current),live=window.ScopeManagedWindows?.snapshot();
+    d.workspace=W.clone(workspace);if(live?.initialized)d.workspace.windows=live;
+    d.operator=W.operator(d.workspace);d.layout.mode=d.workspace.layout;d.parameters=parameters();d.detailsVisible=presentation.detailsVisible;
+    return C.validate(d);
+  }
+  function validateDesign(value){
+    if(looksParameters(value)&&!looksDesign(value))throw Error('This appears to be application Parameters JSON. Use Import Parameters JSON instead.');
+    if(!object(value)||!Object.hasOwn(value,'navigation')||!Object.hasOwn(value,'theme'))throw Error('Choose a scope-design.json exported by SCOPE Design Studio, including navigation, theme and schemaVersion.');
+    if(value.schemaVersion!==1)throw Error('Unsupported SCOPE design schema version '+String(value.schemaVersion)+'. This mockup supports version 1. Export a compatible design or regenerate this HTML with a newer Studio.');
+    let d;try{d=C.validate(value);}catch(error){throw Error('Invalid SCOPE Design JSON: '+error.message+'. Export a compatible scope-design.json from Design Studio.');}if(!presets.some(p=>p.id===d.theme))throw Error('The selected theme is not embedded in this mockup. Regenerate it with the current Design Studio.');
+    // Parameter validation historically accepts extra nested presentation keys.
+    // A design import must not silently ignore such unsupported fields.
+    function fields(value,allowed,path){if(!object(value))throw Error('Expected an object at '+path);for(const key of Object.keys(value))if(!allowed.includes(key))throw Error('Unsupported design field: '+path+'.'+key);}
+    const p=value.parameters;
+    if(p){
+      if(p.branding)fields(p.branding,[...new Set([...Object.keys(DefaultPresentationConfig.branding),...Object.keys(P.defaults.branding)])],'parameters.branding');
+      if(p.initial)fields(p.initial,[...Object.keys(P.defaults.initial),'family'],'parameters.initial');
+      for(const [id,app] of Object.entries(p.applications||{}))fields(app,['name','visible','tabs'],'parameters.applications.'+id);
+      if(p.labels){
+        fields(p.labels,[...new Set([...Object.keys(DefaultPresentationConfig.labels),...Object.keys(P.defaults.labels)])],'parameters.labels');
+        for(const [key,labels] of Object.entries(p.labels))if(object(DefaultPresentationConfig.labels[key]))fields(labels,Object.keys(DefaultPresentationConfig.labels[key]),'parameters.labels.'+key);
+      }
+    }
+    return d;
+  }
+  function preserveWindows(target,before){
+    const w=W.fromDesign(target),incoming=W.clone(w.windows),live=window.ScopeManagedWindows?.snapshot();
+    const previous=live?.initialized?live:before.windows;
+    if(previous.initialized){
+      if(!w.windows.initialized)w.windows=W.clone(previous);
+      else {
+        const items=w.windows.items;
+        for(const old of previous.items.filter(item=>item.state!=='closed')){
+          const index=items.findIndex(item=>item.app===old.app);
+          if(index<0)items.push(W.clone(old));
+          else if(items[index].state==='closed'||items[index].state==='minimized'&&old.state!=='minimized')items[index]=W.clone(old);
+        }
+        if(!items.some(item=>item.app===w.windows.active&&!['closed','minimized'].includes(item.state)))w.windows.active=items.filter(item=>!['closed','minimized'].includes(item.state)).at(-1)?.app||null;
+      }
+      if(w.windowed&&!incoming.initialized){
+        const measured=window.ScopeManagedWindows?.bounds(),bounds=measured?.width>1&&measured.height>1?measured:{width:1200,height:800};
+        for(const app of [...new Set([w.left,...(w.layout==='single'?[]:[w.right])])])w.windows=W.windows.action(w.windows,{type:'open',app},bounds);
+      }
+    }
+    if(detachedContext){
+      // A browser pop-out remains its one application; it is not a managed desktop.
+      w.layout='single';w.left=ApplicationIds[detachedContext.app];w.expanded=null;w.allowedLayouts=[...new Set(['single',...w.allowedLayouts])];
+    }
+    const p=parameters(),required=detachedContext?[w.left]:[w.left,...(w.layout==='single'?[]:[w.right]),...w.windows.items.filter(item=>item.state!=='closed').map(item=>item.app)];
+    if(required.some(app=>!p.applications[app].visible))throw Error('The design selects an application disabled by the current parameters. Enable it using Import Parameters JSON, or choose another design.');
+    target.workspace=W.validate(w);target.layout.mode=w.layout;target.operator=W.operator(w);
+  }
+  async function importDesign(value){
+    if(!window.ScopeStandaloneMockup)throw Error('Use the Design Studio design importer in the editor. These controls are for generated standalone mockups.');
+    const target=validateDesign(value);
+    if(dragging||window.ScopeManagedWindows?.isInteracting()||state.lab.busy||[...demoViews.values()].some(view=>view.busy)||typeof demoDialog==='object'&&demoDialog||document.getElementById('demo-action-dialog')?.open)throw Error('Finish or cancel the application dialog, loading operation or window drag, then import the design again.');
+    const before=W.fromDesign(current),preserved=C.clone(current.parameters||{});
+    // Parameters remain application/user owned. Only their existing style blocks
+    // belong to the design cascade; branding, logos, labels and app settings stay.
+    for(const key of ['componentStyles','shellComponents','buttonGeometry']){
+      if(target.parameters?.[key]!==undefined)preserved[key]=C.clone(target.parameters[key]);else delete preserved[key];
+    }
+    if(current.parameters||Object.keys(preserved).length)target.parameters=preserved;else delete target.parameters;
+    parameterGeometry(target,target.parameters||{},true);
+    preserveWindows(target,before);
+    const validated=C.validate(target),preset=presets.find(p=>p.id===validated.theme);
+    C.compileDesign(validated,preset); // Preflight the same compiler used by preview/export.
+    const previous=C.clone(current),previousOptions={...options};
+    switchingDesign=true;
+    try{window.ScopePreviewRuntime.apply(validated,presets,{...options,presentation:true,application:validated.workspace.left,rightApplication:validated.workspace.right});}
+    catch(error){try{window.ScopePreviewRuntime.apply(previous,presets,previousOptions);}catch{}throw Error('Design was not applied; the previous design was restored. '+error.message);}
+    finally{switchingDesign=false;}
+    window.ScopeOperator.onChange?.(current);
+    const parked=before.windowed&&!validated.workspace.windowed;
+    say('SCOPE design applied. Application parameters, branding, labels, data and view state retained. '+(detachedContext?'This browser pop-out keeps its single application; shell-managed layouts apply in the main mockup.':parked?'Managed windows are parked, not closed; choose Managed Windows to return. Classic hosts may reset transient focus/scroll.':validated.workspace.windowed?'Existing managed windows remain open; imported geometry is fitted to the workspace.':'Classic layout hosts may rebuild and reset transient focus/scroll.'));
+    return currentDesign();
+  }
+  async function resetDesign(){if(!originalDesign)throw Error('No original design snapshot is available');const d=await importDesign(C.clone(originalDesign));say('Original embedded design restored. '+feedback);return d;}
+  function exportDesign(filename='scope-design.json'){
+    if(!window.ScopeStandaloneMockup)throw Error('Use Export Design JSON in the Design Studio');
+    if(typeof filename!=='string'||!filename.trim()||filename.length>120||/[\\/:*?"<>|\x00-\x1f]/.test(filename))throw Error('Choose a simple JSON filename without path characters');
+    if(!filename.toLowerCase().endsWith('.json'))filename+='.json';
+    const d=currentDesign();download(JSON.stringify(d,null,2),filename,'application/json');say('Current SCOPE design exported as '+filename+'.');return d;
+  }
+  async function importParameters(value){if(looksDesign(value))throw Error('This appears to be a SCOPE design configuration. Use Import SCOPE Design JSON instead.');const p=P.validate(value);if(!presets.some(x=>x.id===p.initial.theme))throw Error('Unknown palette in parameters');const d=C.clone(current);d.parameters=p;if(value.shellComponents!==undefined)delete d.shellComponents;d.theme=p.initial.theme;d.navigation=p.initial.navigation;d.layout.mode=p.initial.mode;d.workspace=W.validate(p.workspace,{...W.defaults,layout:p.initial.mode,left:p.initial.left,right:p.initial.right,allowedLayouts:p.allowedModes.filter(m=>m!=='popout'),popout:p.allowedModes.includes('popout')});d.operator=W.operator(d.workspace);parameterGeometry(d,p);window.ScopePreviewRuntime.apply(d,presets,{...options,application:d.operator.left,rightApplication:d.operator.right});window.ScopeOperator.onChange?.(d);say('Parameters applied.');}
   function choose(kind){
-    if(!picker){picker=document.createElement('input');picker.type='file';picker.hidden=true;document.body.append(picker);picker.addEventListener('change',async()=>{try{const file=picker.files[0];if(!file)return;if(kindSelected==='params'){if(file.size>3000000)throw Error('Parameters exceed 3 MB');await importParameters(JSON.parse(await file.text()));}else {if(file.size>2000000||!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type))throw Error('Choose a PNG/JPEG/WebP/GIF below 2 MB');const url=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});const d=C.clone(current);d.parameters={...d.parameters,logoPath:url};window.ScopePreviewRuntime.apply(d,presets,options);window.ScopeOperator.onChange?.(d);say('Logo embedded.');}}catch(error){say(error.message);}finally{picker.value='';}});}
-    kindSelected=kind;picker.accept=kind==='params'?'.json,application/json':'image/png,image/jpeg,image/webp,image/gif';picker.click();
+    if(!picker){picker=document.createElement('input');picker.type='file';picker.hidden=true;document.body.append(picker);picker.addEventListener('change',async()=>{try{const file=picker.files[0];if(!file)return;if(kindSelected==='params'||kindSelected==='design'){if(file.size>(kindSelected==='design'?6*1024*1024:3000000))throw Error(kindSelected==='design'?'Design JSON exceeds 6 MB':'Parameters exceed 3 MB');let value;try{value=JSON.parse(await file.text());}catch{throw Error('Invalid JSON. Choose a valid '+(kindSelected==='design'?'SCOPE Design JSON':'Parameters JSON')+' file.');}if(kindSelected==='design')await importDesign(value);else await importParameters(value);}else {if(file.size>2000000||!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type))throw Error('Choose a PNG/JPEG/WebP/GIF below 2 MB');const url=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});const d=C.clone(current);d.parameters={...d.parameters,logoPath:url};window.ScopePreviewRuntime.apply(d,presets,options);window.ScopeOperator.onChange?.(d);say('Logo embedded.');}}catch(error){say(error.message);}finally{picker.value='';}});}
+    kindSelected=kind;picker.accept=kind!=='logo'?'.json,application/json':'image/png,image/jpeg,image/webp,image/gif';picker.click();
   }
   let kindSelected='params';
   async function saveUpdated(){
@@ -92,12 +187,12 @@
   document.addEventListener('click',async e=>{const b=e.target.closest('[data-operator],[data-integration-action]');if(!b||!current||window.ScopeComponentPicker)return;const legacy=b.dataset.integrationAction;if(legacy&&!['focus','expand','restore','mode-single','mode-split','pair'].includes(legacy))return;e.preventDefault();e.stopImmediatePropagation();try{const action=b.dataset.operator||legacy,slot=b.dataset.panel||workspace.focused;
     if(action==='managed'){transition({workspace:{windowed:true}});state.view='workspace';render();decorate();}if(action==='workspace'||action==='laboratory'){state.view=action==='workspace'?'workspace':'lab';render();decorate();}if(action==='mode'||action==='mode-single'||action==='mode-split')transition({mode:b.dataset.mode||(action==='mode-single'?'single':'split')});if(action==='pair')transition({mode:'split',operator:{left:'blos',right:'display'}});if(action==='swap')transition({swap:true});if(action==='reset-ratio')transition({operator:{ratio:50}});if(action==='focus')transition({workspace:{focused:slot}});if(action==='expand')transition({workspace:{expanded:workspace.expanded?null:slot,focused:slot}});if(action==='restore'){transition({workspace:{expanded:null}});say('Previous split layout and divider restored.');}if(action==='popout')detach(ApplicationIds.indexOf(b.dataset.app),b.dataset.slot);if(action==='return-app')returnRecord(detached.get(ApplicationIds.indexOf(b.dataset.app)),null);
     if(action==='return'){if(detachedContext){if(sendParent('scope-workspace-return')){say('Return requested.');setTimeout(()=>say('No return confirmation. If this window remains open, Save Updated Mockup or close it; the original view remains in the workspace.'),3000);}}else {for(const r of [...detached.values()])returnRecord(r,null);appWindows.forEach(h=>{try{h.close();}catch{}});say('Returned to main workspace. Detached simulation data was independent.');}}if(action==='close-window'){sendParent('scope-workspace-closed');window.close();}
-    if(action==='import-params')choose('params');if(action==='import-logo')choose('logo');if(action==='save-params')download(JSON.stringify({...parameters(),workspace,initial:{theme:current.theme,navigation:current.navigation,mode:workspace.layout,left:op.left,right:op.right},allowedModes:op.allowed},null,2),'params.json','application/json');if(action==='save-html')await saveUpdated();
+    if(action==='import-design')choose('design');if(action==='export-design')exportDesign();if(action==='reset-design')await resetDesign();if(action==='import-params')choose('params');if(action==='import-logo')choose('logo');if(action==='save-params')download(JSON.stringify({...parameters(),workspace,initial:{theme:current.theme,navigation:current.navigation,mode:workspace.layout,left:op.left,right:op.right},allowedModes:op.allowed},null,2),'params.json','application/json');if(action==='save-html')await saveUpdated();
   }catch(error){say(error.message);}},true);
   document.addEventListener('change',e=>{const slot=e.target.dataset.integrationChoice;if(!slot||!current)return;e.stopImmediatePropagation();try{transition({operator:{[slot]:ApplicationIds[Number(e.target.value)]},workspace:{focused:slot}});}catch(error){say(error.message);}},true);
   document.addEventListener('pointerdown',e=>{const slot=e.target.closest('[data-demo-host]')?.dataset.slot;if(['left','right'].includes(slot)&&workspace.focused!==slot)transition({workspace:{focused:slot}});},true);
   const css=document.createElement('style');css.textContent='.operator-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--scope-header,#14243a);color:var(--scope-text,#edf5ff);border-bottom:1px solid var(--scope-border,#6c829c);font:13px system-ui}.operator-layouts{display:flex;gap:4px;flex-wrap:wrap}.operator-bar label{display:flex;align-items:center;gap:8px}.operator-bar button,.operator-bar select{font:inherit;padding:8px 10px;min-height:38px}.operator-bar output{font-size:12px;max-width:460px}.workspace-windows{display:flex;align-items:center;gap:8px}.operator-config{display:grid;gap:8px;position:absolute;z-index:100;background:var(--scope-panel,#24364b);padding:16px;box-shadow:0 8px 25px #0007;max-width:390px}.integration-pane{min-width:0;min-height:0;overflow:auto}.operator-divider{position:absolute!important;top:0;bottom:0;width:12px;padding:0!important;min-height:0!important;transform:translateX(-50%);cursor:col-resize;touch-action:none;z-index:20;border:2px solid var(--scope-controlBorder)!important;background:var(--scope-control)!important;color:var(--scope-controlText)!important;border-radius:4px!important}.operator-divider::after{content:"";position:absolute;inset:35% 3px;border-inline:1px solid var(--scope-focus)}.operator-divider[data-axis="vertical"]{left:0;right:0;bottom:auto;height:12px;width:100%;transform:translateY(-50%);cursor:row-resize}.operator-divider[data-axis="vertical"]::after{inset:3px 40%;border-inline:0;border-block:1px solid var(--scope-focus)}.operator-divider:focus-visible{outline:3px solid var(--scope-focus)!important;outline-offset:3px}[data-workspace-pane-actions]{display:inline-flex;align-items:center;gap:8px}@media(max-width:760px){.operator-bar{gap:6px;padding:8px}.operator-bar label{max-width:100%}.integrated-panes{min-width:0}.operator-divider{min-width:12px!important}.operator-config{position:fixed;inset:15% 5% auto;max-width:90vw}}@media print{.operator-bar,.operator-divider{display:none!important}}';document.head.append(css);
   function setWindows(value,enabled){const d=C.clone(current);d.workspace={...W.clone(workspace),windows:W.windows.validate(value),windowed:enabled};window.ScopePreviewRuntime.apply(d,presets,options);window.ScopeOperator.onChange?.(d);}
-  window.ScopeOperator={setWindows,configure,decorate,transition,importParameters,parameters,launchInfo,originSlot:index=>detached.get(index)?.slot||slotFor(index),detach,returnRecord,say,workspaceId,snapshot:()=>({...op,mode:workspace.layout,focused:workspace.focused,expanded:workspace.expanded,workspace:W.clone(workspace),detached:[...detached.values()].map(({id,app,slot,state})=>({id,app,slot,state}))})};
+  window.ScopeOperator={setWindows,configure,decorate,transition,importParameters,importDesign,exportDesign,resetDesign,currentDesign,originalDesign:()=>C.clone(originalDesign),parameters,launchInfo,originSlot:index=>detached.get(index)?.slot||slotFor(index),detach,returnRecord,say,workspaceId,snapshot:()=>({...op,mode:workspace.layout,focused:workspace.focused,expanded:workspace.expanded,workspace:W.clone(workspace),detached:[...detached.values()].map(({id,app,slot,state})=>({id,app,slot,state}))})};
   setTimeout(()=>{if(window.ScopePortableWindow)sendParent('scope-workspace-ready');},0);
 })();

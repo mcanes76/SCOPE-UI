@@ -1,0 +1,39 @@
+{
+  "baseline": "30bf8d6f0c0ca38a38273fe99114fa0062c57f1b",
+  "feature": "SCOPE - Standalone Design JSON Switching",
+  "authorization": "Explicit user request dated 2026-11-16; exact feature changes only. The protected baseline is not replaced.",
+  "record": "docs/SCOPE-Standalone-Design-Switching.html",
+  "regression": "node docs/assets/validate-standalone-design-switching.cjs",
+  "files": [
+    {
+      "path": "design-studio/operator-runtime.js",
+      "gitBlob": "9821b08ce9d98f9932f8b7082fba962a3b91d484",
+      "purpose": "Separate standalone Design JSON actions and wrong-type guidance using the shared schema/apply mechanisms.",
+      "impact": "Preserves application parameters and live state; adds only the three requested standalone menu controls."
+    },
+    {
+      "path": "design-studio/exports.js",
+      "gitBlob": "a22f908afaae2e7538553d516417daa5e3855ae2",
+      "purpose": "Embed standalone eligibility and an immutable-by-copy original design snapshot in new operator exports.",
+      "impact": "New standalone/folder exports carry the reset baseline; Studio preview controls stay unchanged."
+    },
+    {
+      "path": "design-studio/workspace-windows-runtime.js",
+      "gitBlob": "572cc200c2240b0bd23eac9c65b217ab03cffd8f",
+      "purpose": "Expose a read-only window drag-in-progress query.",
+      "impact": "Allows the importer to refuse unsafe transitions without changing Phase 3 window behavior."
+    },
+    {
+      "path": "design-studio/embedded-windows.js",
+      "gitBlob": "3550ca040ed90b6464a6c8e4fd09b55ee245ed51",
+      "purpose": "Use the preserving importer for authenticated standalone design-switch broadcasts.",
+      "impact": "Browser pop-outs retain independent parameters and their single application; report busy-state refusal."
+    },
+    {
+      "path": "dist/SCOPE-Design-Studio.html",
+      "gitBlob": "bb4d19a510f72cb496d2dea36113910c2fa513b9",
+      "purpose": "Regenerate the existing offline bundle from validated modular source.",
+      "impact": "Embeds the new standalone export runtime; no preset/schema/application-owned code changes."
+    }
+  ]
+}
