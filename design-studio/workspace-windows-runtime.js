@@ -25,7 +25,7 @@
     const title=button(names(app),'move',app);title.className='managed-title';title.setAttribute('aria-label','Move '+names(app)+' window; arrow keys move, Shift plus arrows resize');header.append(title);
     const controls=document.createElement('div');controls.className='managed-controls';
     for(const [text,action] of [['Minimize','minimize'],['Maximize','maximize'],['Restore','restore'],['Dock left','dock-left'],['Dock right','dock-right'],['Close','close']])controls.append(button(text,action,app));
-    controls.append(button('Pop out','popout',app));header.append(controls);
+    controls.append(button('Pop Out','popout',app));header.append(controls);
     const body=document.createElement('div');body.className='managed-body';body.innerHTML=surface(index,'Managed workspace window',slot);
     const grip=button('Resize','resize',app);grip.className='managed-resize';grip.setAttribute('aria-label','Resize '+names(app)+' window with arrow keys');
     frame.append(header,body,grip);nodes.set(app,frame);return frame;

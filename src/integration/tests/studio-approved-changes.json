@@ -7,9 +7,9 @@
   "files": [
     {
       "path": "design-studio/operator-runtime.js",
-      "gitBlob": "9821b08ce9d98f9932f8b7082fba962a3b91d484",
-      "purpose": "Separate standalone Design JSON actions and wrong-type guidance using the shared schema/apply mechanisms.",
-      "impact": "Preserves application parameters and live state; adds only the three requested standalone menu controls."
+      "gitBlob": "11b6a23cc56abd9961d325209e951164c33a6046",
+      "purpose": "Standalone design switching plus exclusion of managed headers from classic split-pane action injection.",
+      "impact": "Preserves import/export and application parameters; removes duplicate/wrong-application legacy Pop Out controls from managed headers while retaining classic split controls."
     },
     {
       "path": "design-studio/exports.js",
@@ -19,9 +19,9 @@
     },
     {
       "path": "design-studio/workspace-windows-runtime.js",
-      "gitBlob": "572cc200c2240b0bd23eac9c65b217ab03cffd8f",
-      "purpose": "Expose a read-only window drag-in-progress query.",
-      "impact": "Allows the importer to refuse unsafe transitions without changing Phase 3 window behavior."
+      "gitBlob": "5ab50244534a4d13b7fd1c784454b79d8496d7ef",
+      "purpose": "Expose the existing read-only drag query and consistently label the managed centralized Pop Out control.",
+      "impact": "One application-identified Phase 3 Pop Out control; existing detach, size, view-state and window actions are retained."
     },
     {
       "path": "design-studio/embedded-windows.js",
@@ -31,9 +31,26 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "bb4d19a510f72cb496d2dea36113910c2fa513b9",
+      "gitBlob": "751b192a1d6d81689917e1298df3f81ee7122def",
       "purpose": "Regenerate the existing offline bundle from validated modular source.",
       "impact": "Embeds the new standalone export runtime; no preset/schema/application-owned code changes."
+    }
+  ],
+  "followUpApprovals": [
+    {
+      "feature": "SCOPE - Remove Duplicate Pop Out Controls",
+      "authorization": "Explicit user request to fix duplicate managed title-bar controls; no Window Manager redesign.",
+      "investigatedBaseline": "1c0264a",
+      "rootCause": "Managed windows share integration-pane styling. The legacy classic-pane decorator injected another shell Pop Out action and inferred a left/right application, which could open the wrong application. Both handlers use ScopeOperator detach; neither control comes from application-owned UI.",
+      "retainedHandler": "data-managed-action=popout -> ScopeOperator.detach(application index, managed application slot)",
+      "changes": [
+        "design-studio/operator-runtime.js",
+        "design-studio/workspace-windows-runtime.js",
+        "dist/SCOPE-Design-Studio.html"
+      ],
+      "regression": "node docs/assets/validate-managed-popout.cjs",
+      "evidence": "48 combinations: four applications, four navigation modes and three representative themes; actual baseline investigation opened Display from the managed button and BLOS from the legacy button. New rendering keeps one control; classic split buttons remain.",
+      "limitations": "Older exported HTML must be regenerated to embed the fix. Popup size/placement remain subject to browser/OS policy; native Chrome/Edge popup interaction is not asserted by controlled DOM tests."
     }
   ]
 }
