@@ -11,7 +11,7 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 </style></head><body>
 <nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html" aria-current="page">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a></nav>
 <div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Application-Integration-Plan.md">Markdown source</a></div>
-<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#stages-and-ownership">Stages and ownership</a></li><li><a href="#architecture-decisions-to-settle-before-production-implementation">Architecture decisions to settle before production implementation</a></li><li><a href="#design-studio-change-control">Design Studio change control</a></li><li><a href="#validation-and-conformance-matrix">Validation and conformance matrix</a></li><li><a href="#checkpoint-and-recommended-next-step">Checkpoint and recommended next step</a></li></ul></nav><h1 id="application-integration-implementation-plan">Application Integration Implementation Plan</h1>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#stages-and-ownership">Stages and ownership</a></li><li><a href="#architecture-decisions-to-settle-before-production-implementation">Architecture decisions to settle before production implementation</a></li><li><a href="#design-studio-change-control">Design Studio change control</a></li><li><a href="#validation-and-conformance-matrix">Validation and conformance matrix</a></li><li><a href="#checkpoint-and-recommended-next-step">Checkpoint and recommended next step</a></li><li><a href="#optional-theme-conformance-extension">Optional theme conformance extension</a></li></ul></nav><h1 id="application-integration-implementation-plan">Application Integration Implementation Plan</h1>
 <p>This roadmap separates executable reference work from production readiness. No real application migration, new Studio panel, deployment framework or backend dependency is authorized by this reference checkpoint. All later stages require the entry criteria below and explicit scope approval.</p>
 <h2 id="stages-and-ownership">Stages and ownership</h2>
 <div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
@@ -157,5 +157,54 @@ git diff --check</code></pre>
 <p>For a manual reference walkthrough, open <code>examples/app-integration/index.html</code> directly. Launch, increment inside the app, send a command/context, minimize/restore, move/resize, explicitly maximize/restore, save view state, simulate the error, close/dispose and relaunch. Confirm restored sample state and absence of duplicate mounts/listeners. This validates reference behavior only. The existing Studio must be reviewed separately on the target browser/workstation; controlled DOM tests do not prove rendering, native focus, downloads or popup behavior.</p>
 <h2 id="checkpoint-and-recommended-next-step">Checkpoint and recommended next step</h2>
 <p>After tests pass, create only the requested <code>SCOPE - Application Integration Architecture</code> checkpoint on <code>feature/scope-app-integration</code>. Do not merge or push. The next recommended work is a review with the four application owners using the checklist, then an explicitly scoped decision on runtime/transport and the first onboarding target. Do not proceed automatically to real application integration or production deployment.</p>
+<h2 id="optional-theme-conformance-extension">Optional theme conformance extension</h2>
+<p>Run <code>node src/integration/tests/validate-theme-contract.cjs</code> alongside the existing integration/protection tests and <strong>all</strong> <code>docs/assets/validate-*.cjs</code> regressions (including standalone design switching and managed pop-out). Run <code>python docs/assets/convert-markdown-to-html.py --check</code> after regenerating the documentation.</p>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Current executable evidence</th>
+<th>Production acceptance still required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legacy manifest / explicit Level 0</td>
+<td>Validator preserves original manifests; independent negotiation</td>
+<td>Real app receives no theme and stays visually independent</td>
+</tr>
+<tr>
+<td>Level 1 / Level 2 / bad declaration</td>
+<td>Required basic set, level constraints, typed catalog and dynamic flag</td>
+<td>Per-app supported-token inventory matches actual controls</td>
+</tr>
+<tr>
+<td>Negotiation and version skew</td>
+<td>Supported intersection, unknown requested token reporting, missing basics, no common version</td>
+<td>Authorized session handshake and bounded diagnostics across chosen transport</td>
+</tr>
+<tr>
+<td>Malformed/unsafe/operational tokens</td>
+<td>Invalid values, CSS injection strings, protected/unknown source names rejected</td>
+<td>Protected alarms, maps, severity and data palettes remain unchanged during actual updates</td>
+</tr>
+<tr>
+<td>Initial/change/reset/stale/error</td>
+<td>Explicitly labeled receiver-policy fixture exercises revision ordering and last-good behavior</td>
+<td>Real receiver atomic rollback, acknowledgement schemas, delayed replies, disconnect and timeout recovery</td>
+</tr>
+<tr>
+<td>Serialization/offline/backward compatibility</td>
+<td>JSON round trip, Node/browser-global helper parity, no DOM/network calls; existing integration test checks local lab resources</td>
+<td>Independently deployed app/host release skew and approved older-host manifest fallback</td>
+</tr>
+<tr>
+<td>Application state and accessibility</td>
+<td>Fixture confirms helper does not mutate its inputs or unrelated sample state; Studio regression gate remains separate</td>
+<td>Real forms/stores/focus/instance identity, light/dark states, text/focus contrast, scaling, forced colors and reduced motion</td>
+</tr>
+</tbody>
+</table></div>
+<p>The receiver-policy fixture is not a transport, app adapter or visual rendering test. No theme receiver is attached to BLOS, Display, Sensor Calibration, Native LOS or the synthetic counter. Do not count proposed production cases as passing merely because the pure helper passes. The next implementation decision belongs to the application/platform owners; no further phase begins automatically.</p>
 </main><footer>Generated from SCOPE-Application-Integration-Plan.md. All styling and diagrams are embedded; no server or external runtime is required.</footer>
 </body></html>

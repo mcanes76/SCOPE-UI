@@ -25,10 +25,15 @@
   function exact(input,keys,label){if(!object(input)||Object.keys(input).some(k=>!keys.includes(k)))fail('Invalid '+label);}
   function name(value){return typeof value==='string'&&/^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$/.test(value)&&value.length<=100;}
   function manifest(input){
-    exact(input,['schemaVersion','id','name','version','contractVersion','integration','singleton','capabilities','publishes','commands','contexts'],'manifest');
+    exact(input,['schemaVersion','id','name','version','contractVersion','integration','singleton','capabilities','publishes','commands','contexts','theme'],'manifest');
     if(input.schemaVersion!==1||input.contractVersion!==version)fail('Unsupported integration contract version');
     if(!name(input.id)||typeof input.name!=='string'||!input.name.trim()||input.name.length>100||typeof input.version!=='string'||!/^\d+\.\d+\.\d+$/.test(input.version)||input.integration!=='module'||input.singleton!==true)fail('Invalid manifest identity or integration mode');
     const out=json(input);
+    if(Object.hasOwn(out,'theme')){
+      const theme=root.ScopeIntegrationTheme||(typeof require==='function'?require('./theme-contract.js'):null);
+      if(!theme)fail('Load the optional SCOPE theme contract before registering a themed manifest');
+      out.theme=theme.declaration(out.theme);
+    }
     for(const field of ['capabilities','publishes','commands','contexts']){
       const list=out[field];if(!Array.isArray(list)||list.length>16||new Set(list).size!==list.length||list.some(x=>field==='capabilities'?!capabilities.includes(x):!name(x)))fail('Invalid manifest '+field);
     }

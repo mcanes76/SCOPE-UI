@@ -56,3 +56,19 @@ Use this separately for BLOS, Display, Sensor Calibration and Native LOS. The re
 - [ ] Do not restore Phase 2 Visual Families or silently redefine existing application IDs/preset IDs.
 - [ ] Run protection, contract and full regression validation; review native browser behavior where available.
 - [ ] Distinguish reference evidence from real integration readiness in the review record. Do not merge or push without separate authorization.
+
+
+## Optional visual integration acceptance
+
+- [ ] Select Level 0 (independent), Level 1 (basic) or Level 2 (supported tokens with dynamic updates); obtain application-owner approval. Level 0 remains a valid integration.
+- [ ] Declare theme major versions, exact supported tokens and dynamic support in the optional manifest `theme` field. Verify the old-manifest Level 0 path and older-host manifest fallback.
+- [ ] Record app-owned alarm, status, safety, map/track and visualization colors that must never inherit shell values. Include domain controls with semantic fills in the exclusions.
+- [ ] Agree local font alias mappings, logical-unit/high-DPI conversion, single font-scale application, density interpretation and unavailable-font behavior.
+- [ ] Choose an approved same-DOM, Shadow DOM, iframe, separate-host or native delivery path; document origin/session/identity, permission, reply schema, timeout and recovery policy.
+- [ ] Keep adoption inside app-owned code: no shell selectors, stylesheet injection, cross-frame DOM access or direct store manipulation. Check inherited global CSS does not become an accidental contract.
+- [ ] Validate initial delivery, supported-subset negotiation, unknown/protected tokens, missing basics, version skew and malformed payloads. Provide explicit bounded diagnostics.
+- [ ] Demonstrate atomic update/rollback, revision ordering, duplicate/stale reply handling, disconnect/timeouts and last-good/default fallback. Initial-only apps must not be force-remounted.
+- [ ] Demonstrate light/dark switching and shell reset while preserving forms, data, selection, active alarms, operational palettes, application overrides, focus and mounted instance identity.
+- [ ] Verify normal/hover/active/selected/disabled/focus control states, small text and translucent-source projection on actual target hardware. Record text contrast (normally at least 4.5:1, large text 3:1), visible non-text/focus contrast (3:1 where applicable), zoom/text scaling, keyboard access, forced colors and reduced motion. Disabled controls must remain understandable; document applicable accessibility exceptions and product requirements.
+- [ ] Confirm apps receive only projected presentation values, never raw `scope-design.json`, application parameters or credentials. Review diagnostics for sensitive content.
+- [ ] Run the theme helper conformance test and application-specific receiver/transport tests. Mark unimplemented production paths as pending; helper fixtures alone do not establish operational or accessibility conformance.

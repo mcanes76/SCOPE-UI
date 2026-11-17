@@ -71,3 +71,20 @@ For a manual reference walkthrough, open `examples/app-integration/index.html` d
 ## Checkpoint and recommended next step
 
 After tests pass, create only the requested `SCOPE - Application Integration Architecture` checkpoint on `feature/scope-app-integration`. Do not merge or push. The next recommended work is a review with the four application owners using the checklist, then an explicitly scoped decision on runtime/transport and the first onboarding target. Do not proceed automatically to real application integration or production deployment.
+
+
+## Optional theme conformance extension
+
+Run `node src/integration/tests/validate-theme-contract.cjs` alongside the existing integration/protection tests and **all** `docs/assets/validate-*.cjs` regressions (including standalone design switching and managed pop-out). Run `python docs/assets/convert-markdown-to-html.py --check` after regenerating the documentation.
+
+| Case | Current executable evidence | Production acceptance still required |
+| --- | --- | --- |
+| Legacy manifest / explicit Level 0 | Validator preserves original manifests; independent negotiation | Real app receives no theme and stays visually independent |
+| Level 1 / Level 2 / bad declaration | Required basic set, level constraints, typed catalog and dynamic flag | Per-app supported-token inventory matches actual controls |
+| Negotiation and version skew | Supported intersection, unknown requested token reporting, missing basics, no common version | Authorized session handshake and bounded diagnostics across chosen transport |
+| Malformed/unsafe/operational tokens | Invalid values, CSS injection strings, protected/unknown source names rejected | Protected alarms, maps, severity and data palettes remain unchanged during actual updates |
+| Initial/change/reset/stale/error | Explicitly labeled receiver-policy fixture exercises revision ordering and last-good behavior | Real receiver atomic rollback, acknowledgement schemas, delayed replies, disconnect and timeout recovery |
+| Serialization/offline/backward compatibility | JSON round trip, Node/browser-global helper parity, no DOM/network calls; existing integration test checks local lab resources | Independently deployed app/host release skew and approved older-host manifest fallback |
+| Application state and accessibility | Fixture confirms helper does not mutate its inputs or unrelated sample state; Studio regression gate remains separate | Real forms/stores/focus/instance identity, light/dark states, text/focus contrast, scaling, forced colors and reduced motion |
+
+The receiver-policy fixture is not a transport, app adapter or visual rendering test. No theme receiver is attached to BLOS, Display, Sensor Calibration, Native LOS or the synthetic counter. Do not count proposed production cases as passing merely because the pure helper passes. The next implementation decision belongs to the application/platform owners; no further phase begins automatically.

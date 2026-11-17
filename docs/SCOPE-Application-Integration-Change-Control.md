@@ -48,3 +48,24 @@ Validation results for this change: all 12 existing validators passed, including
 Before modifying an existing Studio file, verify the branch again, record the file/function, demonstrate the need for a reusable interface, consider an isolated module first, document UI/state/export/offline effects, preserve unrelated work and obtain any required scope approval. Keep the change narrow, add focused conformance coverage, run all regression checks and record rollback. A narrow reviewed exception may then be added to the protection policy; do not silently update the baseline or regenerate the Studio to hide drift. No new operator-facing control is justified solely by developer convenience.
 
 The requested checkpoint is `SCOPE - Application Integration Architecture` after validation. Stop at the architecture and reference implementation. Original Studio branches, main/trunk and remotes are not changed.
+
+
+## Optional theme contract extension (current change)
+
+The branch was confirmed as `feature/scope-app-integration` at `6c6ea7d` with a clean working tree before this extension. Phase 1 and the restored pre-Phase-2 themes remain protected; no merge, push or distribution rebuild is part of this change.
+
+| File(s) | Kind | Purpose and impact |
+| --- | --- | --- |
+| Architecture, contract, plan and onboarding checklist Markdown | Documentation | Define optional adoption levels, tokens, delivery/ownership/error policy, hosting strategies, projection and acceptance criteria; clearly label unimplemented wiring |
+| This record and matching generated documentation HTML | Documentation | Record scope/impact; keep offline HTML documentation synchronized |
+| `src/integration/README.md` | Documentation | Explain helper usage, test entry point and production limitations |
+| `src/integration/theme-contract.js` | New isolated reference source | Pure catalog, declaration/payload validation and negotiation; no DOM, styling, persistence, transport or host delivery |
+| `src/integration/contracts.js` | Existing isolated reference source | Permit optional `theme` metadata and validate it; unchanged legacy manifests and host grants; no existing Studio file is modified |
+| `src/integration/application-manifest.schema.json` | Reference contract schema | Declare optional theme metadata; runtime additionally enforces compatibility-level constraints |
+| `examples/app-integration/index.html` | Existing isolated example source | Load the local optional helper before contracts for offline extended-manifest validation; no control or visual change |
+| `src/integration/tests/validate-theme-contract.cjs` | New conformance test source | Validate compatibility, catalog, negotiation, serialization, browser-global loading and proposed receiver-policy examples |
+
+No existing Design Studio, mockup, application store, runtime, export, preset, Component Editor, candidate/history or standalone distribution file is modified. `adapter-host.js`, the synthetic application and its manifest remain unchanged. Theme declarations are metadata only; no app begins inheriting styles. The common design system reuses Phase 1 concepts, without introducing families or another preset catalog. Raw Studio JSON projection and real receivers remain proposals, requiring application-owner review and acceptance tests. Native/browser rendering of new theme adoption cannot be claimed because no adoption UI is implemented.
+
+
+Validation for the optional theme extension: all 17 validators passed (14 existing `docs/assets/validate-*.cjs` validators, integration lifecycle, Studio protection and six new theme-contract groups). Documentation HTML synchronization and `git diff --check` passed. The protection gate confirms Phase 1 retained, Phase 2 reverted, Phase 3 retained and all 31 presets preserved, with no new Studio runtime files. Existing source/distribution parity, standalone workflows and no-network fixtures passed. No native visual/theme-adoption or production transport test is claimed; those remain application-specific acceptance work. Changes are left on the integration branch for review; no commit, merge or push was requested for this extension.

@@ -11,7 +11,7 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 </style></head><body>
 <nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html" aria-current="page">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a></nav>
 <div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Application-Integration-Architecture.md">Markdown source</a></div>
-<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#repository-assessment-confirmed-facts">Repository assessment: confirmed facts</a></li><li><a href="#ownership-and-boundaries">Ownership and boundaries</a></li><li><a href="#integration-options-and-conditional-recommendation">Integration options and conditional recommendation</a></li><li><a href="#implemented-reference">Implemented reference</a></li><li><a href="#security-and-reliability-decisions">Security and reliability decisions</a></li><li><a href="#unresolved-decisions-and-owners">Unresolved decisions and owners</a></li></ul></nav><h1 id="scope-application-integration-architecture">SCOPE Application Integration Architecture</h1>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#repository-assessment-confirmed-facts">Repository assessment: confirmed facts</a></li><li><a href="#ownership-and-boundaries">Ownership and boundaries</a></li><li><a href="#integration-options-and-conditional-recommendation">Integration options and conditional recommendation</a></li><li><a href="#implemented-reference">Implemented reference</a></li><li><a href="#security-and-reliability-decisions">Security and reliability decisions</a></li><li><a href="#unresolved-decisions-and-owners">Unresolved decisions and owners</a></li><li><a href="#optional-common-design-system-and-theme-ownership">Optional common design system and theme ownership</a></li><li><a href="#theme-implementation-strategies-proposed-production-wiring">Theme implementation strategies (proposed production wiring)</a></li><li><a href="#design-studio-to-application-theme-projection">Design Studio to application theme projection</a></li><li><a href="#theme-implementation-status">Theme implementation status</a></li></ul></nav><h1 id="scope-application-integration-architecture">SCOPE Application Integration Architecture</h1>
 <p>Status: <strong>provisional architecture plus implemented, isolated reference</strong>. This is not a production integration platform and no real application has been migrated. See the <a href="SCOPE-Application-Integration-Contract.html">contract</a>, <a href="SCOPE-Application-Integration-Plan.html">plan</a>, <a href="SCOPE-Application-Onboarding-Checklist.html">onboarding checklist</a>, and <a href="SCOPE-Application-Integration-Change-Control.html">change-control record</a>.</p>
 <h2 id="repository-assessment-confirmed-facts">Repository assessment: confirmed facts</h2>
 <div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
@@ -219,5 +219,115 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 </tbody>
 </table></div>
 <p>No real application readiness, production authorization or end-to-end operational correctness is claimed. The next step is owner review of these decisions and contracts, followed by one explicitly approved onboarding target under the staged <a href="SCOPE-Application-Integration-Plan.html">plan</a>.</p>
+<h2 id="optional-common-design-system-and-theme-ownership">Optional common design system and theme ownership</h2>
+<p>The SCOPE application design system is a portable vocabulary of <strong>presentation suggestions</strong>, derived from the existing Phase 1 tokens. It is not a new theme catalog, a global application stylesheet or a requirement to adopt the shell's appearance. All restored presets remain unchanged. Level 0 is the default for existing manifests; no application must change its interface to integrate with SCOPE.</p>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Compatibility</th>
+<th>Application commitment</th>
+<th>Shell commitment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Level 0: independent</td>
+<td>Own appearance; no theme receiver</td>
+<td>Do not deliver or inject application styling</td>
+</tr>
+<tr>
+<td>Level 1: basic</td>
+<td>Accept mode, primary/neutral colors, family, base size and scale; may declare dynamic updates</td>
+<td>Deliver only negotiated basic values; initial-only applications may defer changes until their next normal mount</td>
+</tr>
+<tr>
+<td>Level 2: supported tokens</td>
+<td>Accept the basic set and declare the additional tokens actually implemented; support dynamic updates</td>
+<td>Send the supported intersection; report unsupported requested tokens; do not require every control token</td>
+</tr>
+</tbody>
+</table></div>
+<p>The versioned <a href="SCOPE-Application-Integration-Contract.html#optional-theme-exchange-contract-v1">theme exchange contract</a> defines exact names, types, ordering, acknowledgements and fallback. A declaration describes support, not permission: future host policy must separately authorize theme delivery. Neither the declaration nor the helper causes styling in the current host.</p>
+<p>The application must reserve separate operational tokens for alarms, severity/status colors, target tracks, maps, sensor states, data-series palettes and safety-critical indicators. These are excluded from exchange v1, including the Studio's success/warning/error/neutral component categories. A theme may style a generic button but must not replace an alarm button's semantic fill, its meaning, or accessible label. Application owners choose which controls may inherit; a Level 2 application can keep domain-specific controls wholly independent. Reject an unsafe combination atomically, retain the last accepted presentation and report a bounded reason. Never reinterpret a warning as a decorative accent.</p>
+<h2 id="theme-implementation-strategies-proposed-production-wiring">Theme implementation strategies (proposed production wiring)</h2>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Hosting model</th>
+<th>Delivery and application-owned adoption</th>
+<th>Boundary, fallback and limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Same DOM</td>
+<td>Explicit adapter receiver takes validated data; app maps selected tokens to scoped CSS custom properties on its own root</td>
+<td>No shell selector into descendants, global reset, stylesheet injection or inherited global variables as an implicit API. App resets inherited CSS at its boundary where needed. Trusted same-realm code is not sandboxed.</td>
+</tr>
+<tr>
+<td>Shadow DOM / web component</td>
+<td>Public method or property receives the same payload; component maps values inside its shadow root</td>
+<td>Shadow DOM still inherits some font/color/custom properties. Reset or explicitly consume them; do not use shell <code>::part</code> rules to bypass ownership.</td>
+</tr>
+<tr>
+<td>iframe</td>
+<td>Versioned message payload over a pinned source/origin/session channel; app maps to its own CSS</td>
+<td>No <code>contentDocument</code> access, including same-origin frames. Require acknowledged handshake, sequence/correlation, bounded schemas and exact <code>targetOrigin</code>. Guard exists; transport does not. Opaque file origins need an explicitly reviewed local transport, not a wildcard production exception.</td>
+</tr>
+<tr>
+<td>Separately hosted web application</td>
+<td>Framed deployment follows iframe policy; top-level app uses an authenticated, explicitly paired channel if supported</td>
+<td>Hosting alone creates no trust or channel. Account for origin/CSP/auth restrictions, independent reloads and disconnect. Without approved connectivity remain independent; no URL credentials or raw design JSON in query strings.</td>
+</tr>
+<tr>
+<td>Native application</td>
+<td>Typed IPC maps portable colors, font aliases and logical sizes to native resources on the app UI thread</td>
+<td>Proposed only if production really includes native UIs. Respect system high contrast, font availability and platform scaling; never automate/recolor native controls externally. Native LOS's name does not establish its runtime.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Use CSS variables such as an <strong>app-owned</strong> <code>--reference-button-bg</code> only as a local implementation mapping, not as the wire format. Native applications need no CSS parser. Apps own responsive layout, contrast verification, keyboard/focus behavior and accessible names. OS forced colors, user text scaling and reduced motion take priority; theme delivery must not remove focus or reduce accessibility preferences.</p>
+<h2 id="design-studio-to-application-theme-projection">Design Studio to application theme projection</h2>
+<p>Proposed flow: validate <code>scope-design.json</code> with <code>ScopeDesign.validate</code>, resolve its existing preset and effective Phase 1 component overrides with <code>ScopeVisuals.tokens</code> and <code>resolveShellStyle</code>, then project only approved presentation values into <code>scope.theme</code> v1. Reuse the existing resolvers; do not add a parallel theme engine or reinterpret raw sparse overrides. The projection is a future shell-runtime interface, <strong>not implemented or connected to the Studio by this change</strong>.</p>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Resolved Phase 1 source</th>
+<th>Portable target</th>
+<th>Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>canvas, panel, raised, inset, text, secondary, border, accent</td>
+<td><code>color.*</code> neutral/primary roles</td>
+<td>Use resolved values; choose a readable <code>onPrimary</code> against the actual accent</td>
+</tr>
+<tr>
+<td>effective shell typography</td>
+<td><code>type.*</code></td>
+<td>Map family to an agreed alias, preserve effective sizes/weight, apply user scale once</td>
+</tr>
+<tr>
+<td>effective shell buttons/tabs/inputs</td>
+<td>matching control groups</td>
+<td>Translate hover/pressed/selected/disabled/focus names; no app semantic component groups</td>
+</tr>
+<tr>
+<td>material and effective spacing/density</td>
+<td><code>border.*</code>, <code>space.*</code>, <code>layout.density</code></td>
+<td>Convert to bounded logical pixels and agreed density vocabulary</td>
+</tr>
+<tr>
+<td>focus roles and user accessibility preferences</td>
+<td><code>focus.*</code>, <code>accessibility.reducedMotion</code></td>
+<td>Keep visible focus; OS/user accessibility overrides take precedence</td>
+</tr>
+</tbody>
+</table></div>
+<p>Application-specific overrides remain application-owned. Shell theme changes and reset-to-theme change only the resolved suggestions, without clearing those application overrides or any application state. Projection must flatten translucent surfaces against their actual background to opaque v1 colors, map only approved font aliases, and diagnose unrepresentable values instead of silently inventing a mapping. Do not transmit executable CSS, fonts/URLs, navigation/window layout, application parameters, snapshots, tokens with operational semantics, or raw Studio configuration. Not every Studio setting is an application theme setting. A successful shell design import is not proof that any application accepted its projection.</p>
+<h2 id="theme-implementation-status">Theme implementation status</h2>
+<p>Implemented in the isolated reference: optional manifest metadata validation, a typed token catalog, payload validation and pure capability negotiation in <code>theme-contract.js</code>, plus executable protocol-policy fixtures. Existing manifests, host grants, synthetic UI and the engineering lab's appearance remain unchanged. The lab loads the local helper but adds no controls. No Studio/runtime/mockup/distribution file changes are necessary.</p>
+<p>Still proposed: design projection, host authorization/delivery, application receivers and acknowledgements, transport/session management, live updates, CSS-variable mapping, native mapping and real-application contrast/accessibility acceptance. Conformance fixtures test examples of receiver policy; they are not evidence of an implemented receiver or production integration.</p>
 </main><footer>Generated from SCOPE-Application-Integration-Architecture.md. All styling and diagrams are embedded; no server or external runtime is required.</footer>
 </body></html>

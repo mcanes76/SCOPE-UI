@@ -16,9 +16,21 @@
     "capabilities": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"enum": ["state", "commands", "context"]}},
     "publishes": {"$ref": "#/$defs/topics"},
     "commands": {"$ref": "#/$defs/topics"},
-    "contexts": {"$ref": "#/$defs/topics"}
+    "contexts": {"$ref": "#/$defs/topics"},
+    "theme": {"$ref": "#/$defs/theme"}
   },
   "$defs": {
+    "theme": {
+      "type": "object", "additionalProperties": false,
+      "required": ["level", "versions", "tokens", "dynamic"],
+      "properties": {
+        "level": {"enum": [0, 1, 2]},
+        "versions": {"type": "array", "uniqueItems": true, "maxItems": 8, "items": {"type": "integer", "minimum": 1}},
+        "tokens": {"type": "array", "uniqueItems": true, "maxItems": 128, "items": {"type": "string", "maxLength": 100, "pattern": "^([a-z][a-zA-Z]*\\.)+[a-z][a-zA-Z]*$"}},
+        "dynamic": {"type": "boolean"}
+      },
+      "$comment": "Missing metadata means Level 0. Runtime theme-contract.js additionally enforces level-specific basic tokens, versions and dynamic support. Metadata does not grant delivery or implement a transport."
+    },
     "topic": {"type": "string", "maxLength": 100, "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"},
     "topics": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"$ref": "#/$defs/topic"}}
   },

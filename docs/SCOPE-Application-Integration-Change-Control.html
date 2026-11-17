@@ -11,7 +11,7 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 </style></head><body>
 <nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html" aria-current="page">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a></nav>
 <div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Application-Integration-Change-Control.md">Markdown source</a></div>
-<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#protected-baseline">Protected baseline</a></li><li><a href="#modifications-to-existing-design-studio-files">Modifications to existing Design Studio files</a></li><li><a href="#additive-implementation-inventory">Additive implementation inventory</a></li><li><a href="#verification-and-review-limits">Verification and review limits</a></li><li><a href="#rule-for-later-modifications">Rule for later modifications</a></li></ul></nav><h1 id="design-studio-protection-and-change-control-record">Design Studio Protection and Change-Control Record</h1>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#protected-baseline">Protected baseline</a></li><li><a href="#modifications-to-existing-design-studio-files">Modifications to existing Design Studio files</a></li><li><a href="#additive-implementation-inventory">Additive implementation inventory</a></li><li><a href="#verification-and-review-limits">Verification and review limits</a></li><li><a href="#rule-for-later-modifications">Rule for later modifications</a></li><li><a href="#optional-theme-contract-extension-current-change">Optional theme contract extension (current change)</a></li></ul></nav><h1 id="design-studio-protection-and-change-control-record">Design Studio Protection and Change-Control Record</h1>
 <p>This record applies Task 11 to the accompanying architecture/reference scope. Initial branch verification returned <strong><code>feature/scope-app-integration</code></strong> with a clean worktree at <strong><code>30bf8d6f0c0ca38a38273fe99114fa0062c57f1b</code></strong>, the committed Phase 3 Window Manager checkpoint. The original <code>feature/scope-design-studio-portable</code> branch remains at that checkpoint. No reset, merge, push or unrelated automatic commit is part of this work.</p>
 <h2 id="protected-baseline">Protected baseline</h2>
 <ul>
@@ -84,5 +84,60 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 <h2 id="rule-for-later-modifications">Rule for later modifications</h2>
 <p>Before modifying an existing Studio file, verify the branch again, record the file/function, demonstrate the need for a reusable interface, consider an isolated module first, document UI/state/export/offline effects, preserve unrelated work and obtain any required scope approval. Keep the change narrow, add focused conformance coverage, run all regression checks and record rollback. A narrow reviewed exception may then be added to the protection policy; do not silently update the baseline or regenerate the Studio to hide drift. No new operator-facing control is justified solely by developer convenience.</p>
 <p>The requested checkpoint is <code>SCOPE - Application Integration Architecture</code> after validation. Stop at the architecture and reference implementation. Original Studio branches, main/trunk and remotes are not changed.</p>
+<h2 id="optional-theme-contract-extension-current-change">Optional theme contract extension (current change)</h2>
+<p>The branch was confirmed as <code>feature/scope-app-integration</code> at <code>6c6ea7d</code> with a clean working tree before this extension. Phase 1 and the restored pre-Phase-2 themes remain protected; no merge, push or distribution rebuild is part of this change.</p>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>File(s)</th>
+<th>Kind</th>
+<th>Purpose and impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architecture, contract, plan and onboarding checklist Markdown</td>
+<td>Documentation</td>
+<td>Define optional adoption levels, tokens, delivery/ownership/error policy, hosting strategies, projection and acceptance criteria; clearly label unimplemented wiring</td>
+</tr>
+<tr>
+<td>This record and matching generated documentation HTML</td>
+<td>Documentation</td>
+<td>Record scope/impact; keep offline HTML documentation synchronized</td>
+</tr>
+<tr>
+<td><code>src/integration/README.md</code></td>
+<td>Documentation</td>
+<td>Explain helper usage, test entry point and production limitations</td>
+</tr>
+<tr>
+<td><code>src/integration/theme-contract.js</code></td>
+<td>New isolated reference source</td>
+<td>Pure catalog, declaration/payload validation and negotiation; no DOM, styling, persistence, transport or host delivery</td>
+</tr>
+<tr>
+<td><code>src/integration/contracts.js</code></td>
+<td>Existing isolated reference source</td>
+<td>Permit optional <code>theme</code> metadata and validate it; unchanged legacy manifests and host grants; no existing Studio file is modified</td>
+</tr>
+<tr>
+<td><code>src/integration/application-manifest.schema.json</code></td>
+<td>Reference contract schema</td>
+<td>Declare optional theme metadata; runtime additionally enforces compatibility-level constraints</td>
+</tr>
+<tr>
+<td><code>examples/app-integration/index.html</code></td>
+<td>Existing isolated example source</td>
+<td>Load the local optional helper before contracts for offline extended-manifest validation; no control or visual change</td>
+</tr>
+<tr>
+<td><code>src/integration/tests/validate-theme-contract.cjs</code></td>
+<td>New conformance test source</td>
+<td>Validate compatibility, catalog, negotiation, serialization, browser-global loading and proposed receiver-policy examples</td>
+</tr>
+</tbody>
+</table></div>
+<p>No existing Design Studio, mockup, application store, runtime, export, preset, Component Editor, candidate/history or standalone distribution file is modified. <code>adapter-host.js</code>, the synthetic application and its manifest remain unchanged. Theme declarations are metadata only; no app begins inheriting styles. The common design system reuses Phase 1 concepts, without introducing families or another preset catalog. Raw Studio JSON projection and real receivers remain proposals, requiring application-owner review and acceptance tests. Native/browser rendering of new theme adoption cannot be claimed because no adoption UI is implemented.</p>
+<p>Validation for the optional theme extension: all 17 validators passed (14 existing <code>docs/assets/validate-*.cjs</code> validators, integration lifecycle, Studio protection and six new theme-contract groups). Documentation HTML synchronization and <code>git diff --check</code> passed. The protection gate confirms Phase 1 retained, Phase 2 reverted, Phase 3 retained and all 31 presets preserved, with no new Studio runtime files. Existing source/distribution parity, standalone workflows and no-network fixtures passed. No native visual/theme-adoption or production transport test is claimed; those remain application-specific acceptance work. Changes are left on the integration branch for review; no commit, merge or push was requested for this extension.</p>
 </main><footer>Generated from SCOPE-Application-Integration-Change-Control.md. All styling and diagrams are embedded; no server or external runtime is required.</footer>
 </body></html>

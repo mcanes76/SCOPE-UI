@@ -83,3 +83,50 @@ The module reference executes trusted code in the same realm. The API surface an
 | Which version compatibility and rollback guarantees are required? | Release/platform and application owners |
 
 No real application readiness, production authorization or end-to-end operational correctness is claimed. The next step is owner review of these decisions and contracts, followed by one explicitly approved onboarding target under the staged [plan](SCOPE-Application-Integration-Plan.md).
+
+
+## Optional common design system and theme ownership
+
+The SCOPE application design system is a portable vocabulary of **presentation suggestions**, derived from the existing Phase 1 tokens. It is not a new theme catalog, a global application stylesheet or a requirement to adopt the shell's appearance. All restored presets remain unchanged. Level 0 is the default for existing manifests; no application must change its interface to integrate with SCOPE.
+
+| Compatibility | Application commitment | Shell commitment |
+| --- | --- | --- |
+| Level 0: independent | Own appearance; no theme receiver | Do not deliver or inject application styling |
+| Level 1: basic | Accept mode, primary/neutral colors, family, base size and scale; may declare dynamic updates | Deliver only negotiated basic values; initial-only applications may defer changes until their next normal mount |
+| Level 2: supported tokens | Accept the basic set and declare the additional tokens actually implemented; support dynamic updates | Send the supported intersection; report unsupported requested tokens; do not require every control token |
+
+The versioned [theme exchange contract](SCOPE-Application-Integration-Contract.md#optional-theme-exchange-contract-v1) defines exact names, types, ordering, acknowledgements and fallback. A declaration describes support, not permission: future host policy must separately authorize theme delivery. Neither the declaration nor the helper causes styling in the current host.
+
+The application must reserve separate operational tokens for alarms, severity/status colors, target tracks, maps, sensor states, data-series palettes and safety-critical indicators. These are excluded from exchange v1, including the Studio's success/warning/error/neutral component categories. A theme may style a generic button but must not replace an alarm button's semantic fill, its meaning, or accessible label. Application owners choose which controls may inherit; a Level 2 application can keep domain-specific controls wholly independent. Reject an unsafe combination atomically, retain the last accepted presentation and report a bounded reason. Never reinterpret a warning as a decorative accent.
+
+## Theme implementation strategies (proposed production wiring)
+
+| Hosting model | Delivery and application-owned adoption | Boundary, fallback and limitations |
+| --- | --- | --- |
+| Same DOM | Explicit adapter receiver takes validated data; app maps selected tokens to scoped CSS custom properties on its own root | No shell selector into descendants, global reset, stylesheet injection or inherited global variables as an implicit API. App resets inherited CSS at its boundary where needed. Trusted same-realm code is not sandboxed. |
+| Shadow DOM / web component | Public method or property receives the same payload; component maps values inside its shadow root | Shadow DOM still inherits some font/color/custom properties. Reset or explicitly consume them; do not use shell `::part` rules to bypass ownership. |
+| iframe | Versioned message payload over a pinned source/origin/session channel; app maps to its own CSS | No `contentDocument` access, including same-origin frames. Require acknowledged handshake, sequence/correlation, bounded schemas and exact `targetOrigin`. Guard exists; transport does not. Opaque file origins need an explicitly reviewed local transport, not a wildcard production exception. |
+| Separately hosted web application | Framed deployment follows iframe policy; top-level app uses an authenticated, explicitly paired channel if supported | Hosting alone creates no trust or channel. Account for origin/CSP/auth restrictions, independent reloads and disconnect. Without approved connectivity remain independent; no URL credentials or raw design JSON in query strings. |
+| Native application | Typed IPC maps portable colors, font aliases and logical sizes to native resources on the app UI thread | Proposed only if production really includes native UIs. Respect system high contrast, font availability and platform scaling; never automate/recolor native controls externally. Native LOS's name does not establish its runtime. |
+
+Use CSS variables such as an **app-owned** `--reference-button-bg` only as a local implementation mapping, not as the wire format. Native applications need no CSS parser. Apps own responsive layout, contrast verification, keyboard/focus behavior and accessible names. OS forced colors, user text scaling and reduced motion take priority; theme delivery must not remove focus or reduce accessibility preferences.
+
+## Design Studio to application theme projection
+
+Proposed flow: validate `scope-design.json` with `ScopeDesign.validate`, resolve its existing preset and effective Phase 1 component overrides with `ScopeVisuals.tokens` and `resolveShellStyle`, then project only approved presentation values into `scope.theme` v1. Reuse the existing resolvers; do not add a parallel theme engine or reinterpret raw sparse overrides. The projection is a future shell-runtime interface, **not implemented or connected to the Studio by this change**.
+
+| Resolved Phase 1 source | Portable target | Handling |
+| --- | --- | --- |
+| canvas, panel, raised, inset, text, secondary, border, accent | `color.*` neutral/primary roles | Use resolved values; choose a readable `onPrimary` against the actual accent |
+| effective shell typography | `type.*` | Map family to an agreed alias, preserve effective sizes/weight, apply user scale once |
+| effective shell buttons/tabs/inputs | matching control groups | Translate hover/pressed/selected/disabled/focus names; no app semantic component groups |
+| material and effective spacing/density | `border.*`, `space.*`, `layout.density` | Convert to bounded logical pixels and agreed density vocabulary |
+| focus roles and user accessibility preferences | `focus.*`, `accessibility.reducedMotion` | Keep visible focus; OS/user accessibility overrides take precedence |
+
+Application-specific overrides remain application-owned. Shell theme changes and reset-to-theme change only the resolved suggestions, without clearing those application overrides or any application state. Projection must flatten translucent surfaces against their actual background to opaque v1 colors, map only approved font aliases, and diagnose unrepresentable values instead of silently inventing a mapping. Do not transmit executable CSS, fonts/URLs, navigation/window layout, application parameters, snapshots, tokens with operational semantics, or raw Studio configuration. Not every Studio setting is an application theme setting. A successful shell design import is not proof that any application accepted its projection.
+
+## Theme implementation status
+
+Implemented in the isolated reference: optional manifest metadata validation, a typed token catalog, payload validation and pure capability negotiation in `theme-contract.js`, plus executable protocol-policy fixtures. Existing manifests, host grants, synthetic UI and the engineering lab's appearance remain unchanged. The lab loads the local helper but adds no controls. No Studio/runtime/mockup/distribution file changes are necessary.
+
+Still proposed: design projection, host authorization/delivery, application receivers and acknowledgements, transport/session management, live updates, CSS-variable mapping, native mapping and real-application contrast/accessibility acceptance. Conformance fixtures test examples of receiver policy; they are not evidence of an implemented receiver or production integration.
