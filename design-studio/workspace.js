@@ -39,7 +39,7 @@
     if(!value||typeof value!=='object'||Array.isArray(value))throw Error('View state must be an object');const result=clean(value,0);if(JSON.stringify(result).length>50000)throw Error('View state is too large');return result;
   }
   // Portable window geometry is separate from application view/model state.
-  const windowSizes={blos:[760,560],display:[1120,560],calibration:[780,620],los:[640,480]};
+  const windowSizes={blos:[760,560],display:[820,560],calibration:[780,620],los:[640,480]};
   function rectangle(input){
     if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['x','y','width','height'].includes(k)))throw Error('Invalid window rectangle');
     const out={};for(const k of ['x','y','width','height']){const v=input[k];if(typeof v!=='number'||!Number.isFinite(v)||Math.abs(v)>100000||['width','height'].includes(k)&&v<1)throw Error('Invalid window dimension');out[k]=Math.round(v);}return out;

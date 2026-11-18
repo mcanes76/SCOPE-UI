@@ -31,27 +31,9 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "9e8626ee9091707a9f91060698fee7f14b3ca98f",
+      "gitBlob": "bfc739c47f145dcb865226a85823ef9c85b6f307",
       "purpose": "Regenerate the existing offline bundle from validated modular source.",
-      "impact": "Rebuilt offline bundle embeds compact workspace controls and Display map-first UI/sizing in newly generated exports; design schemas and theme presets remain unchanged."
-    },
-    {
-      "path": "design-studio/workspace.js",
-      "gitBlob": "6264bb38d27896556e0bbc89954bc97c434f7191",
-      "purpose": "Prefer a landscape Display managed window by increasing its initial width from 820 to 1120, retaining the 560 height.",
-      "impact": "Existing fit, movement, resizing, docking, maximize/minimize/restore and all other application size profiles remain unchanged."
-    },
-    {
-      "path": "mockups/scope-integrated-electric-glass.html",
-      "gitBlob": "e1def05d92d28edc030d44659a9de4613fac7064",
-      "purpose": "Compact only the active regional Display presentation; retain camera/model algorithms and add native node/disclosure UI routing.",
-      "impact": "Nine map actions, layers, node inventory, simulation text and attribution remain; per-view state and other application modules are preserved."
-    },
-    {
-      "path": "mockups/styles.css",
-      "gitBlob": "9cddbb279cad8966f75855bedc0e06e71fe2783b",
-      "purpose": "Scope compact map-first layout, bounded app height, disclosures and responsive camera controls to Display.",
-      "impact": "No Window Manager selectors or other application-specific styling is changed; existing theme tokens and operational colors are retained."
+      "impact": "Regenerated offline bundle embeds the compact shell runtime in newly exported standalone HTML; existing schema/presets/applications stay unchanged."
     }
   ],
   "followUpApprovals": [
@@ -82,20 +64,6 @@
       "record": "docs/SCOPE-Compact-Workspace.html",
       "regression": "node docs/assets/validate-compact-workspace.cjs",
       "limitations": "Controlled DOM and source/CSS verification; native rendering was blocked by browser URL verification. Older exported mockups must be regenerated."
-    },
-    {
-      "feature": "SCOPE - Display Map-Centric Layout Optimization",
-      "authorization": "Explicit attached user request to optimize Display presentation and application-specific initial window sizing; preserve map algorithms and other applications.",
-      "investigatedBaseline": "5bbcf40",
-      "changes": [
-        "design-studio/workspace.js",
-        "mockups/scope-integrated-electric-glass.html",
-        "mockups/styles.css",
-        "dist/SCOPE-Design-Studio.html"
-      ],
-      "record": "docs/SCOPE-Display-Map-Layout.html",
-      "regression": "node docs/assets/validate-display-map-layout.cjs",
-      "limitations": "Controlled DOM and source checks; native viewport rendering/scroll measurements remain manual. Regenerate older standalone HTML to embed the improvements."
     }
   ]
 }
