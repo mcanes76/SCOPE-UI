@@ -64,7 +64,7 @@ const originalQueryAll=engine.document.querySelectorAll;
 engine.document.querySelectorAll=selector=>selector==='.deck-layout'?[layout]:selector==='.studio-resize'?layout.children.filter(el=>el.className==='studio-resize'):originalQueryAll(selector);
 engine.document.createElement=()=>{const el=new engine.Element();el.style={};el.setPointerCapture=()=>{};el.removeEventListener=(type)=>delete el.events[type];return el;};
 const runtimeEvents=[];runtime.onEvent((type,payload)=>runtimeEvents.push({type,...payload}));
-runtime.apply(candidate,presets,{application:'blos',editing:true});assert.equal(layout.children.length,2);
+runtime.apply({...candidate,layout:{...candidate.layout,contextVisible:true}},presets,{application:'blos',editing:true});assert.equal(layout.children.length,2);
 let handle=layout.children[0];handle.events.pointerdown({preventDefault(){},pointerId:1,clientX:200});handle.events.pointermove({clientX:2000});assert(layout.style.values['grid-template-columns'][0].startsWith('280px'));assert.equal(layout.style.values['grid-template-columns'][1],'important');handle.events.pointerup();assert.equal(runtimeEvents.at(-1).width,280);
 const resized=C.clone(candidate);resized.regions.navigation={width:280};runtime.apply(resized,presets,{editing:true});handle=layout.children[0];assert.equal(handle.attrs['aria-valuenow'],'280');handle.events.keydown({key:'ArrowLeft',preventDefault(){}});assert.equal(runtimeEvents.at(-1).width,270);
 runtime.apply({...candidate,layout:{...candidate.layout,contextVisible:false}},presets,{editing:true});assert.equal(layout.children.length,1);

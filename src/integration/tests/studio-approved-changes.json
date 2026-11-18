@@ -7,9 +7,9 @@
   "files": [
     {
       "path": "design-studio/operator-runtime.js",
-      "gitBlob": "11b6a23cc56abd9961d325209e951164c33a6046",
-      "purpose": "Standalone design switching plus exclusion of managed headers from classic split-pane action injection.",
-      "impact": "Preserves import/export and application parameters; removes duplicate/wrong-application legacy Pop Out controls from managed headers while retaining classic split controls."
+      "gitBlob": "d11062210b304b0288290bc7b26517eafdd58271",
+      "purpose": "Reuse one shell Context Panel across layouts; accessible Show/Hide control in existing toolbar.",
+      "impact": "Reparents shell nodes without cloning applications; retains scroll/events and exports visibility through existing design flow."
     },
     {
       "path": "design-studio/exports.js",
@@ -31,15 +31,57 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "bfba6eb50a8af148593aea259fef02cc4761204a",
-      "purpose": "Rebuild offline bundle from the validated modular sources.",
-      "impact": "New standalone exports include container-aware managed sizing and restorable geometry, retaining all accepted application UIs, themes and controls."
+      "gitBlob": "b5a0e4e3ca6d6ebaaa7566e4ca3a6990793ed401",
+      "purpose": "Rebuild the offline bundle with Phase C Context Panel support.",
+      "impact": "New exports include shared context behavior; existing exports must be regenerated."
     },
     {
       "path": "design-studio/workspace.js",
       "gitBlob": "fe7fd9b7d9611c40f1e0d9778cb7090b0260fc3f",
       "purpose": "Separate restorable intent from fitted rectangles; improve first managed-window sizing and preserve tiled placement across bounds changes.",
       "impact": "Legacy window JSON remains valid; optional tile grid metadata is emitted for new Tile actions. App-specific preferences and existing browser Pop Out size requests remain supported."
+    },
+    {
+      "path": "design-studio/design-core.js",
+      "gitBlob": "6e6b5d7f1cb41cd4bd2529ad93d853a30163dd0d",
+      "purpose": "Shared shell Context Panel layout and backward-compatible collapsed defaults.",
+      "impact": "Existing saved visibility stays explicit; missing schema-1 visibility retains the old open default. CSS exports release the hidden panel track."
+    },
+    {
+      "path": "design-studio/design-config.json",
+      "gitBlob": "3957582d30ecb854ed36117ea0da05656f827188",
+      "purpose": "Initialize new designs with context collapsed.",
+      "impact": "Only new workspace defaults change; imported saved choices are preserved."
+    },
+    {
+      "path": "design-studio/studio.js",
+      "gitBlob": "54838ab99311713be189cf1aa7e820cfe4b79e89",
+      "purpose": "Enable existing Context width/visibility controls across navigation and arrangement modes.",
+      "impact": "Uses the existing design history/store; preview scaling and application controls stay unchanged."
+    },
+    {
+      "path": "design-studio/preview-runtime.js",
+      "gitBlob": "530db93952f1c8e841c8780311fd6bc669d3368e",
+      "purpose": "Retarget the existing Deck context-width drag handle to the shared context track.",
+      "impact": "Preserves native navigation resizing and existing inspector selection; no preview sizing/scaling change."
+    },
+    {
+      "path": "mockups/scope-integrated-electric-glass.html",
+      "gitBlob": "cec709e4ccc5b3f3857d5285ff13e1db6a3d784c",
+      "purpose": "Extract the existing shell-owned Context Panel contents into a reusable renderer.",
+      "impact": "Same inventory and event content; no application-owned rendering or logic changes."
+    },
+    {
+      "path": "docs/assets/validate-design-studio.cjs",
+      "gitBlob": "a52bd962f0e687c140a5f0de06ff0c64665df9b7",
+      "purpose": "Make the existing two-resize-handle test explicitly enable Context.",
+      "impact": "Retains existing resize assertions with the new collapsed default."
+    },
+    {
+      "path": "docs/assets/validate-window-manager.cjs",
+      "gitBlob": "bcd705f05c3ca20456f877edf2f062e213aa1026",
+      "purpose": "Add standard DOM before() reparenting to the controlled fixture.",
+      "impact": "Allows shared shell wrappers while preserving existing Window Manager tests."
     }
   ],
   "followUpApprovals": [
@@ -83,6 +125,26 @@
       "regression": "node docs/assets/validate-container-aware-sizing.cjs",
       "findings": "Confirmed mixed viewport/document coordinate subtraction and incomplete cached sizing-style cleanup; no restore-model correction required.",
       "limitations": "Browser geometry and screenshots unavailable. Controlled DOM fixtures are not visual validation."
+    },
+    {
+      "feature": "SCOPE - Phase C Context Panel",
+      "authorization": "Explicit user request to move to Phase C of container-aware workspace sizing and Context Panel refinement; Phase D is excluded.",
+      "investigatedBaseline": "91b7e59",
+      "changes": [
+        "design-studio/design-core.js",
+        "design-studio/design-config.json",
+        "design-studio/studio.js",
+        "design-studio/preview-runtime.js",
+        "mockups/scope-integrated-electric-glass.html",
+        "design-studio/operator-runtime.js",
+        "dist/SCOPE-Design-Studio.html",
+        "docs/assets/validate-design-studio.cjs",
+        "docs/assets/validate-window-manager.cjs",
+        "docs/assets/validate-container-aware-sizing.cjs",
+        "docs/assets/validate-context-panel.cjs"
+      ],
+      "regression": "node docs/assets/validate-context-panel.cjs",
+      "record": "docs/SCOPE-Phase-C-Context-Panel.html"
     }
   ]
 }

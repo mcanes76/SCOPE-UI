@@ -27,7 +27,7 @@
   themes.push(...V.paletteIds);
   const regions={shell:'.shell',header:'.shell-top',branding:'.shell-brand',navigation:'.aperture-dock,.mosaic-layout>nav,.application-shelf,.portal-location,.directory-grid,.deck-nav',workspace:'.aperture-stage,.mosaic-board,.portal-directory,.portal-room,.deck-main,.integrated-panes',context:'.deck-rail',footer:'.owner-footer,.detached-note'};
   const bounds={borderWidth:[0,3],radius:[0,28],opacity:[0.6,0.98],blur:[0,28],padding:[0,40],gap:[8,28],width:[140,360],height:[56,112]};
-  const defaults={schemaVersion:1,name:'Customer design',navigation:'aperture',theme:'electric-glass',colors:{},material:{},typography:{family:'system-ui',baseSize:15,headingSize:24,weight:500,density:'comfortable',spacing:16},layout:{mode:'single',navWidth:190,contextWidth:250,contextVisible:true,headerVisible:true,footerVisible:true,workspacePadding:22,panelGap:16,headerHeight:76},regions:{},detailsVisible:false,notes:{navigation:'',theme:'',colors:'',typography:'',layout:'',review:''}};
+  const defaults={schemaVersion:1,name:'Customer design',navigation:'aperture',theme:'electric-glass',colors:{},material:{},typography:{family:'system-ui',baseSize:15,headingSize:24,weight:500,density:'comfortable',spacing:16},layout:{mode:'single',navWidth:190,contextWidth:250,contextVisible:false,headerVisible:true,footerVisible:true,workspacePadding:22,panelGap:16,headerHeight:76},regions:{},detailsVisible:false,notes:{navigation:'',theme:'',colors:'',typography:'',layout:'',review:''}};
   function object(v){return v!==null&&typeof v==='object'&&!Array.isArray(v);}
   function assert(ok,message){if(!ok)throw Error(message);}
   function numeric(value,min,max,key){assert(typeof value==='number'&&Number.isFinite(value),key+' must be a number');return Math.max(min,Math.min(max,value));}
@@ -48,6 +48,8 @@
     for(const [key,v] of Object.entries(input.material||{})){assert(bounds[key]&&['borderWidth','radius','opacity','blur'].includes(key),'Unknown material token');d.material[key]=numeric(v,...bounds[key],key);}
     const typeRules={family:["system-ui","Segoe UI","Arial","Aptos","Calibri","Tahoma","Verdana","Trebuchet MS","Bahnschrift","Georgia","Consolas","Courier New","Lucida Console","Arial Narrow"],baseSize:[14,20],headingSize:[18,36],weight:[400,700],density:['compact','comfortable','spacious'],spacing:[8,28]};
     for(const [k,v] of Object.entries(input.typography||{})){assert(Object.hasOwn(typeRules,k),'Unknown typography token');if(['family','density'].includes(k)){assert(typeRules[k].includes(v),'Invalid '+k);d.typography[k]=v;}else d.typography[k]=numeric(v,...typeRules[k],k);}
+    // Schema 1 documents that omitted visibility used the original open rail.
+    if(!Object.hasOwn(input.layout||{},'contextVisible'))d.layout.contextVisible=true;
     const layoutRules={navWidth:[140,280],contextWidth:[180,360],workspacePadding:[8,40],panelGap:[8,28],headerHeight:[56,112]};
     for(const [k,v] of Object.entries(input.layout||{})){
       assert(Object.hasOwn(defaults.layout,k),'Unknown layout token');
@@ -97,6 +99,16 @@
       out.push('@media(min-width:851px) and (max-width:1250px){'+selector('.deck-layout')+'{grid-template-columns:'+nav+'px minmax(0,1fr)!important}}');
       if(!visible)rule(regions.context,'display:none!important');
     }
+    // Shared shell context: native Deck fallback remains valid for CSS-only consumers.
+    rule('.scope-context-layout','display:grid;grid-template-columns:minmax(0,1fr)'+(d.layout.contextVisible&&d.regions.context?.visible!==false?' '+(d.regions.context?.width||d.layout.contextWidth)+'px':'')+';min-width:0;position:relative');
+    rule('.scope-context-main','min-width:0');
+    rule('.scope-context-main > .integrated-panes','position:relative');
+    rule('.scope-context-panel','align-self:start;max-height:75vh;overflow:auto;min-width:0;grid-column:auto');
+    rule('.scope-context-panel[hidden]','display:none!important');
+    // Explicit Context visibility is independent of the application demo-details switch.
+    out.push('body[data-scope-design="true"][data-ui-details="hidden"] .scope-context-panel > section{display:block!important}');
+    if(d.navigation==='deck')out.push('@media(min-width:851px){'+selector('.scope-context-main > .deck-layout')+'{grid-template-columns:'+(d.regions.navigation?.width||d.layout.navWidth)+'px minmax(0,1fr)!important}}');
+    out.push('@media(max-width:1250px){'+selector('.scope-context-layout')+'{grid-template-columns:minmax(0,1fr)}'+selector('.scope-context-panel')+'{grid-column:1/-1}}');
     for(const [id,v] of Object.entries(d.regions)){
       let props=material(Object.fromEntries(Object.entries(v).filter(([k])=>['borderWidth','radius','opacity','blur'].includes(k))));
       for(const [k,x] of Object.entries(v)){
