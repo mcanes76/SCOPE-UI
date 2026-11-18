@@ -3,18 +3,23 @@
   'use strict';
   const W=window.ScopeWorkspace,M=W.windows,apps=W.apps,nodes=new Map();
   let design=null,settings=null,canvas=null,stage=null,tasks=null,drag=null,configKey='',placing=false,lastSize='',observer=null,sizeQueued=false,metrics=null;
-  const minimums=new Map(),observed=new Set(),pendingOpen=new Set();
+  const sizingOverrides=new Map(),observed=new Set(),pendingOpen=new Set();
   const baseRender=render,baseRects=windowRects;
   function enabled(){return Boolean(design&&settings?.windowed&&!detachedContext);}
   function active(){return enabled()&&state.view==='workspace';}
   function bounds(){const r=stage?.getBoundingClientRect(),width=Math.floor(stage?.clientWidth??r?.width??0),height=Math.floor(stage?.clientHeight??r?.height??0);return width>0&&height>0?{width,height}:null;}
   const pixels=value=>Number.parseFloat(value)||0;
-  function releaseSizing(){for(const [el,previous] of minimums){if(previous.value)el.style.setProperty('min-height',previous.value,previous.priority);else el.style.removeProperty('min-height');}minimums.clear();observer?.disconnect();observed.clear();metrics=null;lastSize='';}
+  function sizingStyle(el,property,value,priority=''){
+    const current=el.style.getPropertyValue?.(property)||el.style[property]||'',currentPriority=el.style.getPropertyPriority?.(property)||'';
+    if(!sizingOverrides.has(el))sizingOverrides.set(el,new Map());const properties=sizingOverrides.get(el);
+    if(!properties.has(property))properties.set(property,{value:current,priority:currentPriority});
+    if(current!==value||currentPriority!==priority)el.style.setProperty(property,value,priority);
+  }
+  function releaseSizing(){for(const [el,properties] of sizingOverrides)for(const [property,previous] of properties){if(previous.value)el.style.setProperty(property,previous.value,previous.priority);else el.style.removeProperty(property);}sizingOverrides.clear();observer?.disconnect();observed.clear();metrics=null;lastSize='';}
   function sizeAncestors(){
     for(let el=canvas?.parentElement;el&&el!==document.body;el=el.parentElement){
       if(!['shell','deck-layout','aperture-stage','panes'].some(c=>el.classList?.contains(c)))continue;
-      if(!minimums.has(el))minimums.set(el,{value:el.style.getPropertyValue?.('min-height')||'',priority:el.style.getPropertyPriority?.('min-height')||''});
-      el.style.setProperty('min-height',el.classList.contains('shell')?(design.regions.shell?.height||0)+'px':'0px','important');
+      sizingStyle(el,'min-height',el.classList.contains('shell')?(design.regions.shell?.height||0)+'px':'0px','important');
     }
   }
   function measureStage(){
@@ -24,13 +29,16 @@
     // explicit stage rectangle; browsers always take the DOM budget path below.
     if(typeof window.getComputedStyle!=='function')return bounds();
     const style=el=>window.getComputedStyle(el),viewport=window.visualViewport;
+    const viewportHeight=viewport?.height??window.innerHeight??document.documentElement?.clientHeight??0;
+    if(!Number.isFinite(viewportHeight)||viewportHeight<=0)return null;
+    // Both VisualViewport.offsetTop + height and DOMRect.top are expressed in
+    // this window/iframe's layout-viewport coordinates. Parent scroll is unrelated.
+    const viewportBottom=(viewport?.offsetTop||0)+viewportHeight;
     const host=canvas.parentElement,dock=[...host.children].find(el=>el.classList?.contains('aperture-dock'));
     const dockStyle=dock&&style(dock),extra=dock&&dockStyle.display!=='none'?Math.max(0,Math.ceil(dock.getBoundingClientRect().height+pixels(dockStyle.bottom)+8-pixels(style(host).paddingBottom))):0;
     // The positioned Aperture dock normally fits in existing host padding. If
     // it wraps taller, reserve only the additional physical space below tasks.
-    if(canvas.style.paddingBottom!==extra+'px')canvas.style.setProperty('padding-bottom',extra+'px');
-    const viewportBottom=(viewport?.offsetTop||0)+(viewport?.height||window.innerHeight||document.documentElement?.clientHeight||0);
-    if(viewportBottom<=0)return null;
+    sizingStyle(canvas,'padding-bottom',extra+'px');
     const limits=[],watch=new Set([stage]);let reserve=0;
     for(let child=stage,parent=child.parentElement;parent;child=parent,parent=parent.parentElement){
       const box=parent.getBoundingClientRect(),s=style(parent),cr=child.getBoundingClientRect();watch.add(parent);
@@ -53,14 +61,14 @@
       if(parent===document.body)break;
     }
     const documentTop=rect.top+(window.scrollY||0);
-    const room=viewportBottom-documentTop-reserve,ceiling=Math.min(...limits);
+    const room=viewportBottom-rect.top-reserve,ceiling=Math.min(...limits);
     if(ceiling<1)return null; // A collapsed bounded host has no usable geometry.
     // Preserve usable controls when shell chrome alone exhausts a short viewport;
     // a genuinely smaller bounded host still wins over this soft minimum.
     const height=Math.floor(Math.min(ceiling,Math.max(180,room)));
-    const value=height+'px';if(stage.style.height!==value)stage.style.setProperty('height',value);
+    sizingStyle(stage,'height',height+'px');
     if(observer){let changed=watch.size!==observed.size||[...watch].some(el=>!observed.has(el));if(changed){observer.disconnect();observed.clear();for(const el of watch)if(el.nodeType===1){observer.observe(el);observed.add(el);}}}
-    const measured=bounds();metrics={viewportBottom,stageTop:rect.top,stageDocumentTop:documentTop,trailingShellSpace:reserve,stageOuterHeight:height,minimumOverflow:Math.max(0,height-room),bounds:measured};return measured;
+    const measured=bounds();metrics={coordinateSpace:'local-layout-viewport',viewportBottom,viewportDocumentBottom:viewportBottom+(window.scrollY||0),stageTop:rect.top,stageDocumentTop:documentTop,trailingShellSpace:reserve,stageOuterHeight:height,minimumOverflow:Math.max(0,height-room),bounds:measured};return measured;
   }
   function fitStage(){
     if(!settings.windows.initialized||pendingOpen.size){decorate();return bounds();}
@@ -171,7 +179,7 @@
     if(e.key==='Escape'&&!document.querySelector('dialog[open]')){const details=document.querySelector('.operator-bar details[open]');if(details){details.open=false;details.querySelector('summary')?.focus();e.preventDefault();e.stopImmediatePropagation();}}
   },true);
   document.addEventListener('focusin',e=>{if(!active()||window.ScopeComponentPicker)return;const node=e.target.closest('.managed-window');if(node&&settings.windows.active!==node.dataset.managedApp)update({type:'focus',app:node.dataset.managedApp});},true);
-  window.addEventListener('resize',scheduleSize);window.visualViewport?.addEventListener('resize',scheduleSize);
+  window.addEventListener('resize',scheduleSize);window.addEventListener('scroll',scheduleSize,{passive:true});window.visualViewport?.addEventListener('resize',scheduleSize);window.visualViewport?.addEventListener('scroll',scheduleSize);
   // Native modal focus trapping and Escape are retained; restore the launch focus.
   for(const id of ['switcher','window-manager','confirmation']){
     const dialog=document.getElementById(id);if(!dialog)continue;const show=dialog.showModal?.bind(dialog);let launch=null;

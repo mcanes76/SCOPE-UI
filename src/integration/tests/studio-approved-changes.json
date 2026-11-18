@@ -19,9 +19,9 @@
     },
     {
       "path": "design-studio/workspace-windows-runtime.js",
-      "gitBlob": "9b479fba873688944e93c7d813142c5790a85b21",
-      "purpose": "Measure shell host space from DOM geometry and preserve window intent during resizing, without changing toolbar presentation.",
-      "impact": "Accounts for shell rows, borders/padding, wrapped controls and Context Panel placement; defers hidden hosts, coalesces observer callbacks and preserves application DOM. Context visibility and Studio preview controls remain unchanged."
+      "gitBlob": "fe87991aff2b161d50a9fa40cb97b914422bf9a1",
+      "purpose": "DOM host budgeting and Phase B verification fixes: consistent iframe viewport coordinates, viewport scroll handling, idempotent sizing overrides and complete cleanup.",
+      "impact": "Preserves toolbar presentation and window intent; handles scrolling and visual viewport changes without reading parent geometry. Restores prior sizing CSS values/priorities on managed-mode exit."
     },
     {
       "path": "design-studio/embedded-windows.js",
@@ -31,7 +31,7 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "56d1f7a435c99ea89f0b5cfe68edff37721183f9",
+      "gitBlob": "bfba6eb50a8af148593aea259fef02cc4761204a",
       "purpose": "Rebuild offline bundle from the validated modular sources.",
       "impact": "New standalone exports include container-aware managed sizing and restorable geometry, retaining all accepted application UIs, themes and controls."
     },
@@ -70,6 +70,19 @@
       "record": "docs/SCOPE-Container-Aware-Window-Manager.html",
       "regression": "node docs/assets/validate-container-aware-sizing.cjs",
       "limitations": "Browser measurement host unavailable. DOM fixtures exercise the measurement algorithm, but native rendering/screenshots remain unverified. Very short viewports can require scrolling to preserve usable controls. Previously lost geometry cannot be reconstructed."
+    },
+    {
+      "feature": "SCOPE - Phase B Sizing Verification Fixes",
+      "authorization": "Explicit verification request; make only confirmed sizing/cleanup corrections and preserve all UI behavior.",
+      "investigatedBaseline": "1433d40",
+      "changes": [
+        "design-studio/workspace-windows-runtime.js",
+        "dist/SCOPE-Design-Studio.html"
+      ],
+      "record": "docs/SCOPE-Container-Aware-Window-Manager.html",
+      "regression": "node docs/assets/validate-container-aware-sizing.cjs",
+      "findings": "Confirmed mixed viewport/document coordinate subtraction and incomplete cached sizing-style cleanup; no restore-model correction required.",
+      "limitations": "Browser geometry and screenshots unavailable. Controlled DOM fixtures are not visual validation."
     }
   ]
 }
