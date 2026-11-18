@@ -2,15 +2,76 @@
 (function(){
   'use strict';
   const W=window.ScopeWorkspace,M=W.windows,apps=W.apps,nodes=new Map();
-  let design=null,settings=null,canvas=null,stage=null,tasks=null,drag=null,configKey='',placing=false,lastSize='',observer=null;
+  let design=null,settings=null,canvas=null,stage=null,tasks=null,drag=null,configKey='',placing=false,lastSize='',observer=null,sizeQueued=false,metrics=null;
+  const minimums=new Map(),observed=new Set(),pendingOpen=new Set();
   const baseRender=render,baseRects=windowRects;
   function enabled(){return Boolean(design&&settings?.windowed&&!detachedContext);}
   function active(){return enabled()&&state.view==='workspace';}
-  function bounds(){const r=stage?.getBoundingClientRect();return {width:Math.max(1,Math.floor(stage?.clientWidth||r?.width||1)),height:Math.max(1,Math.floor(stage?.clientHeight||r?.height||1))};}
+  function bounds(){const r=stage?.getBoundingClientRect(),width=Math.floor(stage?.clientWidth??r?.width??0),height=Math.floor(stage?.clientHeight??r?.height??0);return width>0&&height>0?{width,height}:null;}
+  const pixels=value=>Number.parseFloat(value)||0;
+  function releaseSizing(){for(const [el,previous] of minimums){if(previous.value)el.style.setProperty('min-height',previous.value,previous.priority);else el.style.removeProperty('min-height');}minimums.clear();observer?.disconnect();observed.clear();metrics=null;lastSize='';}
+  function sizeAncestors(){
+    for(let el=canvas?.parentElement;el&&el!==document.body;el=el.parentElement){
+      if(!['shell','deck-layout','aperture-stage','panes'].some(c=>el.classList?.contains(c)))continue;
+      if(!minimums.has(el))minimums.set(el,{value:el.style.getPropertyValue?.('min-height')||'',priority:el.style.getPropertyPriority?.('min-height')||''});
+      el.style.setProperty('min-height',el.classList.contains('shell')?(design.regions.shell?.height||0)+'px':'0px','important');
+    }
+  }
+  function measureStage(){
+    if(!active()||!canvas?.isConnected||!stage)return null;
+    const rect=stage.getBoundingClientRect();if(rect.width<=0||stage.getClientRects?.().length===0)return null;
+    // Older fixture/host environments without CSS measurement can supply an
+    // explicit stage rectangle; browsers always take the DOM budget path below.
+    if(typeof window.getComputedStyle!=='function')return bounds();
+    const style=el=>window.getComputedStyle(el),viewport=window.visualViewport;
+    const host=canvas.parentElement,dock=[...host.children].find(el=>el.classList?.contains('aperture-dock'));
+    const dockStyle=dock&&style(dock),extra=dock&&dockStyle.display!=='none'?Math.max(0,Math.ceil(dock.getBoundingClientRect().height+pixels(dockStyle.bottom)+8-pixels(style(host).paddingBottom))):0;
+    // The positioned Aperture dock normally fits in existing host padding. If
+    // it wraps taller, reserve only the additional physical space below tasks.
+    if(canvas.style.paddingBottom!==extra+'px')canvas.style.setProperty('padding-bottom',extra+'px');
+    const viewportBottom=(viewport?.offsetTop||0)+(viewport?.height||window.innerHeight||document.documentElement?.clientHeight||0);
+    if(viewportBottom<=0)return null;
+    const limits=[],watch=new Set([stage]);let reserve=0;
+    for(let child=stage,parent=child.parentElement;parent;child=parent,parent=parent.parentElement){
+      const box=parent.getBoundingClientRect(),s=style(parent),cr=child.getBoundingClientRect();watch.add(parent);
+      if(s.display==='none'||s.visibility==='hidden')return null;
+      let after=0;
+      for(const sibling of parent.children){
+        if(sibling===child)continue;const ss=style(sibling);watch.add(sibling);
+        if(ss.display==='none'||ss.position==='absolute'||ss.position==='fixed')continue;
+        const r=sibling.getBoundingClientRect();
+        if(r.width>0&&r.height>0&&r.left<cr.right-1&&r.right>cr.left+1&&r.top>=cr.bottom-1)after=Math.max(after,r.bottom-cr.bottom+pixels(ss.marginBottom));
+      }
+      reserve+=after+pixels(s.paddingBottom)+pixels(s.borderBottomWidth);
+      // A declared fixed height/maximum or an actual scrollport is a real host
+      // boundary. Natural content height must not become a self-imposed ceiling.
+      const inline=parent.style.height,typed=parent.computedStyleMap?.().get('height');
+      const fixed=inline&&!['auto','fit-content','min-content','max-content'].includes(inline)||typed&&typed.toString()!=='auto';
+      if(fixed||parent.scrollHeight>parent.clientHeight+1&&['auto','scroll','hidden','clip'].includes(s.overflowY))limits.push(box.bottom-rect.top-reserve);
+      const maximum=Number.parseFloat(s.maxHeight);
+      if(Number.isFinite(maximum))limits.push(box.top+maximum+(s.boxSizing==='border-box'?0:pixels(s.paddingTop)+pixels(s.paddingBottom)+pixels(s.borderTopWidth)+pixels(s.borderBottomWidth))-rect.top-reserve);
+      if(parent===document.body)break;
+    }
+    const documentTop=rect.top+(window.scrollY||0);
+    const room=viewportBottom-documentTop-reserve,ceiling=Math.min(...limits);
+    if(ceiling<1)return null; // A collapsed bounded host has no usable geometry.
+    // Preserve usable controls when shell chrome alone exhausts a short viewport;
+    // a genuinely smaller bounded host still wins over this soft minimum.
+    const height=Math.floor(Math.min(ceiling,Math.max(180,room)));
+    const value=height+'px';if(stage.style.height!==value)stage.style.setProperty('height',value);
+    if(observer){let changed=watch.size!==observed.size||[...watch].some(el=>!observed.has(el));if(changed){observer.disconnect();observed.clear();for(const el of watch)if(el.nodeType===1){observer.observe(el);observed.add(el);}}}
+    const measured=bounds();metrics={viewportBottom,stageTop:rect.top,stageDocumentTop:documentTop,trailingShellSpace:reserve,stageOuterHeight:height,minimumOverflow:Math.max(0,height-room),bounds:measured};return measured;
+  }
+  function fitStage(){
+    if(!settings.windows.initialized||pendingOpen.size){decorate();return bounds();}
+    const b=measureStage();if(!b)return null;
+    const key=JSON.stringify(b);if(key!==lastSize){lastSize=key;settings.windows=M.action(settings.windows,{type:'fit'},b);paint();EarthRenderer.schedule();}return b;
+  }
+  function scheduleSize(){if(sizeQueued)return;sizeQueued=true;requestAnimationFrame(()=>{sizeQueued=false;if(active()&&!drag&&!placing)fitStage();});}
   function names(id){return window.ScopeOperator.parameters().applications[id].name;}
   function commit(){if(design&&!drag)window.ScopeOperator.setWindows(settings.windows,settings.windowed);}
   function update(action,{save=true,focus=false}={}){
-    if(!stage)return;settings.windows=M.action(settings.windows,action,bounds());paint();if(save)commit();if(focus){const node=nodes.get(settings.windows.active);(node?.querySelector('.managed-title')||tasks?.querySelector('button')||canvas?.querySelector('.managed-launch button'))?.focus();}EarthRenderer.schedule();
+    if(!stage)return;const b=measureStage();if(!b){if(action.type==='open')pendingOpen.add(action.app);return;}settings.windows=M.action(M.action(settings.windows,{type:'fit'},b),action,b);paint();if(save)commit();if(focus){const node=nodes.get(settings.windows.active);(node?.querySelector('.managed-title')||tasks?.querySelector('button')||canvas?.querySelector('.managed-launch button'))?.focus();}EarthRenderer.schedule();
   }
   function open(app){if(!apps.includes(app)||!window.ScopeOperator.parameters().applications[app].visible)return;update({type:'open',app},{focus:true});}
   function button(label,action,app){const b=document.createElement('button');b.type='button';b.dataset.managedAction=action;if(app)b.dataset.managedApp=app;b.textContent=label;b.setAttribute('aria-label',label+(app?' '+names(app):''));b.setAttribute('data-style-id','shell.window.button.'+action+(app?'.'+app:''));return b;}
@@ -62,7 +123,7 @@
       for(const [label,action] of [['Cascade','cascade'],['Tile','tile'],['Reset workspace','reset']])launch.append(button(label,action));
       stage=document.createElement('div');stage.className='managed-stage';stage.setAttribute('aria-label','Application window area');
       tasks=document.createElement('nav');tasks.className='managed-tasks';tasks.setAttribute('aria-label','Open and minimized windows');canvas.append(launch,stage,tasks);
-      if(typeof ResizeObserver!=='undefined'){observer=new ResizeObserver(()=>{if(!active()||drag||placing)return;const key=JSON.stringify(bounds());if(key!==lastSize){lastSize=key;settings.windows=M.action(settings.windows,{type:'fit'},bounds());paint();}});observer.observe(stage);}
+      if(typeof ResizeObserver!=='undefined')observer=new ResizeObserver(scheduleSize);
     }
     // Keep engine navigation chrome; replace only the shell's application hosts.
     if(canvas.parentElement!==target){
@@ -71,16 +132,19 @@
       target.dataset.managedTarget='true';target.prepend(canvas);
       if(target.classList.contains('integrated-panes')){target.style.setProperty('display','block','important');target.style.setProperty('height','auto','important');}
     }
+    if(observer&&!observed.has(stage)){observer.observe(stage);observed.add(stage);}
+    sizeAncestors();const measured=measureStage();if(!measured)return;
     const visible=window.ScopeOperator.parameters().applications;
     for(const item of settings.windows.items)if(!visible[item.app].visible){item.state='closed';if(settings.windows.active===item.app)settings.windows.active=null;}
-    if(!settings.windows.initialized){settings.windows=M.action(settings.windows,{type:'reset',apps:[settings.left,...(settings.layout==='single'?[]:[settings.right])]},bounds());}
-    settings.windows=M.action(settings.windows,{type:'fit'},bounds());paint();EarthRenderer.schedule();
+    if(!settings.windows.initialized){settings.windows=M.action(settings.windows,{type:'reset',apps:[settings.left,...(settings.layout==='single'?[]:[settings.right])]},measured);}
+    for(const app of pendingOpen)if(visible[app]?.visible)settings.windows=M.action(settings.windows,{type:'open',app},measured);pendingOpen.clear();
+    lastSize=JSON.stringify(measured);settings.windows=M.action(settings.windows,{type:'fit'},measured);paint();EarthRenderer.schedule();
   }
   function configure(d){
     design=d;const next=W.fromDesign(d),key=JSON.stringify(next);if(key!==configKey&&!drag){settings=next;configKey=key;}
-    if(!enabled())canvas?.remove();
+    if(!enabled()){canvas?.remove();releaseSizing();pendingOpen.clear();}
   }
-  render=function(){canvas?.remove();baseRender();decorate();};
+  render=function(){releaseSizing();canvas?.remove();baseRender();decorate();};
   // Browser/OS placement is advisory; a single pop-out is never screen-sized.
   windowRects=function(count,layout){if(count!==1)return baseRects(count,layout);const screen=window.screen,w=Math.max(1,screen.availWidth||1280),h=Math.max(1,screen.availHeight||800),r=M.initial('blos',{width:w,height:h});return [{left:(screen.availLeft||0)+Math.floor((w-r.width)/2),top:(screen.availTop||0)+Math.floor((h-r.height)/2),width:r.width,height:r.height}];};
   document.addEventListener('click',e=>{
@@ -96,8 +160,8 @@
     const handle=e.target.closest('[data-managed-action="move"],[data-managed-action="resize"]');if(!handle)return;
     const item=settings.windows.items.find(w=>w.app===app);if(item.state!=='normal')return;e.preventDefault();handle.setPointerCapture?.(e.pointerId);
     drag={before:W.clone(settings.windows),rect:W.clone(item.rect),app,type:handle.dataset.managedAction==='move'?'move':'resize',x:e.clientX,y:e.clientY};
-    const move=event=>{if(!drag)return;const r=drag.rect,dx=event.clientX-drag.x,dy=event.clientY-drag.y;settings.windows=M.action(drag.before,{type:drag.type,app,rect:drag.type==='move'?{...r,x:r.x+dx,y:r.y+dy}:{...r,width:r.width+dx,height:r.height+dy}},bounds());paint();};
-    const end=event=>{if(!drag)return;const before=drag.before;drag=null;if(event?.type==='pointercancel')settings.windows=before;for(const [type,fn] of [['pointermove',move],['pointerup',end],['pointercancel',end],['lostpointercapture',end]])handle.removeEventListener(type,fn);paint();commit();EarthRenderer.schedule();};
+    const move=event=>{if(!drag)return;const b=bounds();if(!b)return;const r=drag.rect,dx=event.clientX-drag.x,dy=event.clientY-drag.y;settings.windows=M.action(drag.before,{type:drag.type,app,rect:drag.type==='move'?{...r,x:r.x+dx,y:r.y+dy}:{...r,width:r.width+dx,height:r.height+dy}},b);paint();};
+    const end=event=>{if(!drag)return;const before=drag.before;drag=null;if(event?.type==='pointercancel')settings.windows=before;for(const [type,fn] of [['pointermove',move],['pointerup',end],['pointercancel',end],['lostpointercapture',end]])handle.removeEventListener(type,fn);fitStage();paint();commit();EarthRenderer.schedule();};
     drag.cancel=()=>end({type:'pointercancel'});
     handle.addEventListener('pointermove',move);for(const type of ['pointerup','pointercancel','lostpointercapture'])handle.addEventListener(type,end);
   },true);
@@ -107,7 +171,7 @@
     if(e.key==='Escape'&&!document.querySelector('dialog[open]')){const details=document.querySelector('.operator-bar details[open]');if(details){details.open=false;details.querySelector('summary')?.focus();e.preventDefault();e.stopImmediatePropagation();}}
   },true);
   document.addEventListener('focusin',e=>{if(!active()||window.ScopeComponentPicker)return;const node=e.target.closest('.managed-window');if(node&&settings.windows.active!==node.dataset.managedApp)update({type:'focus',app:node.dataset.managedApp});},true);
-  window.addEventListener('resize',()=>{if(active()&&!drag&&stage)update({type:'fit'},{save:false});});
+  window.addEventListener('resize',scheduleSize);window.visualViewport?.addEventListener('resize',scheduleSize);
   // Native modal focus trapping and Escape are retained; restore the launch focus.
   for(const id of ['switcher','window-manager','confirmation']){
     const dialog=document.getElementById(id);if(!dialog)continue;const show=dialog.showModal?.bind(dialog);let launch=null;
@@ -115,8 +179,8 @@
     dialog.addEventListener('close',()=>{if(launch?.isConnected)launch.focus();});
   }
   const css=document.createElement('style');css.id='scope-managed-window-styles';css.textContent=`
-  .managed-workspace{width:100%;min-width:0;position:relative}.managed-launch,.managed-tasks{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--scope-nav,var(--surface));color:var(--scope-text);border:1px solid var(--scope-border)}.managed-launch button,.managed-tasks button{font-size:12px;padding:6px 9px;min-height:36px}.managed-stage{position:relative;isolation:isolate;overflow:hidden;width:100%;height:clamp(280px,calc(100dvh - 260px),820px);background:var(--scope-workspace,#101c2c);border:1px solid var(--scope-border)}.managed-window{position:absolute!important;display:flex!important;flex-direction:column;min-width:0!important;min-height:0!important;margin:0!important;overflow:hidden;border:1px solid var(--scope-border)!important;border-radius:var(--scope-window-radius,8px);background:var(--scope-panel);box-shadow:0 8px 24px #0006}.managed-window[hidden],.managed-window button[hidden]{display:none!important}.managed-window.managed-active{outline:2px solid var(--scope-focus);outline-offset:-2px}.managed-header{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:4px;padding:6px!important;background:var(--scope-header)!important;color:var(--scope-text)!important;cursor:default}.managed-title{flex:1;min-width:100px;text-align:left;cursor:move;touch-action:none}.managed-controls{display:flex;flex-wrap:wrap;gap:3px}.managed-controls button{font-size:10px;padding:4px 6px;min-height:30px}.managed-body{flex:1 1 auto;overflow:auto;min-height:0;min-width:0}.managed-body>.owner-surface{min-height:100%;margin:0!important;border-radius:0!important}.managed-resize{position:absolute;bottom:0;right:0;min-height:24px!important;min-width:32px!important;padding:2px!important;font-size:9px;cursor:nwse-resize;touch-action:none;z-index:2}[data-managed-target=true].panes{display:block!important}[data-managed-target=true].aperture-stage{display:block!important;padding-bottom:80px}.operator-bar[data-managed-active=true] label,.operator-bar[data-managed-active=true] [data-operator=swap],.operator-bar[data-managed-active=true] [data-operator=reset-ratio],.operator-bar[data-managed-active=true] [data-operator=popout]{display:none!important}
+  .managed-workspace{width:100%;min-width:0;position:relative}.managed-launch,.managed-tasks{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--scope-nav,var(--surface));color:var(--scope-text);border:1px solid var(--scope-border)}.managed-launch button,.managed-tasks button{font-size:12px;padding:6px 9px;min-height:36px}.managed-stage{position:relative;isolation:isolate;overflow:hidden;width:100%;height:300px;min-height:0;box-sizing:border-box;background:var(--scope-workspace,#101c2c);border:1px solid var(--scope-border)}.managed-window{position:absolute!important;display:flex!important;flex-direction:column;min-width:0!important;min-height:0!important;margin:0!important;overflow:hidden;border:1px solid var(--scope-border)!important;border-radius:var(--scope-window-radius,8px);background:var(--scope-panel);box-shadow:0 8px 24px #0006}.managed-window[hidden],.managed-window button[hidden]{display:none!important}.managed-window.managed-active{outline:2px solid var(--scope-focus);outline-offset:-2px}.managed-header{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:4px;padding:6px!important;background:var(--scope-header)!important;color:var(--scope-text)!important;cursor:default}.managed-title{flex:1;min-width:100px;text-align:left;cursor:move;touch-action:none}.managed-controls{display:flex;flex-wrap:wrap;gap:3px}.managed-controls button{font-size:10px;padding:4px 6px;min-height:30px}.managed-body{flex:1 1 auto;overflow:auto;min-height:0;min-width:0}.managed-body>.owner-surface{min-height:100%;margin:0!important;border-radius:0!important}.managed-resize{position:absolute;bottom:0;right:0;min-height:24px!important;min-width:32px!important;padding:2px!important;font-size:9px;cursor:nwse-resize;touch-action:none;z-index:2}[data-managed-target=true].panes{display:block!important}[data-managed-target=true].aperture-stage{display:block!important;padding-bottom:80px}.operator-bar[data-managed-active=true] label,.operator-bar[data-managed-active=true] [data-operator=swap],.operator-bar[data-managed-active=true] [data-operator=reset-ratio],.operator-bar[data-managed-active=true] [data-operator=popout]{display:none!important}
   body[data-scope-design] :is(#switcher,#window-manager,#confirmation){position:fixed;inset:0;margin:auto;width:min(680px,calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:85vh;overflow:auto;padding:24px;box-sizing:border-box}body[data-scope-design] :is(#switcher,#window-manager,#confirmation)::backdrop{background:#02061180;backdrop-filter:blur(2px)}.operator-config{max-height:85vh;overflow:auto;max-width:min(390px,calc(100vw - 32px));box-sizing:border-box}@media print{.managed-controls,.managed-resize,.managed-launch,.managed-tasks{display:none!important}}`;
   document.head.append(css);
-  window.ScopeManagedWindows={isInteracting:()=>Boolean(drag),configure,decorate,enabled,active,open,update,snapshot:()=>W.clone(settings?.windows||W.defaults.windows),node:app=>nodes.get(app),bounds};
+  window.ScopeManagedWindows={isInteracting:()=>Boolean(drag),configure,decorate,enabled,active,open,update,snapshot:()=>W.clone(settings?.windows||W.defaults.windows),node:app=>nodes.get(app),bounds,measure:()=>metrics&&W.clone(metrics)};
 })();

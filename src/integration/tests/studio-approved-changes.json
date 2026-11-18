@@ -19,9 +19,9 @@
     },
     {
       "path": "design-studio/workspace-windows-runtime.js",
-      "gitBlob": "5ab50244534a4d13b7fd1c784454b79d8496d7ef",
-      "purpose": "Expose the existing read-only drag query and consistently label the managed centralized Pop Out control.",
-      "impact": "One application-identified Phase 3 Pop Out control; existing detach, size, view-state and window actions are retained."
+      "gitBlob": "9b479fba873688944e93c7d813142c5790a85b21",
+      "purpose": "Measure shell host space from DOM geometry and preserve window intent during resizing, without changing toolbar presentation.",
+      "impact": "Accounts for shell rows, borders/padding, wrapped controls and Context Panel placement; defers hidden hosts, coalesces observer callbacks and preserves application DOM. Context visibility and Studio preview controls remain unchanged."
     },
     {
       "path": "design-studio/embedded-windows.js",
@@ -31,9 +31,15 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "751b192a1d6d81689917e1298df3f81ee7122def",
-      "purpose": "Regenerate the existing offline bundle from validated modular source.",
-      "impact": "Embeds the new standalone export runtime; no preset/schema/application-owned code changes."
+      "gitBlob": "56d1f7a435c99ea89f0b5cfe68edff37721183f9",
+      "purpose": "Rebuild offline bundle from the validated modular sources.",
+      "impact": "New standalone exports include container-aware managed sizing and restorable geometry, retaining all accepted application UIs, themes and controls."
+    },
+    {
+      "path": "design-studio/workspace.js",
+      "gitBlob": "fe7fd9b7d9611c40f1e0d9778cb7090b0260fc3f",
+      "purpose": "Separate restorable intent from fitted rectangles; improve first managed-window sizing and preserve tiled placement across bounds changes.",
+      "impact": "Legacy window JSON remains valid; optional tile grid metadata is emitted for new Tile actions. App-specific preferences and existing browser Pop Out size requests remain supported."
     }
   ],
   "followUpApprovals": [
@@ -51,6 +57,19 @@
       "regression": "node docs/assets/validate-managed-popout.cjs",
       "evidence": "48 combinations: four applications, four navigation modes and three representative themes; actual baseline investigation opened Display from the managed button and BLOS from the legacy button. New rendering keeps one control; classic split buttons remain.",
       "limitations": "Older exported HTML must be regenerated to embed the fix. Popup size/placement remain subject to browser/OS policy; native Chrome/Edge popup interaction is not asserted by controlled DOM tests."
+    },
+    {
+      "feature": "SCOPE - Container-Aware Window Manager Sizing",
+      "authorization": "Explicit Phase B request; container-aware sizing and restore semantics only, with no toolbar, Context Panel or preview-control redesign.",
+      "investigatedBaseline": "5b6aa8d",
+      "changes": [
+        "design-studio/workspace.js",
+        "design-studio/workspace-windows-runtime.js",
+        "dist/SCOPE-Design-Studio.html"
+      ],
+      "record": "docs/SCOPE-Container-Aware-Window-Manager.html",
+      "regression": "node docs/assets/validate-container-aware-sizing.cjs",
+      "limitations": "Browser measurement host unavailable. DOM fixtures exercise the measurement algorithm, but native rendering/screenshots remain unverified. Very short viewports can require scrolling to preserve usable controls. Previously lost geometry cannot be reconstructed."
     }
   ]
 }
