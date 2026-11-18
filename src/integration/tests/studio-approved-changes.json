@@ -7,9 +7,9 @@
   "files": [
     {
       "path": "design-studio/operator-runtime.js",
-      "gitBlob": "ccf74aa601fd33953be74f76ac74135192add28b",
-      "purpose": "Preserve standalone design switching and classic Pop Out exclusion; fit the operator workspace to the remaining viewport and remove fixed stacked-pane height floors.",
-      "impact": "Shell-only flex sizing and compact toolbar spacing; lab/guide document scrolling and all application-owned DOM, forms, stores and gestures remain unchanged."
+      "gitBlob": "11b6a23cc56abd9961d325209e951164c33a6046",
+      "purpose": "Standalone design switching plus exclusion of managed headers from classic split-pane action injection.",
+      "impact": "Preserves import/export and application parameters; removes duplicate/wrong-application legacy Pop Out controls from managed headers while retaining classic split controls."
     },
     {
       "path": "design-studio/exports.js",
@@ -19,9 +19,9 @@
     },
     {
       "path": "design-studio/workspace-windows-runtime.js",
-      "gitBlob": "4f33ef4e970652be11c67b2d9a2f0cc410203137",
-      "purpose": "Compact managed title bars and launch/layout controls while preserving centralized window actions and geometry.",
-      "impact": "Minimize, maximize/restore and close stay visible; dock and the single Pop Out move to an accessible disclosure. Stage flexes within the viewport and existing fit constraints preserve cached app nodes."
+      "gitBlob": "5ab50244534a4d13b7fd1c784454b79d8496d7ef",
+      "purpose": "Expose the existing read-only drag query and consistently label the managed centralized Pop Out control.",
+      "impact": "One application-identified Phase 3 Pop Out control; existing detach, size, view-state and window actions are retained."
     },
     {
       "path": "design-studio/embedded-windows.js",
@@ -31,9 +31,9 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "bfc739c47f145dcb865226a85823ef9c85b6f307",
+      "gitBlob": "751b192a1d6d81689917e1298df3f81ee7122def",
       "purpose": "Regenerate the existing offline bundle from validated modular source.",
-      "impact": "Regenerated offline bundle embeds the compact shell runtime in newly exported standalone HTML; existing schema/presets/applications stay unchanged."
+      "impact": "Embeds the new standalone export runtime; no preset/schema/application-owned code changes."
     }
   ],
   "followUpApprovals": [
@@ -51,19 +51,6 @@
       "regression": "node docs/assets/validate-managed-popout.cjs",
       "evidence": "48 combinations: four applications, four navigation modes and three representative themes; actual baseline investigation opened Display from the managed button and BLOS from the legacy button. New rendering keeps one control; classic split buttons remain.",
       "limitations": "Older exported HTML must be regenerated to embed the fix. Popup size/placement remain subject to browser/OS policy; native Chrome/Edge popup interaction is not asserted by controlled DOM tests."
-    },
-    {
-      "feature": "SCOPE - Compact Workspace and Window Controls",
-      "authorization": "Explicit user request dated 2026-11-17 to compact shell controls and fix workspace viewport sizing; preserve application internals.",
-      "investigatedBaseline": "b6b0288",
-      "changes": [
-        "design-studio/operator-runtime.js",
-        "design-studio/workspace-windows-runtime.js",
-        "dist/SCOPE-Design-Studio.html"
-      ],
-      "record": "docs/SCOPE-Compact-Workspace.html",
-      "regression": "node docs/assets/validate-compact-workspace.cjs",
-      "limitations": "Controlled DOM and source/CSS verification; native rendering was blocked by browser URL verification. Older exported mockups must be regenerated."
     }
   ]
 }

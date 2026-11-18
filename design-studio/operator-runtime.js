@@ -49,19 +49,9 @@
     window.ScopePreviewRuntime.apply(d,presets,{...options,application:next.left,rightApplication:next.right});if(patch.swap)render();decorate();window.ScopeOperator.onChange?.(d);
   }
   function isStacked(pane){return workspace.layout==='stacked'||workspace.layout==='split'&&pane.getBoundingClientRect().width<workspace.minPaneWidth*2;}
-  function fitViewport(){
-    // A flex height budget accounts for actual chrome, including wrapped rows.
-    // Lab/guide views retain document scrolling. No application DOM is measured.
-    const fit=state.view==='workspace'&&state.concept!==4;
-    document.body.dataset.workspaceFit=String(fit);
-    const height=window.visualViewport?.height||window.innerHeight;
-    if(Number.isFinite(height)&&height>0)document.body.style?.setProperty('--scope-viewport-height',height+'px');
-    document.body.style?.setProperty('--scope-workspace-inset',(current?.layout.workspacePadding||8)+'px');
-  }
-  window.addEventListener('resize',fitViewport);window.visualViewport?.addEventListener('resize',fitViewport);
-  function dividerLayout(pane,ratio){const stacked=isStacked(pane);pane.dataset.workspaceLayout=workspace.layout;pane.style.setProperty('display','grid','important');pane.style.setProperty('grid-template-columns',stacked||workspace.expanded?'minmax(0,1fr)':`minmax(0,${ratio}fr) minmax(0,${100-ratio}fr)`,'important');pane.style.setProperty('grid-template-rows',stacked&&!workspace.expanded?`minmax(0,${ratio}fr) minmax(0,${100-ratio}fr)`:'minmax(0,1fr)','important');pane.style.setProperty('height','100%');pane.style.setProperty('overflow','hidden');}
+  function dividerLayout(pane,ratio){const stacked=isStacked(pane);pane.dataset.workspaceLayout=workspace.layout;pane.style.setProperty('display','grid','important');pane.style.setProperty('grid-template-columns',stacked||workspace.expanded?'minmax(0,1fr)':`minmax(0,${ratio}fr) minmax(0,${100-ratio}fr)`,'important');pane.style.setProperty('grid-template-rows',stacked&&!workspace.expanded?`minmax(0,${ratio}fr) minmax(0,${100-ratio}fr)`:'minmax(0,1fr)','important');pane.style.setProperty('height','max('+Math.max(520,workspace.minPaneHeight*(stacked?2:1))+'px,calc(100vh - 250px))');pane.style.setProperty('overflow','auto');}
   function decorate(){
-    if(!current||dragging)return;fitViewport();if(!toolbar){toolbar=document.createElement('nav');toolbar.className='operator-bar';toolbar.setAttribute('aria-label','Workspace Manager');document.getElementById('exploration').before(toolbar);}
+    if(!current||dragging)return;if(!toolbar){toolbar=document.createElement('nav');toolbar.className='operator-bar';toolbar.setAttribute('aria-label','Workspace Manager');document.getElementById('exploration').before(toolbar);}
     const p=parameters(),visible=ApplicationIds.filter(id=>p.applications[id].visible),choices=active=>visible.map(id=>`<option value="${id}" ${id===active?'selected':''}>${escapeHTML(p.applications[id].name)}</option>`).join('');
     if(!detachedContext&&workspace.layout==='single')op.left=ApplicationIds[state.concept===3?state.deck.active:state.concept===2?state.portal.active:state.concept===1?state.mosaic.focus:state.aperture.active];
     if(workspace.layout==='single'&&!detachedContext)workspace.left=op.left;
@@ -205,31 +195,6 @@
   document.addEventListener('change',e=>{const slot=e.target.dataset.integrationChoice;if(!slot||!current)return;e.stopImmediatePropagation();try{transition({operator:{[slot]:ApplicationIds[Number(e.target.value)]},workspace:{focused:slot}});}catch(error){say(error.message);}},true);
   document.addEventListener('pointerdown',e=>{const slot=e.target.closest('[data-demo-host]')?.dataset.slot;if(['left','right'].includes(slot)&&workspace.focused!==slot)transition({workspace:{focused:slot}});},true);
   const css=document.createElement('style');css.textContent='.operator-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--scope-header,#14243a);color:var(--scope-text,#edf5ff);border-bottom:1px solid var(--scope-border,#6c829c);font:13px system-ui}.operator-layouts{display:flex;gap:4px;flex-wrap:wrap}.operator-bar label{display:flex;align-items:center;gap:8px}.operator-bar button,.operator-bar select{font:inherit;padding:8px 10px;min-height:38px}.operator-bar output{font-size:12px;max-width:460px}.workspace-windows{display:flex;align-items:center;gap:8px}.operator-config{display:grid;gap:8px;position:absolute;z-index:100;background:var(--scope-panel,#24364b);padding:16px;box-shadow:0 8px 25px #0007;max-width:390px}.integration-pane{min-width:0;min-height:0;overflow:auto}.operator-divider{position:absolute!important;top:0;bottom:0;width:12px;padding:0!important;min-height:0!important;transform:translateX(-50%);cursor:col-resize;touch-action:none;z-index:20;border:2px solid var(--scope-controlBorder)!important;background:var(--scope-control)!important;color:var(--scope-controlText)!important;border-radius:4px!important}.operator-divider::after{content:"";position:absolute;inset:35% 3px;border-inline:1px solid var(--scope-focus)}.operator-divider[data-axis="vertical"]{left:0;right:0;bottom:auto;height:12px;width:100%;transform:translateY(-50%);cursor:row-resize}.operator-divider[data-axis="vertical"]::after{inset:3px 40%;border-inline:0;border-block:1px solid var(--scope-focus)}.operator-divider:focus-visible{outline:3px solid var(--scope-focus)!important;outline-offset:3px}[data-workspace-pane-actions]{display:inline-flex;align-items:center;gap:8px}@media(max-width:760px){.operator-bar{gap:6px;padding:8px}.operator-bar label{max-width:100%}.integrated-panes{min-width:0}.operator-divider{min-width:12px!important}.operator-config{position:fixed;inset:15% 5% auto;max-width:90vw}}@media print{.operator-bar,.operator-divider{display:none!important}}';document.head.append(css);
-  // Scope the viewport chain to the operator workspace, never application internals.
-  css.textContent+=`
-  .operator-bar{gap:6px;padding:6px 10px}.operator-bar button,.operator-bar select{padding:5px 8px;min-height:32px}.operator-bar output:empty,.workspace-windows:empty{display:none}.operator-bar details{position:relative}.operator-bar .operator-config{right:0}
-  body[data-scope-design][data-workspace-fit=true]{height:var(--scope-viewport-height,100dvh);min-height:0!important;margin:0;display:flex;flex-direction:column;overflow:hidden}
-  body[data-scope-design][data-workspace-fit=true]>.operator-bar{flex:0 0 auto;position:relative;z-index:50}
-  body[data-scope-design][data-workspace-fit=true] #exploration{flex:1 1 0;min-height:0!important;min-width:0;width:100%;box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden}
-  body[data-scope-design][data-workspace-fit=true] #exploration>.concept-panel:not([hidden]),body[data-scope-design][data-workspace-fit=true] .concept-panel>.theme,body[data-scope-design][data-workspace-fit=true] #view-workspace,body[data-scope-design][data-workspace-fit=true] #exploration>.theme{display:flex;flex-direction:column;flex:1 1 0;min-height:0;min-width:0}
-  body[data-scope-design][data-workspace-fit=true] .shell{display:flex;flex-direction:column;flex:1 1 0;min-height:0!important;min-width:0;height:100%;box-sizing:border-box}
-  body[data-scope-design][data-workspace-fit=true] .shell>.shell-top,body[data-scope-design][data-workspace-fit=true] .shell>.detached-note{flex:0 0 auto}
-  body[data-scope-design][data-workspace-fit=true] .shell>:is(.aperture-stage,.mosaic-layout,.portal-room,.deck-layout,.integrated-panes,.detached-surface){flex:1 1 0;min-height:0!important;height:auto!important;overflow:hidden;box-sizing:border-box}
-  body[data-scope-design][data-workspace-fit=true] :is(.deck-layout,.mosaic-layout){grid-template-rows:minmax(0,1fr)}
-  body[data-scope-design][data-workspace-fit=true] :is(.aperture-stage,.portal-room,.deck-main,.mosaic-board,.detached-surface){display:flex;flex-direction:column;min-height:0}
-  body[data-scope-design][data-workspace-fit=true] .aperture-stage{padding-bottom:var(--scope-workspace-inset,8px)!important}
-  body[data-scope-design][data-workspace-fit=true] .aperture-dock{position:static;transform:none;align-self:center;flex:0 0 auto;margin-top:8px}
-  body[data-scope-design][data-workspace-fit=true] :is(.deck-nav,.deck-rail,.workspace-tools,.portal-directory){min-height:0;overflow:auto}
-  body[data-scope-design][data-workspace-fit=true] .portal-directory{flex:1 1 0}
-  body[data-scope-design][data-workspace-fit=true] :is(.panes,.integrated-panes){flex:1 1 0;min-height:0!important;height:100%;align-items:stretch}
-  body[data-scope-design][data-workspace-fit=true] .panes{grid-auto-rows:minmax(0,1fr)}body[data-scope-design][data-workspace-fit=true] :is(.panes.count-3,.panes.count-4){grid-template-rows:repeat(2,minmax(0,1fr))}
-  body[data-scope-design][data-workspace-fit=true] :is(.panes>.pane,.integrated-panes>.integration-pane){display:flex;flex-direction:column;min-height:0;overflow:hidden}
-  body[data-scope-design][data-workspace-fit=true] :is(.aperture-stage,.portal-room,.deck-main,.detached-surface,.pane,.integration-pane)>.owner-surface{flex:1 1 0;min-height:0!important;overflow:auto}
-  body[data-scope-design][data-workspace-fit=true] .managed-body>.owner-surface{flex:none}
-  @media(max-width:1250px) and (min-width:851px){body[data-scope-design][data-workspace-fit=true] .deck-layout{grid-template-rows:minmax(0,1fr) minmax(0,25%)} }
-  @media(max-width:850px){body[data-scope-design][data-workspace-fit=true] .deck-layout{overflow:auto;grid-template-rows:auto minmax(240px,1fr) auto}}
-  @media print{body[data-scope-design][data-workspace-fit=true]{height:auto;overflow:visible;display:block}body[data-scope-design][data-workspace-fit=true] #exploration,body[data-scope-design][data-workspace-fit=true] .shell{height:auto;overflow:visible}}
-  `;
   function setWindows(value,enabled){const d=C.clone(current);d.workspace={...W.clone(workspace),windows:W.windows.validate(value),windowed:enabled};window.ScopePreviewRuntime.apply(d,presets,options);window.ScopeOperator.onChange?.(d);}
   window.ScopeOperator={setWindows,configure,decorate,transition,importParameters,importDesign,exportDesign,resetDesign,currentDesign,originalDesign:()=>C.clone(originalDesign),parameters,launchInfo,originSlot:index=>detached.get(index)?.slot||slotFor(index),detach,returnRecord,say,workspaceId,snapshot:()=>({...op,mode:workspace.layout,focused:workspace.focused,expanded:workspace.expanded,workspace:W.clone(workspace),detached:[...detached.values()].map(({id,app,slot,state})=>({id,app,slot,state}))})};
   setTimeout(()=>{if(window.ScopePortableWindow)sendParent('scope-workspace-ready');},0);
