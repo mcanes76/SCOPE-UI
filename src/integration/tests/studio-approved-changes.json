@@ -94,6 +94,42 @@
       "gitBlob": "7e756620dde5de4a012af465b59ce017e8c1a410",
       "purpose": "Size the Studio workspace from its available height and clip the scaled preview to its rendered bounds.",
       "impact": "Keeps editor controls reachable and gives oversized manual previews a deliberate scroll area."
+    },
+    {
+      "path": "README.md",
+      "gitBlob": "43e26fc9479332509ff745a3dd1eaa5368654fde",
+      "purpose": "Index the current prototype guides and proposed production architecture.",
+      "impact": "Documentation only."
+    },
+    {
+      "path": "docs/SCOPE-Demo-Notes.html",
+      "gitBlob": "f0737d8a95b52269f7abe10ff56f91e1c5fdc68a",
+      "purpose": "Bring the Studio overview up to date while preserving the original demo evidence.",
+      "impact": "Documentation only."
+    },
+    {
+      "path": "docs/SCOPE-Design-Studio-Architecture.html",
+      "gitBlob": "59d2ed4b45783ac042955248d00380bab1382312",
+      "purpose": "Describe the implemented prototype workspace, context, preview and exports.",
+      "impact": "Documentation only."
+    },
+    {
+      "path": "docs/SCOPE-Phase-3-Window-Manager.md",
+      "gitBlob": "4b0c71e7833949f3cacf458d44c80ab8dcc67b48",
+      "purpose": "Describe actual managed geometry and later verification.",
+      "impact": "Documentation only."
+    },
+    {
+      "path": "docs/SCOPE-UI-Documentation.html",
+      "gitBlob": "0eefc6eb7e1b0aba7ca32de6ff9c28f34f27f9ae",
+      "purpose": "Separate implemented prototype and proposed operational architecture.",
+      "impact": "Documentation only."
+    },
+    {
+      "path": "docs/SCOPE-Visual-Systems.html",
+      "gitBlob": "8c32f11a1a278b351472973babc321244473db8e",
+      "purpose": "Correct the current preset count and scope the windowing and browser evidence.",
+      "impact": "Documentation only."
     }
   ],
   "followUpApprovals": [
@@ -171,6 +207,20 @@
         "docs/assets/validate-preview-sizing.cjs"
       ],
       "regression": "node docs/assets/validate-preview-sizing.cjs \"<Chrome or Edge executable>\""
+    },
+    {
+      "feature": "SCOPE - Synchronize Documentation Through Phase D",
+      "authorization": "Request to synchronize documentation with the repository through Phase D and clarify product maturity.",
+      "investigatedBaseline": "edbba36",
+      "changes": [
+        "README.md",
+        "docs/SCOPE-Demo-Notes.html",
+        "docs/SCOPE-Design-Studio-Architecture.html",
+        "docs/SCOPE-Phase-3-Window-Manager.md",
+        "docs/SCOPE-UI-Documentation.html",
+        "docs/SCOPE-Visual-Systems.html"
+      ],
+      "scope": "Protected documentation paths only. No runtime, validator, or distribution changes."
     }
   ]
 }

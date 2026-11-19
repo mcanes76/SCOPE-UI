@@ -9,11 +9,11 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 @media(max-width:700px){body{margin:8px auto;padding:0 10px 24px}main{padding:20px 16px}h1{font-size:25px}.transition-list{columns:1}}
 @media print{@page{margin:16mm}body{max-width:none;margin:0;padding:0;background:#fff;color:#172536;font-size:10pt}main{border:0;padding:0}.document-tools,.document-links,footer,.diagram details{display:none}.toc{background:white}h1,h2,h3{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere}pre code{white-space:pre-wrap;font-size:8pt}.table-scroll{overflow:visible}table{font-size:8pt}th,td{min-width:0;padding:6px}thead{display:table-header-group}tr,.diagram{break-inside:avoid}a{color:#172536}}
 </style></head><body>
-<nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html" aria-current="page">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a></nav>
+<nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html" aria-current="page">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a><a href="SCOPE-Phase-D-Preview-Resolution-and-Scaling.html">Phase D Preview Resolution and Scaling</a></nav>
 <div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Application-Integration-Plan.md">Markdown source</a></div>
-<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#stages-and-ownership">Stages and ownership</a></li><li><a href="#architecture-decisions-to-settle-before-production-implementation">Architecture decisions to settle before production implementation</a></li><li><a href="#design-studio-change-control">Design Studio change control</a></li><li><a href="#validation-and-conformance-matrix">Validation and conformance matrix</a></li><li><a href="#checkpoint-and-recommended-next-step">Checkpoint and recommended next step</a></li><li><a href="#optional-theme-conformance-extension">Optional theme conformance extension</a></li></ul></nav><h1 id="application-integration-implementation-plan">Application Integration Implementation Plan</h1>
-<p>This roadmap separates executable reference work from production readiness. No real application migration, new Studio panel, deployment framework or backend dependency is authorized by this reference checkpoint. All later stages require the entry criteria below and explicit scope approval.</p>
-<h2 id="stages-and-ownership">Stages and ownership</h2>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#proposed-production-stages-and-ownership">Proposed production stages and ownership</a></li><li><a href="#architecture-decisions-to-settle-before-production-implementation">Architecture decisions to settle before production implementation</a></li><li><a href="#design-studio-change-control">Design Studio change control</a></li><li><a href="#validation-and-conformance-matrix">Validation and conformance matrix</a></li><li><a href="#pending-production-decisions">Pending production decisions</a></li><li><a href="#optional-theme-conformance-extension">Optional theme conformance extension</a></li></ul></nav><h1 id="application-integration-implementation-plan">Application Integration Implementation Plan</h1>
+<p>This roadmap is for the proposed operational shell and is separate from Studio Phases B, C and D. Those prototype phases demonstrated container-aware sizing, optional Context and responsive preview fidelity. The reference lab supplies synthetic evidence. The repository establishes no real app onboarding or production deployment. See the <a href="SCOPE-Application-Integration-Architecture.html#product-maturity">maturity and ownership model</a>.</p>
+<h2 id="proposed-production-stages-and-ownership">Proposed production stages and ownership</h2>
 <div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
 <thead>
 <tr>
@@ -73,8 +73,8 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 <li>Agree measured startup, responsiveness, memory, accessibility, audit and failure-recovery criteria. Do not invent operational thresholds from the synthetic demo.</li>
 </ol>
 <h2 id="design-studio-change-control">Design Studio change control</h2>
-<p>Existing Studio/runtime files are unchanged in this checkpoint. Future changes must be the minimum necessary to expose a reusable integration interface, preferably an additive optional host callback at the mount/lifecycle boundary. Document the exact file/function, rationale, alternatives, impact on all four mock applications, offline/export implications, ownership review and rollback. Do not add operator configuration merely to expose development settings. Keep integration lab controls outside the Studio.</p>
-<p>The baseline protection validator compares every existing tracked file against <code>30bf8d6</code>, verifies the Phase 2 revert tree and rejects new files under Studio/runtime roots. A future approved change needs a reviewed, narrow exception and updated modification record. Do not silently bump the baseline or weaken the check to make a test pass.</p>
+<p>The original adapter reference checkpoint left the Studio and runtime files unchanged. Later user-scoped prototype updates are recorded in <a href="SCOPE-Application-Integration-Change-Control.html">change control</a>. Any work to connect the reference to the Studio should use a reviewed mount/lifecycle boundary and preserve the offline prototype. Document the exact file/function, rationale, alternatives, impact on all four mock applications, offline/export implications, ownership review and rollback. Do not add operator configuration merely to expose development settings. Keep integration lab controls outside the Studio.</p>
+<p>The baseline protection validator compares pre-existing tracked files against <code>30bf8d6</code>, enforces exact-file exceptions, verifies the Phase 2 revert tree and rejects new files under the protected Studio/runtime roots.</p>
 <h2 id="validation-and-conformance-matrix">Validation and conformance matrix</h2>
 <div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
 <thead>
@@ -97,7 +97,7 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 </tr>
 <tr>
 <td>Activation/deactivation/resize</td>
-<td>Real host methods and synthetic DOM state exercised; Phase 3 geometry reused</td>
+<td>Reference host methods and synthetic DOM state exercised using the shared geometry model</td>
 <td>Visibility, background work and target display behavior</td>
 </tr>
 <tr>
@@ -127,13 +127,13 @@ p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;bac
 </tr>
 <tr>
 <td>Window operations</td>
-<td>Synthetic mount in isolated managed geometry; existing Phase 3 validator unchanged</td>
+<td>Synthetic mount in isolated managed geometry. Studio Phase B and D validation is separate prototype evidence</td>
 <td>Actual applications under all layouts, sizes, close policies and pop-outs</td>
 </tr>
 <tr>
 <td>Studio preservation</td>
-<td>Baseline Git diff, all existing regression validators and source/distribution parity</td>
-<td>Native browser appearance, downloads, keyboard/modal and operator review</td>
+<td>Baseline protection, source/distribution parity and scoped headless Chrome/Edge preview/export checks</td>
+<td>Headed focus/keyboard, pop-outs and target-workstation review. Operational acceptance remains separate</td>
 </tr>
 </tbody>
 </table></div>
@@ -154,11 +154,11 @@ node docs/assets/validate-window-manager.cjs
 node docs/assets/validate-source-sync.cjs
 git diff --check</code></pre>
 <p><code>validate-visual-families.cjs</code> is the <strong>pre-existing legacy material/theme regression test</strong>. Running it does not restore the rejected Phase 2 implementation. The standalone/source-sync validators build temporary artifacts; the checked-in Studio distribution is not regenerated or changed in this checkpoint.</p>
-<p>For a manual reference walkthrough, open <code>examples/app-integration/index.html</code> directly. Launch, increment inside the app, send a command/context, minimize/restore, move/resize, explicitly maximize/restore, save view state, simulate the error, close/dispose and relaunch. Confirm restored sample state and absence of duplicate mounts/listeners. This validates reference behavior only. The existing Studio must be reviewed separately on the target browser/workstation; controlled DOM tests do not prove rendering, native focus, downloads or popup behavior.</p>
-<h2 id="checkpoint-and-recommended-next-step">Checkpoint and recommended next step</h2>
-<p>After tests pass, create only the requested <code>SCOPE - Application Integration Architecture</code> checkpoint on <code>feature/scope-app-integration</code>. Do not merge or push. The next recommended work is a review with the four application owners using the checklist, then an explicitly scoped decision on runtime/transport and the first onboarding target. Do not proceed automatically to real application integration or production deployment.</p>
+<p>For a manual reference walkthrough, open <code>examples/app-integration/index.html</code> directly. Launch, increment inside the app, send a command/context, minimize/restore, move/resize, explicitly maximize/restore, save view state, simulate the error, close/dispose and relaunch. Confirm restored sample state and absence of duplicate mounts/listeners. This validates reference behavior only. The separate <a href="SCOPE-Phase-D-Preview-Resolution-and-Scaling.html#validation-and-remaining-limits">Studio browser suite</a> covers specific Chrome/Edge prototype flows. Review the reference lab and operational applications in their intended environments.</p>
+<h2 id="pending-production-decisions">Pending production decisions</h2>
+<p>Review the checklist with the four application owners. Choose the runtime, transport and first onboarding target based on owner readiness and platform/security review. Each real adapter and deployment must meet the operational acceptance gates above.</p>
 <h2 id="optional-theme-conformance-extension">Optional theme conformance extension</h2>
-<p>Run <code>node src/integration/tests/validate-theme-contract.cjs</code> alongside the existing integration/protection tests and <strong>all</strong> <code>docs/assets/validate-*.cjs</code> regressions (including standalone design switching and managed pop-out). Run <code>python docs/assets/convert-markdown-to-html.py --check</code> after regenerating the documentation.</p>
+<p>Run <code>node src/integration/tests/validate-theme-contract.cjs</code> alongside the existing integration/protection tests and the Studio regressions, including standalone design switching, managed pop-out, container-aware sizing and Context Panel. The <a href="SCOPE-Phase-D-Preview-Resolution-and-Scaling.html">Phase D browser check</a> takes an explicit Chrome or Edge executable. Run <code>python docs/assets/convert-markdown-to-html.py --check</code> after regenerating the documentation.</p>
 <div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
 <thead>
 <tr>

@@ -1,6 +1,6 @@
 # Design Studio Protection and Change-Control Record
 
-This record applies Task 11 to the accompanying architecture/reference scope. Initial branch verification returned **`feature/scope-app-integration`** with a clean worktree at **`30bf8d6f0c0ca38a38273fe99114fa0062c57f1b`**, the committed Phase 3 Window Manager checkpoint. The original `feature/scope-design-studio-portable` branch remains at that checkpoint. No reset, merge, push or unrelated automatic commit is part of this work.
+The first sections record the original architecture and synthetic reference checkpoint. Later sections record changes against the same protection baseline. Initial branch verification returned **`feature/scope-app-integration`** with a clean worktree at **`30bf8d6f0c0ca38a38273fe99114fa0062c57f1b`**, the committed Phase 3 Window Manager checkpoint. The original `feature/scope-design-studio-portable` branch remains at that checkpoint. No reset, merge, push or unrelated automatic commit is part of this work.
 
 ## Protected baseline
 
@@ -10,9 +10,9 @@ This record applies Task 11 to the accompanying architecture/reference scope. In
 - Preserve every existing tracked file, including current theme presets, mockups, Studio source, validators, build scripts and standalone HTML.
 - The rejected Phase 2 Visual Families architecture, curated presets and controls remain absent. Existing earlier material/theme groups and their regression test remain intact.
 
-## Modifications to existing Design Studio files
+## Original reference checkpoint file changes
 
-**None.** No existing tracked file is modified in this checkpoint. There is therefore no operator-facing appearance, control, mounting, navigation, application behavior, store, schema, export or build-pipeline change to the current Studio. The standalone distribution is preserved, not rebuilt. Existing application-specific prototype code is assessed and documented, not migrated.
+**None at the original reference checkpoint.** There is therefore no operator-facing appearance, control, mounting, navigation, application behavior, store, schema, export or build-pipeline change to the current Studio. The standalone distribution is preserved, not rebuilt. Existing application-specific prototype code is assessed and documented, not migrated.
 
 The new demo reads the existing `design-studio/workspace.js` as a local script and uses only its pure geometry model. Purpose: demonstrate a reference adapter inside a bounded managed window without restructuring the Studio. Impact on existing files: read-only reuse; no imports into the Studio and no application registry/global-store access. The `blos` geometry key is a sizing profile in this isolated demo, not a BLOS registration or adapter.
 
@@ -33,7 +33,7 @@ The new demo reads the existing `design-studio/workspace.js` as a local script a
 
 These files add no runtime dependency, server requirement, dynamic executable loading, real application adapter, authentication service, backend client, iframe transport, native host or durable state service. The message guard is validation logic, not a production channel. Proposed production responsibilities are explicitly labeled in the architecture and plan.
 
-## Verification and review limits
+## Original reference verification and review limits
 
 The protection test compares **every pre-existing tracked path** to the Phase 3 commit using Git's working-tree comparison (including normal text EOL handling). It also rejects new files under `design-studio/`, `dist/`, `mockups/` and `scripts/`. New files are restricted to isolated integration modules/tests, the separate example and new documentation. The check never resets, rewrites, stages or commits protected files. It is a current-change gate, not a permanent prohibition on approved future reusable interfaces.
 
@@ -43,14 +43,14 @@ Native browser rendering is not established by controlled DOM tests. The prior P
 
 Validation results for this change: all 12 existing validators passed, including Phase 1, Phase 3, legacy navigation/themes/workspace, exports, offline packaging and exact source/distribution parity. Both new integration/protection validators passed; the integration validator includes 11 focused groups. All 69 existing tracked files compare unchanged against the Phase 3 baseline, with zero new files under protected runtime roots. `git diff --check` passed. No native browser rendering pass is claimed.
 
-## Rule for later modifications
+## Review of later modifications
 
 Before modifying an existing Studio file, verify the branch again, record the file/function, demonstrate the need for a reusable interface, consider an isolated module first, document UI/state/export/offline effects, preserve unrelated work and obtain any required scope approval. Keep the change narrow, add focused conformance coverage, run all regression checks and record rollback. A narrow reviewed exception may then be added to the protection policy; do not silently update the baseline or regenerate the Studio to hide drift. No new operator-facing control is justified solely by developer convenience.
 
 The requested checkpoint is `SCOPE - Application Integration Architecture` after validation. Stop at the architecture and reference implementation. Original Studio branches, main/trunk and remotes are not changed.
 
 
-## Optional theme contract extension (current change)
+## Optional theme contract extension
 
 The branch was confirmed as `feature/scope-app-integration` at `6c6ea7d` with a clean working tree before this extension. Phase 1 and the restored pre-Phase-2 themes remain protected; no merge, push or distribution rebuild is part of this change.
 
@@ -68,4 +68,16 @@ The branch was confirmed as `feature/scope-app-integration` at `6c6ea7d` with a 
 No existing Design Studio, mockup, application store, runtime, export, preset, Component Editor, candidate/history or standalone distribution file is modified. `adapter-host.js`, the synthetic application and its manifest remain unchanged. Theme declarations are metadata only; no app begins inheriting styles. The common design system reuses Phase 1 concepts, without introducing families or another preset catalog. Raw Studio JSON projection and real receivers remain proposals, requiring application-owner review and acceptance tests. Native/browser rendering of new theme adoption cannot be claimed because no adoption UI is implemented.
 
 
-Validation for the optional theme extension: all 17 validators passed (14 existing `docs/assets/validate-*.cjs` validators, integration lifecycle, Studio protection and six new theme-contract groups). Documentation HTML synchronization and `git diff --check` passed. The protection gate confirms Phase 1 retained, Phase 2 reverted, Phase 3 retained and all 31 presets preserved, with no new Studio runtime files. Existing source/distribution parity, standalone workflows and no-network fixtures passed. No native visual/theme-adoption or production transport test is claimed; those remain application-specific acceptance work. Changes are left on the integration branch for review; no commit, merge or push was requested for this extension.
+Validation for the optional theme extension: all 17 validators passed (14 existing `docs/assets/validate-*.cjs` validators, integration lifecycle, Studio protection and six new theme-contract groups). Documentation HTML synchronization and `git diff --check` passed. The protection gate confirms Phase 1 retained, Phase 2 reverted, Phase 3 retained and all 31 presets preserved, with no new Studio runtime files. Existing source/distribution parity, standalone workflows and no-network fixtures passed. No native visual/theme-adoption or production transport test is claimed; those remain application-specific acceptance work. The optional theme extension is recorded in `b6b0288`.
+
+## Subsequent prototype checkpoints
+
+| Checkpoint | Accepted scope |
+| --- | --- |
+| `1c0264a`, `6c6ea7d` | [Standalone design JSON switching](SCOPE-Standalone-Design-Switching.html) and one managed title-bar Pop Out control per window, using the existing detached simulation lifecycle. |
+| `41eb3d2`, `5b6aa8d` | Reverts of Display Map-Centric Layout and Compact Workspace. |
+| `1433d40`, `91b7e59` | [Phase B](SCOPE-Container-Aware-Window-Manager.html) host measurement, geometry intent and sizing cleanup. |
+| `d371e5b` | [Phase C](SCOPE-Phase-C-Context-Panel.html) optional shared Context Panel. |
+| `edbba36` | [Phase D](SCOPE-Phase-D-Preview-Resolution-and-Scaling.md) logical viewport and visual zoom, with focused headless Chrome and Edge evidence. |
+
+The [exact-file review record](../src/integration/tests/studio-approved-changes.json) tracks changes to protected files. These checkpoints affect the Studio or standalone simulations. Application ownership, adapter interfaces and production deployment decisions remain as described in the proposed architecture.

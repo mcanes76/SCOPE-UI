@@ -1,8 +1,8 @@
 # Application Integration Implementation Plan
 
-This roadmap separates executable reference work from production readiness. No real application migration, new Studio panel, deployment framework or backend dependency is authorized by this reference checkpoint. All later stages require the entry criteria below and explicit scope approval.
+This roadmap is for the proposed operational shell and is separate from Studio Phases B, C and D. Those prototype phases demonstrated container-aware sizing, optional Context and responsive preview fidelity. The reference lab supplies synthetic evidence. The repository establishes no real app onboarding or production deployment. See the [maturity and ownership model](SCOPE-Application-Integration-Architecture.md#product-maturity).
 
-## Stages and ownership
+## Proposed production stages and ownership
 
 | Stage | Entry criteria | Deliverables and responsible owners | Exit criteria | Status here |
 | --- | --- | --- | --- | --- |
@@ -25,9 +25,9 @@ Stage D should onboard one application first, selected from owner readiness evid
 
 ## Design Studio change control
 
-Existing Studio/runtime files are unchanged in this checkpoint. Future changes must be the minimum necessary to expose a reusable integration interface, preferably an additive optional host callback at the mount/lifecycle boundary. Document the exact file/function, rationale, alternatives, impact on all four mock applications, offline/export implications, ownership review and rollback. Do not add operator configuration merely to expose development settings. Keep integration lab controls outside the Studio.
+The original adapter reference checkpoint left the Studio and runtime files unchanged. Later user-scoped prototype updates are recorded in [change control](SCOPE-Application-Integration-Change-Control.md). Any work to connect the reference to the Studio should use a reviewed mount/lifecycle boundary and preserve the offline prototype. Document the exact file/function, rationale, alternatives, impact on all four mock applications, offline/export implications, ownership review and rollback. Do not add operator configuration merely to expose development settings. Keep integration lab controls outside the Studio.
 
-The baseline protection validator compares every existing tracked file against `30bf8d6`, verifies the Phase 2 revert tree and rejects new files under Studio/runtime roots. A future approved change needs a reviewed, narrow exception and updated modification record. Do not silently bump the baseline or weaken the check to make a test pass.
+The baseline protection validator compares pre-existing tracked files against `30bf8d6`, enforces exact-file exceptions, verifies the Phase 2 revert tree and rejects new files under the protected Studio/runtime roots.
 
 ## Validation and conformance matrix
 
@@ -35,14 +35,14 @@ The baseline protection validator compares every existing tracked file against `
 | --- | --- | --- |
 | Manifest identity, version and schema | Reject unknown fields, versions, duplicates, invalid topics and undeclared/ungranted capabilities | App-owned manifest, supply-chain and release review |
 | Singleton launch/mount | Concurrent launch serialized, one mount, second container rejected | Actual app's supported instance policy and mount behavior |
-| Activation/deactivation/resize | Real host methods and synthetic DOM state exercised; Phase 3 geometry reused | Visibility, background work and target display behavior |
+| Activation/deactivation/resize | Reference host methods and synthetic DOM state exercised using the shared geometry model | Visibility, background work and target display behavior |
 | Event/command/context permissions | Allowlisted schemas, response validation, payload copies and listener fault isolation | Operational authorization, auditing and approved domain semantics |
 | Errors and health | Recoverable synthetic error, failed startup, status envelopes and bounded diagnostics | Backend health sources, liveness policy, observability/retention |
 | Cleanup/failure recovery | Disposal, callbacks, cancellation, deadlines, quarantine and safe retry | Frame/process termination, app resources and hostile/unresponsive cases |
 | Optional snapshots | Envelope identity/version, save/restore and application validation | Data classification, migration, persistence and privacy/security controls |
 | Future frame guard | Source/origin/session/identity/version/schema/sequence/replay rejection | Complete transport, handshake, correlation, policy and real origins |
-| Window operations | Synthetic mount in isolated managed geometry; existing Phase 3 validator unchanged | Actual applications under all layouts, sizes, close policies and pop-outs |
-| Studio preservation | Baseline Git diff, all existing regression validators and source/distribution parity | Native browser appearance, downloads, keyboard/modal and operator review |
+| Window operations | Synthetic mount in isolated managed geometry. Studio Phase B and D validation is separate prototype evidence | Actual applications under all layouts, sizes, close policies and pop-outs |
+| Studio preservation | Baseline protection, source/distribution parity and scoped headless Chrome/Edge preview/export checks | Headed focus/keyboard, pop-outs and target-workstation review. Operational acceptance remains separate |
 
 Run:
 
@@ -66,16 +66,16 @@ git diff --check
 
 `validate-visual-families.cjs` is the **pre-existing legacy material/theme regression test**. Running it does not restore the rejected Phase 2 implementation. The standalone/source-sync validators build temporary artifacts; the checked-in Studio distribution is not regenerated or changed in this checkpoint.
 
-For a manual reference walkthrough, open `examples/app-integration/index.html` directly. Launch, increment inside the app, send a command/context, minimize/restore, move/resize, explicitly maximize/restore, save view state, simulate the error, close/dispose and relaunch. Confirm restored sample state and absence of duplicate mounts/listeners. This validates reference behavior only. The existing Studio must be reviewed separately on the target browser/workstation; controlled DOM tests do not prove rendering, native focus, downloads or popup behavior.
+For a manual reference walkthrough, open `examples/app-integration/index.html` directly. Launch, increment inside the app, send a command/context, minimize/restore, move/resize, explicitly maximize/restore, save view state, simulate the error, close/dispose and relaunch. Confirm restored sample state and absence of duplicate mounts/listeners. This validates reference behavior only. The separate [Studio browser suite](SCOPE-Phase-D-Preview-Resolution-and-Scaling.md#validation-and-remaining-limits) covers specific Chrome/Edge prototype flows. Review the reference lab and operational applications in their intended environments.
 
-## Checkpoint and recommended next step
+## Pending production decisions
 
-After tests pass, create only the requested `SCOPE - Application Integration Architecture` checkpoint on `feature/scope-app-integration`. Do not merge or push. The next recommended work is a review with the four application owners using the checklist, then an explicitly scoped decision on runtime/transport and the first onboarding target. Do not proceed automatically to real application integration or production deployment.
+Review the checklist with the four application owners. Choose the runtime, transport and first onboarding target based on owner readiness and platform/security review. Each real adapter and deployment must meet the operational acceptance gates above.
 
 
 ## Optional theme conformance extension
 
-Run `node src/integration/tests/validate-theme-contract.cjs` alongside the existing integration/protection tests and **all** `docs/assets/validate-*.cjs` regressions (including standalone design switching and managed pop-out). Run `python docs/assets/convert-markdown-to-html.py --check` after regenerating the documentation.
+Run `node src/integration/tests/validate-theme-contract.cjs` alongside the existing integration/protection tests and the Studio regressions, including standalone design switching, managed pop-out, container-aware sizing and Context Panel. The [Phase D browser check](SCOPE-Phase-D-Preview-Resolution-and-Scaling.md) takes an explicit Chrome or Edge executable. Run `python docs/assets/convert-markdown-to-html.py --check` after regenerating the documentation.
 
 | Case | Current executable evidence | Production acceptance still required |
 | --- | --- | --- |

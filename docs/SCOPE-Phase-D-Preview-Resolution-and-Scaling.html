@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="SCOPE Markdown to HTML (Pandoc)"><title>Phase D: Design Studio Preview Resolution and Scaling</title><style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#172536;background:#edf1f6}
+*{box-sizing:border-box}body{max-width:1200px;margin:24px auto;padding:0 24px 40px;font-size:16px;line-height:1.65}
+main{background:#fff;border:1px solid #ccd5e0;border-radius:10px;padding:32px 40px}h1{font-size:30px;line-height:1.25;margin-top:0}h2{font-size:23px;margin-top:36px;line-height:1.35}h3{font-size:19px}a{color:#174e96;text-underline-offset:3px}a:focus-visible,button:focus-visible{outline:3px solid #1551b0;outline-offset:3px}
+.document-tools,.document-links{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.document-links a{padding:5px 9px;background:#fff;border:1px solid #ccd5e0;border-radius:5px;font-size:13px}.document-links [aria-current]{font-weight:700;border-color:#174e96}.document-tools button{font:inherit;padding:8px 13px;border:1px solid #61748b;border-radius:5px;background:#fff;cursor:pointer}.source-note,footer{font-size:13px;color:#405164}.toc{border:1px solid #ccd5e0;background:#f5f8fc;padding:14px 20px;margin:24px 0}.toc ul{margin:8px 0;padding-left:22px}
+p,li{overflow-wrap:anywhere}code{font:0.88em ui-monospace,Consolas,monospace;background:#edf2f7;border-radius:4px;padding:2px 5px}pre{background:#edf2f7;border:1px solid #ccd5e0;border-radius:7px;padding:16px;overflow:auto;line-height:1.5}pre code{background:none;padding:0;font-size:13px;white-space:pre}blockquote{border-left:4px solid #61748b;margin:20px 0;padding:4px 20px;background:#f5f8fc}.table-scroll{overflow-x:auto;margin:20px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #ccd5e0;padding:10px 12px;text-align:left;vertical-align:top;min-width:130px}th{background:#e8eef6}tbody tr:nth-child(even){background:#f8fafc}ul,ol{padding-left:26px}.task-list-item{list-style:none;margin-left:-20px}.task-list-item input{margin-right:8px;accent-color:#174e96}
+.diagram{margin:24px 0;border:1px solid #ccd5e0;border-radius:7px;padding:16px;background:#f8fafc}.diagram svg{display:block;width:100%;height:auto;min-width:0}.diagram figcaption{font-weight:600;margin:10px 0}.diagram details{margin-top:12px}.transition-list{font-size:13px;columns:2;column-gap:28px}.transition-list li{break-inside:avoid;margin-bottom:7px}footer{margin-top:20px}
+@media(max-width:700px){body{margin:8px auto;padding:0 10px 24px}main{padding:20px 16px}h1{font-size:25px}.transition-list{columns:1}}
+@media print{@page{margin:16mm}body{max-width:none;margin:0;padding:0;background:#fff;color:#172536;font-size:10pt}main{border:0;padding:0}.document-tools,.document-links,footer,.diagram details{display:none}.toc{background:white}h1,h2,h3{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere}pre code{white-space:pre-wrap;font-size:8pt}.table-scroll{overflow:visible}table{font-size:8pt}th,td{min-width:0;padding:6px}thead{display:table-header-group}tr,.diagram{break-inside:avoid}a{color:#172536}}
+</style></head><body>
+<nav class="document-links" aria-label="Documentation pages"><a href="SCOPE-Application-Integration-Architecture.html">Architecture</a><a href="SCOPE-Application-Integration-Change-Control.html">Change Control</a><a href="SCOPE-Application-Integration-Contract.html">Contract</a><a href="SCOPE-Application-Integration-Plan.html">Plan</a><a href="SCOPE-Application-Onboarding-Checklist.html">Onboarding Checklist</a><a href="SCOPE-Phase-1-Component-Editor.html">Phase 1 Component Editor</a><a href="SCOPE-Phase-3-Window-Manager.html">Phase 3 Window Manager</a><a href="SCOPE-Phase-D-Preview-Resolution-and-Scaling.html" aria-current="page">Phase D Preview Resolution and Scaling</a></nav>
+<div class="document-tools"><button type="button" onclick="window.print()">Print / Save PDF</button><a href="SCOPE-Phase-D-Preview-Resolution-and-Scaling.md">Markdown source</a></div>
+<main><nav class="toc" aria-label="On this page"><strong>On this page</strong><ul><li><a href="#resolution-and-zoom">Resolution and zoom</a></li><li><a href="#guided-advanced-and-present-design">Guided, Advanced and Present Design</a></li><li><a href="#ui-details-comparison-and-standalone-exports">UI Details, comparison and standalone exports</a></li><li><a href="#validation-and-remaining-limits">Validation and remaining limits</a></li></ul></nav><h1 id="phase-d-design-studio-preview-resolution-and-scaling">Phase D: Design Studio Preview Resolution and Scaling</h1>
+<p>Phase D applies to the SCOPE Design Studio prototype. It was implemented in <code>edbba36</code> on <code>feature/scope-app-integration</code>. The offline Studio and the operator-only mockup are separate artifacts. The operator mockup runs the same simulation at the browser's own viewport, with its own toolbar and configuration controls. Production shell and application integration proposals are documented in the <a href="SCOPE-Application-Integration-Architecture.html">Application Integration Architecture</a>.</p>
+<h2 id="resolution-and-zoom">Resolution and zoom</h2>
+<p><strong>Resolution</strong> is the embedded shell's logical viewport in CSS pixels. Studio assigns explicit width and height to the iframe. The shell's media queries, layout and Window Manager receive those dimensions. The preview caption shows the current resolution and effective visual zoom.</p>
+<div class="table-scroll" role="region" aria-label="Scrollable documentation table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Resolution</th>
+<th>Logical viewport</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fit Studio space (default)</td>
+<td>Available borderless preview viewport, rounded down to whole CSS pixels. The size follows the available editor area, including after a Guided/Advanced switch.</td>
+</tr>
+<tr>
+<td>1920 × 1080, 1600 × 900, 1366 × 768, 1280 × 720</td>
+<td>Fixed dimensions independent of the available Studio area.</td>
+</tr>
+<tr>
+<td>Custom</td>
+<td>Enter a width from 320 to 7680 and a height from 240 to 4320, then select <strong>Apply resolution</strong>.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Zoom</strong> changes only the size of the rendered preview. The iframe scales from its top-left corner, within a wrapper sized to the scaled result. Manual choices are 100%, 85%, 70% and 55%. <strong>Auto Fit</strong> (default) uses the smaller of the available width ratio, height ratio and 100%. This can display a fixed logical viewport at a smaller physical size inside Studio. The wrapper clips overflow created by the transform. An oversized manual preview can be scrolled within its focusable preview area. The outer viewport is measured independently of those scrollbars, which keeps zoom from changing Fit resolution. Browser zoom and device-pixel ratio are separate.</p>
+<h2 id="guided-advanced-and-present-design">Guided, Advanced and Present Design</h2>
+<p>Guided and Advanced share the live iframe, preview resolution and zoom controls. The preview uses the height remaining after the header, workshop steps where applicable, preview toolbar, caption and Studio footer. On desktop, the structure and inspector can scroll within their own panels. The editor can scroll on very short or narrow screens. The shell retains its own application scrolling and <a href="SCOPE-Container-Aware-Window-Manager.html">host-aware managed window sizing</a>.</p>
+<p><strong>Present Design</strong> hides editor chrome, reveals UI Details and requests browser fullscreen when available. A fixed or custom viewport carries through. If the editor was using Fit Studio space, Present starts with the logical dimensions measured at entry. Enable <strong>Fit presentation viewport</strong> to follow the available presentation area. Zoom continues to use the selected Auto Fit or manual setting. <strong>Return to Studio</strong> restores the prior editor mode. Fit Studio space resumes measuring the editor area.</p>
+<h2 id="ui-details-comparison-and-standalone-exports">UI Details, comparison and standalone exports</h2>
+<ul>
+<li>New Studio designs start with <strong>UI Details hidden</strong>. The Studio checkbox shows the current visibility. Present Design sets details visible in the current design. Return to Studio leaves that design setting visible until changed.</li>
+<li><strong>Compare checkpoints</strong> uses the live logical viewport at dialog entry for both candidates, even when the editor uses Fit. Auto Fit uses the smaller common display area to give both previews the same scale. Both show the current Studio UI Details setting and run independent simulations. Candidate A/B/C and Baseline remain design checkpoints. <strong>Compare themes A/B</strong> uses the same live frame and layout.</li>
+<li>New standalone operator HTML exports open with UI Details shown and include their own visibility toggle. To compare responsive behavior, match the browser's CSS viewport, navigation, arrangement, design and details visibility. Studio zoom and resolution are editor settings and are not exported as shell configuration. Standalone files have independent simulation sessions.</li>
+<li>The <a href="SCOPE-Phase-C-Context-Panel.html">Context Panel</a> is a separate shell control. Its visibility is part of the saved design.</li>
+</ul>
+<h2 id="validation-and-remaining-limits">Validation and remaining limits</h2>
+<p>The Phase D checkpoint passed 19 existing validators and the focused <a href="assets/validate-preview-sizing.cjs">browser regression</a> in headless Chrome and Edge. The browser suite used 1440 × 900, 1280 × 720 and 1024 × 600 Studio viewports. It covered preset and custom iframe dimensions, breakpoints, Auto Fit and all four manual zooms, editor controls and scrolling, presentation, checkpoint comparison, UI Details, native pointer dragging and resizing, window bounds and state retention, and offline operator export. The standalone layout was compared at 1600 × 900 and 740 × 680. Before/after captures and geometry were recorded during that checkpoint.</p>
+<p>At 1440 × 900, the Guided preview displayed the 1600 × 900 logical viewport at about 56.8% (about 908 × 511 rendered CSS pixels). The browser page stayed at 900px tall in both Guided and Advanced, compared with 1009px and 1124px respectively before Phase D.</p>
+<p>Run the browser check with a local browser executable and an optional artifact directory:</p>
+<pre class="text"><code>node docs/assets/validate-preview-sizing.cjs &quot;&lt;Chrome or Edge executable&gt;&quot; [artifact directory]</code></pre>
+<p>This evidence covers the exercised offline flows and resolutions. Broader headed browser review covers fullscreen policy, native file pickers and pop-outs, accessibility and focus, print, and target hardware. The narrowest previews can require shell scrolling. Older offline files retain the behavior embedded when generated.</p>
+</main><footer>Generated from SCOPE-Phase-D-Preview-Resolution-and-Scaling.md. All styling and diagrams are embedded; no server or external runtime is required.</footer>
+</body></html>

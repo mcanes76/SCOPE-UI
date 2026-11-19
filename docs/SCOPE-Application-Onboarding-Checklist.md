@@ -1,6 +1,6 @@
 # Application Team Integration Checklist
 
-Use this separately for BLOS, Display, Sensor Calibration and Native LOS. The repository contains mock implementations, not evidence of real application readiness. No real application is onboarded by this checkpoint.
+Use this checklist separately for production onboarding of BLOS, Display, Sensor Calibration and Native LOS. Each application remains pending. Studio journeys and the synthetic adapter lab provide prototype and reference evidence. See the [maturity model](SCOPE-Application-Integration-Architecture.md#product-maturity).
 
 | Application | Real UI/runtime/mount contract confirmed | Auth/backend ownership confirmed | Adapter and conformance review | Current evidence |
 | --- | --- | --- | --- | --- |
@@ -23,8 +23,8 @@ Use this separately for BLOS, Display, Sensor Calibration and Native LOS. The re
 - [ ] Agree contract/application versions and the compatibility/rollback policy.
 - [ ] Provide an approved manifest and capabilities; do not provide arbitrary executable URLs for host loading.
 - [ ] Implement initialize/mount/activate/deactivate/resize/dispose against the approved transport.
-- [ ] Define hidden, minimized, closed, unloaded and detached semantics without silently changing Phase 3 caching behavior.
-- [ ] Document minimum/initial dimensions, high-DPI/responsive behavior, keyboard focus, modal/popup ownership and accessibility requirements.
+- [ ] Agree production semantics for hide, minimize, close, unload and detach. Studio caching describes the prototype.
+- [ ] Document supported host sizes, high-DPI and responsive behavior, keyboard focus, modal/pop-up ownership and accessibility on the chosen platform. Phase B and D measurements describe the Studio and standalone simulations.
 - [ ] Demonstrate one permitted mount per instance, no duplicate listeners, cooperative cancellation and cleanup after partial startup.
 - [ ] Define recovery for failure, deadline, reload and unresponsive process/frame. Identify resources requiring host termination.
 
@@ -52,7 +52,7 @@ Use this separately for BLOS, Display, Sensor Calibration and Native LOS. The re
 - [ ] Confirm the active integration branch and preserve unrelated work.
 - [ ] Record every proposed change to an existing Studio file and why a reusable interface cannot be added in an isolated module instead.
 - [ ] Preserve Guided/Advanced/Final, all navigation modes, Component Editor, all 31 restored themes, Candidates A/B/C, history, mock applications, window behavior and exports.
-- [ ] Keep standalone HTML operational without a server. Keep development-only controls out of the operator Studio.
+- [ ] Keep the standalone operator mockup usable offline. Keep Studio editor controls out of operator exports.
 - [ ] Do not restore Phase 2 Visual Families or silently redefine existing application IDs/preset IDs.
 - [ ] Run protection, contract and full regression validation; review native browser behavior where available.
 - [ ] Distinguish reference evidence from real integration readiness in the review record. Do not merge or push without separate authorization.
