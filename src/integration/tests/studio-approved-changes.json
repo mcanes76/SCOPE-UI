@@ -31,9 +31,9 @@
     },
     {
       "path": "dist/SCOPE-Design-Studio.html",
-      "gitBlob": "b5a0e4e3ca6d6ebaaa7566e4ca3a6990793ed401",
-      "purpose": "Rebuild the offline bundle with Phase C Context Panel support.",
-      "impact": "New exports include shared context behavior; existing exports must be regenerated."
+      "gitBlob": "427ae1d0f92dfcba2aeeded72febcfc70f2ae96f",
+      "purpose": "Regenerate the standalone Design Studio with Phase D preview sizing.",
+      "impact": "Built Studio works offline with the same controls."
     },
     {
       "path": "design-studio/workspace.js",
@@ -55,9 +55,9 @@
     },
     {
       "path": "design-studio/studio.js",
-      "gitBlob": "54838ab99311713be189cf1aa7e820cfe4b79e89",
-      "purpose": "Enable existing Context width/visibility controls across navigation and arrangement modes.",
-      "impact": "Uses the existing design history/store; preview scaling and application controls stay unchanged."
+      "gitBlob": "5d29d6b688ce49e598e7b7a587873a2a99fd72ea",
+      "purpose": "Separate logical iframe dimensions from visual zoom in live, presentation, and checkpoint previews.",
+      "impact": "Zoom leaves shell breakpoints and design state intact."
     },
     {
       "path": "design-studio/preview-runtime.js",
@@ -73,15 +73,27 @@
     },
     {
       "path": "docs/assets/validate-design-studio.cjs",
-      "gitBlob": "a52bd962f0e687c140a5f0de06ff0c64665df9b7",
-      "purpose": "Make the existing two-resize-handle test explicitly enable Context.",
-      "impact": "Retains existing resize assertions with the new collapsed default."
+      "gitBlob": "dd91aa482e20b4981de6cf1616f3603b893a41f5",
+      "purpose": "Supply box measurements and resize observer support to the Studio fixture.",
+      "impact": "Preserves the existing Studio interaction regression suite."
     },
     {
       "path": "docs/assets/validate-window-manager.cjs",
       "gitBlob": "bcd705f05c3ca20456f877edf2f062e213aa1026",
       "purpose": "Add standard DOM before() reparenting to the controlled fixture.",
       "impact": "Allows shared shell wrappers while preserving existing Window Manager tests."
+    },
+    {
+      "path": "design-studio/index.html",
+      "gitBlob": "deb5ca6f5cd00a3dd9580c60a24716ff0ea843b5",
+      "purpose": "Add logical resolution, visual zoom, and presentation sizing controls.",
+      "impact": "Exposes live and comparison viewport dimensions in CSS pixels."
+    },
+    {
+      "path": "design-studio/studio.css",
+      "gitBlob": "7e756620dde5de4a012af465b59ce017e8c1a410",
+      "purpose": "Size the Studio workspace from its available height and clip the scaled preview to its rendered bounds.",
+      "impact": "Keeps editor controls reachable and gives oversized manual previews a deliberate scroll area."
     }
   ],
   "followUpApprovals": [
@@ -145,6 +157,20 @@
       ],
       "regression": "node docs/assets/validate-context-panel.cjs",
       "record": "docs/SCOPE-Phase-C-Context-Panel.html"
+    },
+    {
+      "feature": "SCOPE - Phase D Preview Resolution and Scaling",
+      "authorization": "Explicit Phase D request for Design Studio preview sizing, scaling, and regression tests.",
+      "investigatedBaseline": "d371e5b",
+      "changes": [
+        "design-studio/index.html",
+        "design-studio/studio.css",
+        "design-studio/studio.js",
+        "dist/SCOPE-Design-Studio.html",
+        "docs/assets/validate-design-studio.cjs",
+        "docs/assets/validate-preview-sizing.cjs"
+      ],
+      "regression": "node docs/assets/validate-preview-sizing.cjs \"<Chrome or Edge executable>\""
     }
   ]
 }

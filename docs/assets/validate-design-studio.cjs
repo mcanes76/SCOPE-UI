@@ -80,13 +80,17 @@ const valid={source:parent,origin:'http://127.0.0.1',data:{namespace:'scope-desi
 async function editorFixture(offlineAssets=null){
   const els=new Map(),events={};
   class Element{
+    getBoundingClientRect(){return {width:1000,height:600};}
     constructor(id=''){this.id=id;this.dataset={};this.value='';this.checked=false;this.disabled=false;this.hidden=false;this.style={};this.attrs={};this.children=[];this.files=[];this.innerHTML='';this.textContent='';this.events={};this.classList={toggle(){},add(){},remove(){}};this.contentWindow={postMessage(){}};}
     setAttribute(k,v){this.attrs[k]=v;}addEventListener(k,fn){this.events[k]=fn;}append(...values){this.children.push(...values);}replaceChildren(){this.children=[];this.innerHTML='';}closest(){return this;}matches(){return false;}showModal(){this.open=true;}close(){this.open=false;this.events.close?.();}click(){}remove(){}
   }
   const get=id=>{if(!els.has(id))els.set(id,new Element(id));return els.get(id);};
+  get('preview-viewport').firstElementChild=new Element();
+  get('preview-resolution').value='fit';
+  get('zoom').value='auto';
   const document={body:new Element('body'),documentElement:new Element(),querySelector:s=>get(s.replace(/^#/,'')),querySelectorAll:()=>[],getElementById:get,createElement:()=>new Element(),addEventListener:(k,fn)=>events[k]=fn};
   const windowEvents={};
-  const downloaded=[],context=vm.createContext({document,window:{addEventListener(type,fn){windowEvents[type]=fn;}},location:{origin:'http://127.0.0.1',href:'http://127.0.0.1/design-studio/'},crypto:{randomUUID:()=>Math.random().toString()},URL,ScopeWorkspace:require('../../design-studio/workspace.js'),ScopeDesign:C,ScopeExports:{...E,download:(...args)=>downloaded.push(args)},fetch:async url=>({ok:true,json:async()=>url==='theme-presets.json'?{presets}:url==='design-config.json'?initial:resources.params}),setTimeout:()=>0,clearTimeout(){},console});
+  const downloaded=[],context=vm.createContext({document,ResizeObserver:class{observe(){}disconnect(){}},window:{addEventListener(type,fn){windowEvents[type]=fn;}},location:{origin:'http://127.0.0.1',href:'http://127.0.0.1/design-studio/'},crypto:{randomUUID:()=>Math.random().toString()},URL,ScopeWorkspace:require('../../design-studio/workspace.js'),ScopeDesign:C,ScopeExports:{...E,download:(...args)=>downloaded.push(args)},fetch:async url=>({ok:true,json:async()=>url==='theme-presets.json'?{presets}:url==='design-config.json'?initial:resources.params}),setTimeout:()=>0,clearTimeout(){},console});
   let networkRequests=0;
   if(offlineAssets){
     context.location={origin:'null',href:'file:///customer/SCOPE-Design-Studio.html'};context.window.origin='null';context.Blob=Blob;

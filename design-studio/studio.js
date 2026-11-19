@@ -8,6 +8,72 @@
   const offline=window.ScopeOfflineRuntime;
   let componentScope='global',componentApp='blos',componentCategory='buttons',selectedInstance='',selectedComponentLabel='',componentPicker=false;
   const clients=new Map(),origin=offline?'null':location.origin;
+  const previewViewport=$('#preview-viewport');
+  const livePreview={viewport:previewViewport,stage:previewViewport.firstElementChild,frame:$('#preview')};
+  let customResolution={width:1920,height:1080},presentationResolution,comparisonResolution;
+  const comparisonPreviews=[];
+  function availableSize(viewport){
+    // The borderless viewport's outer size stays stable when manual zoom adds scrollbars.
+    const {width,height}=viewport.getBoundingClientRect();
+    return {width:Math.floor(width),height:Math.floor(height)};
+  }
+  function logicalSize(available){
+    if(presenting&&$('#presentation-fit').checked)return available;
+    if(presenting)return presentationResolution;
+    const preset=$('#preview-resolution').value;
+    if(preset==='fit')return available;
+    if(preset==='custom')return customResolution;
+    const [width,height]=preset.split('x').map(Number);
+    return {width,height};
+  }
+  function visualScale({width,height},available){
+    const zoom=$('#zoom').value;
+    return zoom==='auto'?Math.min(1,available.width/width,available.height/height):Number(zoom);
+  }
+  function sizePreview({stage,frame},{width,height},scale){
+    if(frame.style.width!==width+'px')frame.style.width=width+'px';
+    if(frame.style.height!==height+'px')frame.style.height=height+'px';
+    frame.style.transform='scale('+scale+')';
+    stage.style.width=width*scale+'px';
+    stage.style.height=height*scale+'px';
+  }
+  function sizeLabel({width,height},scale){
+    return width+' × '+height+' CSS px · '+Number((scale*100).toFixed(1))+'%';
+  }
+  function updatePreviewSize(){
+    const available=availableSize(previewViewport),resolution=logicalSize(available);
+    if(!available.width||!available.height||!resolution.width||!resolution.height)return;
+    const scale=visualScale(resolution,available);
+    sizePreview(livePreview,resolution,scale);
+    const output=$(presenting?'#presentation-size':'#preview-size'),label=sizeLabel(resolution,scale);
+    if(output.textContent!==label)output.textContent=label;
+  }
+  function updateComparisonSize(){
+    if(!comparisonPreviews.length)return;
+    const sizes=comparisonPreviews.map(({viewport})=>availableSize(viewport));
+    const available={width:Math.min(...sizes.map(s=>s.width)),height:Math.min(...sizes.map(s=>s.height))};
+    if(!available.width||!available.height)return;
+    const scale=visualScale(comparisonResolution,available);
+    if(!scale)return;
+    for(const preview of comparisonPreviews)sizePreview(preview,comparisonResolution,scale);
+    const output=$('#comparison-size'),label=sizeLabel(comparisonResolution,scale)+
+      (comparisonPreviews[0].detailsVisible?' · UI Details shown':' · UI Details hidden');
+    if(output.textContent!==label)output.textContent=label;
+  }
+  const liveSizeObserver=new ResizeObserver(updatePreviewSize);
+  const comparisonSizeObserver=new ResizeObserver(updateComparisonSize);
+  liveSizeObserver.observe(previewViewport);
+  $('#preview-resolution').addEventListener('change',event=>{
+    $('#custom-resolution').hidden=event.target.value!=='custom';
+    updatePreviewSize();
+  });
+  $('#custom-resolution').addEventListener('submit',event=>{
+    event.preventDefault();
+    customResolution={width:$('#preview-width').valueAsNumber,height:$('#preview-height').valueAsNumber};
+    updatePreviewSize();
+  });
+  $('#zoom').addEventListener('change',updatePreviewSize);
+  $('#presentation-fit').addEventListener('change',updatePreviewSize);
   function notice(message,error=false){$('#notice').textContent=message;$('#notice').dataset.error=String(error);clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('#notice').textContent='',6500);}
   function register(frame,design=null){const channel=crypto.randomUUID();clients.set(channel,{frame,design,ready:false});if(offline)offline.preview(frame,channel);else frame.src='../mockups/scope-integrated-electric-glass.html?studio=1&studioChannel='+encodeURIComponent(channel);return channel;}
   function send(client,channel){if(!client.ready)return;client.frame.contentWindow.postMessage({namespace:'scope-design-studio',version:1,channel,type:'configure',design:client.design||(themeComparison?{...C.clone(themeComparison.base),theme:themeComparison[themeComparison.active]}:store.value),presets,options:{editing:!client.design&&mode==='advanced'&&!presenting&&!themeComparison,region:client.design?'':region,application:client.design?'blos':application,rightApplication:client.design?'display':rightApplication,presentation:!client.design&&presenting,comparisonFrozen:!client.design&&Boolean(themeComparison),componentPicker:!client.design&&mode==='advanced'&&!presenting&&componentPicker,componentSelection:!client.design&&mode==='advanced'?selectedInstance:''}},offline?'*':origin);}
@@ -93,15 +159,42 @@
     document.querySelectorAll('.component-group').forEach(el=>el.open=openGroups.includes(el.querySelector('summary')?.textContent));
     updateStatus();
   }
-  function updateStatus(){if(!store)return;$('#studio-brand').textContent=store.value.parameters?.branding?.name||params.branding?.name||'SCOPE';if(store.value.parameters?.logoPath?.startsWith('data:image/'))$('#studio-logo').src=store.value.parameters.logoPath;$('#undo').disabled=!store.past.length;$('#redo').disabled=!store.future.length;$('#details').checked=store.value.detailsVisible;$('#design-name').value=store.value.name;$('#right-app-label').hidden=store.value.layout.mode!=='split';for(const id of ['application','right-application'])for(const option of (document.getElementById(id).options||[]))option.textContent=store.value.parameters?.applications?.[option.value]?.name||params.applications?.[option.value]?.name||option.value;}
-  function present(){componentPicker=false;priorMode=mode;presenting=true;store.update(d=>{d.detailsVisible=true;});document.body.classList.add('presenting');$('#presentation-actions').hidden=false;sync();$('#presentation-actions button').focus?.();document.documentElement.requestFullscreen?.().catch(()=>{});}
-  function returnStudio(){presenting=false;mode=priorMode;document.body.classList.remove('presenting');$('#presentation-actions').hidden=true;if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});renderControls();sync();$('[data-action=present]').focus?.();}
+  function updateStatus(){if(!store)return;$('#studio-brand').textContent=store.value.parameters?.branding?.name||params.branding?.name||'SCOPE';if(store.value.parameters?.logoPath?.startsWith('data:image/'))$('#studio-logo').src=store.value.parameters.logoPath;$('#undo').disabled=!store.past.length;$('#redo').disabled=!store.future.length;$('#details').checked=store.value.detailsVisible;$('#details-label').textContent=store.value.detailsVisible?'UI Details shown':'UI Details hidden';$('#design-name').value=store.value.name;$('#right-app-label').hidden=store.value.layout.mode!=='split';for(const id of ['application','right-application'])for(const option of (document.getElementById(id).options||[]))option.textContent=store.value.parameters?.applications?.[option.value]?.name||params.applications?.[option.value]?.name||option.value;}
+  function present(){componentPicker=false;priorMode=mode;presentationResolution=logicalSize(availableSize(previewViewport));$('#presentation-fit').checked=false;presenting=true;store.update(d=>{d.detailsVisible=true;});document.body.classList.add('presenting');$('#presentation-actions').hidden=false;updatePreviewSize();sync();$('#presentation-actions button').focus?.();document.documentElement.requestFullscreen?.().catch(()=>{});}
+  function returnStudio(){presenting=false;mode=priorMode;document.body.classList.remove('presenting');$('#presentation-actions').hidden=true;if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});renderControls();updatePreviewSize();sync();$('[data-action=present]').focus?.();}
   function compare(){
     const names=Object.keys(store.candidates);if(names.length<2){notice('Save Candidate A, B or C before comparing with Baseline.');return;}
-    for(const id of ['compare-left','compare-right'])$('#'+id).innerHTML=names.map(n=>`<option>${n}</option>`).join('');$('#compare-left').value=names[0];$('#compare-right').value=names[1];$('#comparison').showModal();renderComparison();
+    for(const id of ['compare-left','compare-right'])$('#'+id).innerHTML=names.map(n=>`<option>${n}</option>`).join('');$('#compare-left').value=names[0];$('#compare-right').value=names[1];comparisonResolution=logicalSize(availableSize(previewViewport));$('#comparison').showModal();renderComparison();
   }
-  function clearComparison(){for(const [channel,client] of clients)if(client.design)clients.delete(channel);$('#compare-grid').replaceChildren();}
-  function renderComparison(){clearComparison();for(const side of ['left','right']){const name=$('#compare-'+side).value,section=document.createElement('section'),heading=document.createElement('h3'),box=document.createElement('div'),frame=document.createElement('iframe');heading.textContent=name+' / '+store.candidates[name].name;frame.title=name+' shell comparison';box.append(frame);section.append(heading,box);$('#compare-grid').append(section);const d=C.clone(store.candidates[name]);d.detailsVisible=false;register(frame,d);}}
+  function clearComparison(){
+    for(const [channel,client] of clients)if(client.design)clients.delete(channel);
+    comparisonSizeObserver.disconnect();
+    comparisonPreviews.length=0;
+    $('#compare-grid').replaceChildren();
+  }
+  function renderComparison(){
+    clearComparison();
+    for(const side of ['left','right']){
+      const name=$('#compare-'+side).value,section=document.createElement('section'),heading=document.createElement('h3');
+      const viewport=document.createElement('div'),stage=document.createElement('div'),frame=document.createElement('iframe');
+      heading.textContent=name+' / '+store.candidates[name].name;
+      frame.title=name+' shell comparison';
+      viewport.className='preview-viewport';
+      viewport.tabIndex=0;
+      viewport.setAttribute('aria-label',name+' scrollable preview');
+      stage.className='preview-stage';
+      stage.append(frame);
+      viewport.append(stage);
+      section.append(heading,viewport);
+      $('#compare-grid').append(section);
+      const design=C.clone(store.candidates[name]);
+      design.detailsVisible=store.value.detailsVisible;
+      comparisonPreviews.push({viewport,stage,frame,detailsVisible:design.detailsVisible});
+      comparisonSizeObserver.observe(viewport);
+      register(frame,design);
+    }
+    updateComparisonSize();
+  }
   async function exportAction(kind){const d=C.clone(store.value);d.workspace=ScopeWorkspace.fromDesign(d);d.workspace.left=application;d.workspace.right=rightApplication;d.operator=ScopeWorkspace.operator(d.workspace);if(kind==='folder'){const bytes=await ScopeExports.folder(d,presets);ScopeExports.download(bytes,'scope-configurable-mockup.zip','application/zip');notice('Folder package exported. Extract it before serving or editing params.json.');}if(kind==='json')ScopeExports.download(JSON.stringify(d,null,2),'scope-design.json','application/json');if(kind==='css')ScopeExports.download(ScopeExports.css(d,presets),'scope-design.css','text/css');if(kind==='summary')ScopeExports.download(ScopeExports.summary(d,presets,params),'scope-decisions.html','text/html');if(kind==='final'){notice('Preparing standalone mockup with embedded CSS, configuration, logos and Earth texture…');const html=await ScopeExports.finalHTML(d,presets);ScopeExports.download(html,'SCOPE-Operator-Standalone.html','text/html');notice('Operator-only SCOPE mockup exported (not the Design Studio). Open SCOPE-Operator-Standalone.html in Chrome/Edge.');}}
   document.addEventListener('click',async event=>{
     const b=event.target.closest('button');if(!b||b.disabled||!store)return;
@@ -177,7 +270,6 @@
       if(el.id==='details')set('detailsVisible',el.checked);
       if(el.id==='decision-note')set('notes.'+steps[step][0],el.value);
       if(el.id==='design-name'&&el.value.trim())set('name',el.value);
-      if(el.id==='zoom'){const z=Number(el.value);$('#preview').style.transform='scale('+z+')';$('#preview').style.width=100/z+'%';$('#preview').style.height=100/z+'%';}
       if(el.id==='application'){application=el.value;sync();}if(el.id==='right-application'){rightApplication=el.value;sync();}
     }catch(error){notice(error.message,true);}
   });
@@ -207,7 +299,7 @@
     const logo=$('#studio-logo'),path=params.logoPath||'assets/logo.png';if(offline)logo.src=offline.logo;else if(!/^(?:[a-z][a-z0-9+.-]*:|\/|\\)/i.test(path)&&!path.includes('\\'))logo.src=new URL(path,new URL('../mockups/',location.href)).href;logo.addEventListener('error',()=>{if(!logo.dataset.fallback){logo.dataset.fallback='1';logo.src=offline?offline.fallback:'../mockups/assets/scope-logo.svg';}else logo.hidden=true;});
     for(const id of ['application','right-application'])$('#'+id).innerHTML=Object.entries(params.applications).map(([key,value])=>`<option value="${key}">${escape(value.name)}</option>`).join('');$('#right-application').value=rightApplication;
     document.getElementById('branding-logo-file').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>2000000||!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type))throw Error('Choose an image below 2 MB');const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});set('parameters.logoPath',data);}catch(error){notice(error.message,true);}finally{event.target.value='';}});
-    renderControls();register($('#preview'));
+    renderControls();updatePreviewSize();register($('#preview'));
     setTimeout(()=>{if(![...clients.values()].some(c=>c.ready))notice(offline?'Embedded preview did not connect. Reopen the complete generated HTML in Edge or Chrome.':'Preview not connected. Check that the repository root is served over HTTP.',true);},12000);
   }catch(error){notice(error.message,true);$('#controls').textContent=error.message;$('#preview-status').textContent='Not connected';}
 })();
